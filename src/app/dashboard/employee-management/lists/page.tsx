@@ -136,6 +136,10 @@ const EmployeeLists: React.FC = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
 
+  // View Modal States
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewingEmployee, setViewingEmployee] = useState<Employee | null>(null);
+
   // Detect screen size changes and update table visibility
   useEffect(() => {
     const checkScreenSize = () => {
@@ -311,6 +315,17 @@ const EmployeeLists: React.FC = () => {
   const handleCancelDelete = () => {
     setIsDeleteModalOpen(false);
     setDeletingEmployee(null);
+  };
+
+  // View Employee Functions
+  const handleViewEmployee = (employee: Employee) => {
+    setViewingEmployee(employee);
+    setIsViewModalOpen(true);
+  };
+
+  const handleCloseView = () => {
+    setIsViewModalOpen(false);
+    setViewingEmployee(null);
   };
 
   // Filter employees based on search and filter criteria
@@ -553,9 +568,7 @@ const EmployeeLists: React.FC = () => {
                   <div className={`flex items-center justify-center ${showFullTable ? 'space-x-1' : 'space-x-0.5'}`}>
                     <button
                       className={`${showFullTable ? 'p-2' : 'p-1.5'} text-blue-600 hover:bg-blue-50 rounded-lg transition-colors`}
-                      onClick={() => toast.info(`Viewing employee: ${employee.name}`, {
-                        icon: <Info className="w-5 h-5" />,
-                      })}
+                      onClick={() => handleViewEmployee(employee)}
                       title="View Employee"
                     >
                       <Eye size={showFullTable ? 18 : 16} />
@@ -1164,6 +1177,141 @@ const EmployeeLists: React.FC = () => {
               Delete Employee
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* View Employee Modal */}
+      <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+            <div>
+              <DialogTitle className="text-lg font-semibold text-gray-900">Employee Details</DialogTitle>
+              <DialogDescription className="text-sm text-gray-500 mt-1">
+                View complete information about this employee.
+              </DialogDescription>
+            </div>
+          </div>
+
+          {viewingEmployee && (
+            <div className="p-4 sm:p-6 space-y-6">
+              {/* Employee Header */}
+              <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                  {viewingEmployee.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">{viewingEmployee.name}</h3>
+                  <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getPositionColor(viewingEmployee.position)} mt-1`}>
+                    {viewingEmployee.position}
+                  </span>
+                </div>
+              </div>
+
+              {/* Personal Information */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">Personal Information</h4>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Full Name</label>
+                      <p className="text-gray-900 font-medium">{viewingEmployee.name}</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Gender</label>
+                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getGenderColor(viewingEmployee.gender)}`}>
+                        {viewingEmployee.gender}
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Date of Birth</label>
+                      <p className="text-gray-900">{viewingEmployee.dob}</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Phone Number</label>
+                      <p className="text-gray-900">{viewingEmployee.phone}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">Work Information</h4>
+
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Position</label>
+                      <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getPositionColor(viewingEmployee.position)}`}>
+                        {viewingEmployee.position}
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Join Date</label>
+                      <p className="text-gray-900">{viewingEmployee.joinDate}</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Service Years</label>
+                      <p className="text-gray-900 font-medium text-green-600">{calculateServiceYears(viewingEmployee.joinDate)}</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1">Employee ID</label>
+                      <p className="text-gray-900 font-mono">EMP-{viewingEmployee.id.toString().padStart(4, '0')}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Information */}
+              {(viewingEmployee.nrc || viewingEmployee.address) && (
+                <div className="space-y-4">
+                  <h4 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">Additional Information</h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {viewingEmployee.nrc && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600 mb-1">NRC Number</label>
+                        <p className="text-gray-900">{viewingEmployee.nrc}</p>
+                      </div>
+                    )}
+
+                    {viewingEmployee.address && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-600 mb-1">Address</label>
+                        <p className="text-gray-900">{viewingEmployee.address}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Footer */}
+          <div className="flex justify-end gap-3 p-4 sm:p-6 border-t bg-gray-50">
+            <Button
+              variant="outline"
+              onClick={handleCloseView}
+              className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400"
+            >
+              Close
+            </Button>
+            <Button
+              onClick={() => {
+                handleCloseView();
+                if (viewingEmployee) {
+                  handleEditEmployee(viewingEmployee);
+                }
+              }}
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+            >
+              Edit Employee
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
