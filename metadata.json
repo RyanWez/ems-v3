@@ -1,0 +1,5 @@
+{
+  "name": "React Sidebar Navigation",
+  "description": "A modern, collapsible sidebar navigation menu for a web application, inspired by vue-element-admin. It features multi-level nested menus, active state highlighting, and a clean, professional design built with React, TypeScript, and Tailwind CSS.",
+  "requestFramePermissions": []
+}

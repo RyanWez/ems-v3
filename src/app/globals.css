@@ -1,0 +1,352 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 47.4% 11.2%;
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+
+  body {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--foreground));
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  }
+}
+
+@layer utilities {
+  .sticky-fade-right::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 20px;
+    transform: translateX(100%);
+    background: linear-gradient(to right, hsl(var(--background)), transparent);
+    pointer-events: none;
+    transition: background 0.2s ease-in-out;
+  }
+
+  .group:hover .sticky-fade-right::after {
+    background: linear-gradient(to right, hsl(var(--secondary)), transparent);
+  }
+  
+  .sticky-fade-left::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 20px;
+    transform: translateX(-100%);
+    background: linear-gradient(to left, hsl(var(--background)), transparent);
+    pointer-events: none;
+    transition: background 0.2s ease-in-out;
+  }
+  
+  .group:hover .sticky-fade-left::after {
+     background: linear-gradient(to left, hsl(var(--secondary)), transparent);
+  }
+
+  thead .sticky-fade-right::after {
+     background: linear-gradient(to right, hsl(var(--secondary)), transparent);
+  }
+  
+  thead .sticky-fade-left::after {
+     background: linear-gradient(to left, hsl(var(--secondary)), transparent);
+  }
+}
+
+/* Enhanced Sidebar Styles */
+.sidebar-enter {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.sidebar-enter-active {
+  max-height: 240px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-exit {
+  max-height: 240px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sidebar-exit-active {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Mobile responsive improvements */
+@media (max-width: 768px) {
+  .sidebar-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    width: 100% !important; /* Full width for mobile */
+    max-height: 80vh; /* Limit height to 80% of viewport */
+    border-radius: 20px 20px 0 0; /* More rounded top corners */
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.25);
+    overflow: hidden; /* Ensure content doesn't overflow rounded corners */
+  }
+
+  .sidebar-container.open {
+    transform: translateY(0);
+  }
+
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 40;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .sidebar-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Prevent body scroll when mobile menu is open */
+  .mobile-menu-open {
+    overflow: hidden;
+  }
+
+  /* Ensure main content doesn't shift on mobile */
+  .main-content-mobile {
+    transition: none;
+    width: 100%;
+  }
+
+  /* Mobile sidebar specific styles */
+  .mobile-sidebar-content {
+    max-height: calc(80vh - 64px); /* Account for header */
+    overflow-y: auto;
+  }
+
+  /* Enhanced mobile sidebar styling */
+  .mobile-sidebar-container {
+    background: linear-gradient(145deg, #304156 0%, #263445 100%);
+    border-radius: 20px 20px 0 0;
+  }
+
+  .mobile-sidebar-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    margin-top: 8px;
+  }
+}
+
+/* Smooth animations for nested items */
+.sidebar-item-enter {
+  max-height: 0;
+  opacity: 0;
+}
+
+.sidebar-item-enter-active {
+  max-height: 48px;
+  opacity: 1;
+  transition: all 0.2s ease-in-out;
+}
+
+.sidebar-item-exit {
+  max-height: 48px;
+  opacity: 1;
+}
+
+.sidebar-item-exit-active {
+  max-height: 0;
+  opacity: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Enhanced header styling */
+.main-header {
+  backdrop-filter: blur(8px);
+  background: hsla(var(--background), 0.95);
+  border-bottom: 1px solid hsla(var(--border), 0.8);
+}
+
+.main-header .toggle-button {
+  transition: all 0.2s ease-in-out;
+}
+
+.main-header .toggle-button:hover {
+  background-color: hsla(var(--accent));
+  transform: scale(1.05);
+}
+
+.user-avatar {
+  transition: all 0.2s ease-in-out;
+}
+
+.user-avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Mobile menu backdrop blur effect */
+@media (max-width: 768px) {
+  .main-header.mobile-blur {
+    backdrop-filter: blur(8px);
+    background: hsla(var(--background), 0.9);
+  }
+
+  .mobile-sidebar-header {
+    background: linear-gradient(135deg, #304156 0%, #263445 100%);
+  }
+
+  /* Ensure text visibility on mobile */
+  .sidebar-container span {
+    font-display: swap;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Force text visibility for mobile menu items */
+  .mobile-sidebar-container span {
+    display: inline !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #BFCBD9 !important;
+  }
+
+  /* Improve text contrast and readability */
+  .mobile-sidebar-container {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  /* Force text visibility on mobile menu */
+  .mobile-sidebar-container .sidebar-container span {
+    display: inline !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #BFCBD9 !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    font-weight: 500 !important;
+  }
+
+  /* Ensure icons and text are properly spaced */
+  .mobile-sidebar-container .flex.items-center span {
+    margin-left: 16px !important;
+  }
+
+  /* Mobile menu button effects */
+  .mobile-menu-button button {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mobile-menu-button button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease;
+    border-radius: 50%;
+  }
+
+  .mobile-menu-button button:active {
+    transform: scale(0.95);
+  }
+
+  .mobile-menu-button button:active::before {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* Enhanced indicator dot animations */
+  @keyframes pulse-indicator {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.8;
+    }
+  }
+
+  .mobile-menu-button .indicator-dot {
+    animation: pulse-indicator 2s infinite;
+  }
+
+  .mobile-menu-button .indicator-dot.active {
+    animation: pulse-indicator 1.5s infinite;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+  }
+}
