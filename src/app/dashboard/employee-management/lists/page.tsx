@@ -1,4 +1,3 @@
-
 'use client';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
@@ -28,7 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-
 type Employee = {
   id: number;
   name: string;
@@ -52,7 +50,6 @@ const initialEmployees: Employee[] = [
   { id: 8, name: 'SU PO PO SAN', joinDate: '2021-09-22', position: 'Account Department', gender: 'Female', dob: '1999-01-15', phone: '09767745868' },
   { id: 9, name: 'TIN THANDAR WIN', joinDate: '2021-09-29', position: 'Account Department', gender: 'Female', dob: '1999-04-17', phone: '09797851643' },
   { id: 10, name: 'TUE TUE AUNG', joinDate: '2021-10-06', position: 'Account Department', gender: 'Female', dob: '2000-05-12', phone: '0953988106' },
-  // Add more employees to match the "113 employees" shown in the image
   { id: 11, name: 'KYAW KYAW', joinDate: '2021-08-15', position: 'Leader', gender: 'Male', dob: '1996-12-08', phone: '09876543210' },
   { id: 12, name: 'MYA MYA', joinDate: '2021-11-20', position: 'Account Department', gender: 'Female', dob: '1998-03-25', phone: '09712345678' },
   { id: 13, name: 'ZAW ZAW', joinDate: '2022-02-14', position: 'Leader', gender: 'Male', dob: '1997-09-30', phone: '09987654321' },
@@ -120,9 +117,7 @@ const EmployeeLists: React.FC = () => {
     position: 'Leader',
     gender: 'Male',
     dob: '',
-    phone: '',
-    nrc: '',
-    address: ''
+    phone: ''
   });
 
   // Delete Modal States
@@ -132,7 +127,7 @@ const EmployeeLists: React.FC = () => {
   // Detect screen size changes and update table visibility
   useEffect(() => {
     const checkScreenSize = () => {
-      setShowFullTable(window.innerWidth >= 1024); // lg breakpoint - show all columns on larger screens
+      setShowFullTable(window.innerWidth >= 1024);
     };
 
     checkScreenSize();
@@ -140,7 +135,6 @@ const EmployeeLists: React.FC = () => {
 
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
-
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -181,7 +175,7 @@ const EmployeeLists: React.FC = () => {
 
   // Edit Employee Functions
   const handleEditEmployee = (employee: Employee) => {
-    setEditForm({ ...employee, nrc: employee.nrc || '', address: employee.address || '' });
+    setEditForm({ ...employee });
     setIsEditModalOpen(true);
   };
 
@@ -217,9 +211,7 @@ const EmployeeLists: React.FC = () => {
       position: 'Leader',
       gender: 'Male',
       dob: '',
-      phone: '',
-      nrc: '',
-      address: ''
+      phone: ''
     });
   };
 
@@ -236,7 +228,6 @@ const EmployeeLists: React.FC = () => {
       setIsDeleteModalOpen(false);
       setDeletingEmployee(null);
 
-      // Reset to first page if current page becomes empty
       const newFilteredEmployees = employees.filter(emp => emp.id !== deletingEmployee.id);
       const newTotalPages = Math.ceil(newFilteredEmployees.length / rowsPerPage);
       if (currentPage > newTotalPages && newTotalPages > 0) {
@@ -393,7 +384,6 @@ const EmployeeLists: React.FC = () => {
           </div>
         </div>
       </div>
-
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm relative z-0">
         <table className="w-full bg-white text-sm table-auto"
           style={{
@@ -574,7 +564,6 @@ const EmployeeLists: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* Edit Employee Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
         <DialogContent className="sm:max-w-[600px] bg-white border-0 shadow-lg">
@@ -608,69 +597,13 @@ const EmployeeLists: React.FC = () => {
                 <Label htmlFor="edit-joinDate" className="block text-sm font-medium text-gray-700 mb-2">
                   Join Date
                 </Label>
-                <div className="flex gap-2">
-                  <Select
-                    value={editForm.joinDate.split('-')[0] || '2021'}
-                    onValueChange={(year) => {
-                      const [, month, day] = editForm.joinDate.split('-');
-                      handleEditFormChange('joinDate', `${year}-${month || '07'}-${day || '01'}`);
-                    }}
-                  >
-                    <SelectTrigger className="w-20">
-                      <SelectValue placeholder="Year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 10 }, (_, i) => 2020 + i).map((year) => (
-                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={(() => {
-                      const monthNum = editForm.joinDate.split('-')[1] || '07';
-                      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'];
-                      return monthNames[parseInt(monthNum) - 1] || 'July';
-                    })()}
-                    onValueChange={(month) => {
-                      const [year, , day] = editForm.joinDate.split('-');
-                      const monthMap: { [key: string]: string } = {
-                        'January': '01', 'February': '02', 'March': '03', 'April': '04',
-                        'May': '05', 'June': '06', 'July': '07', 'August': '08',
-                        'September': '09', 'October': '10', 'November': '11', 'December': '12'
-                      };
-                      handleEditFormChange('joinDate', `${year || '2021'}-${monthMap[month] || '07'}-${day || '01'}`);
-                    }}
-                  >
-                    <SelectTrigger className="w-24">
-                      <SelectValue placeholder="Month" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {['January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
-                          <SelectItem key={month} value={month}>{month}</SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={editForm.joinDate.split('-')[2] || '1'}
-                    onValueChange={(day) => {
-                      const [year, month] = editForm.joinDate.split('-');
-                      handleEditFormChange('joinDate', `${year || '2021'}-${month || '07'}-${day.padStart(2, '0')}`);
-                    }}
-                  >
-                    <SelectTrigger className="w-16">
-                      <SelectValue placeholder="Day" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                        <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Input
+                  id="edit-joinDate"
+                  type="date"
+                  value={editForm.joinDate}
+                  onChange={(e) => handleEditFormChange('joinDate', e.target.value)}
+                  className="w-full"
+                />
               </div>
 
               <div>
@@ -717,119 +650,44 @@ const EmployeeLists: React.FC = () => {
                 <Label htmlFor="edit-dob" className="block text-sm font-medium text-gray-700 mb-2">
                   Date of Birth
                 </Label>
-                <div className="flex gap-2">
-                  <Select
-                    value={editForm.dob.split('-')[0] || '2001'}
-                    onValueChange={(year) => {
-                      const [, month, day] = editForm.dob.split('-');
-                      handleEditFormChange('dob', `${year}-${month || '05'}-${day || '24'}`);
-                    }}
-                  >
-                    <SelectTrigger className="w-20">
-                      <SelectValue placeholder="Year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 50 }, (_, i) => 1970 + i).map((year) => (
-                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={(() => {
-                      const monthNum = editForm.dob.split('-')[1] || '05';
-                      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'];
-                      return monthNames[parseInt(monthNum) - 1] || 'May';
-                    })()}
-                    onValueChange={(month) => {
-                      const [year, , day] = editForm.dob.split('-');
-                      const monthMap: { [key: string]: string } = {
-                        'January': '01', 'February': '02', 'March': '03', 'April': '04',
-                        'May': '05', 'June': '06', 'July': '07', 'August': '08',
-                        'September': '09', 'October': '10', 'November': '11', 'December': '12'
-                      };
-                      handleEditFormChange('dob', `${year || '2001'}-${monthMap[month] || '05'}-${day || '24'}`);
-                    }}
-                  >
-                    <SelectTrigger className="w-24">
-                      <SelectValue placeholder="Month" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {['January', 'February', 'March', 'April', 'May', 'June',
-                        'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
-                          <SelectItem key={month} value={month}>{month}</SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={editForm.dob.split('-')[2] || '24'}
-                    onValueChange={(day) => {
-                      const [year, month] = editForm.dob.split('-');
-                      handleEditFormChange('dob', `${year || '2001'}-${month || '05'}-${day.padStart(2, '0')}`);
-                    }}
-                  >
-                    <SelectTrigger className="w-16">
-                      <SelectValue placeholder="Day" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-                        <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
-            {/* Phone Number and NRC Number Row */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number <span className="text-red-500">(Optional)</span>
-                </Label>
                 <Input
-                  id="edit-phone"
-                  value={editForm.phone}
-                  onChange={(e) => handleEditFormChange('phone', e.target.value)}
-                  placeholder="09960476738"
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="edit-nrc" className="block text-sm font-medium text-gray-700 mb-2">
-                  NRC Number <span className="text-red-500">(Optional)</span>
-                </Label>
-                <Input
-                  id="edit-nrc"
-                  value={editForm.nrc || ''}
-                  onChange={(e) => handleEditFormChange('nrc', e.target.value)}
-                  placeholder="****"
-                  className="text-center"
+                  id="edit-dob"
+                  type="date"
+                  value={editForm.dob}
+                  onChange={(e) => handleEditFormChange('dob', e.target.value)}
+                  className="w-full"
                 />
               </div>
             </div>
 
-            {/* Address */}
+            {/* Phone Number */}
             <div>
-              <Label htmlFor="edit-address" className="block text-sm font-medium text-gray-700 mb-2">
-                Address <span className="text-red-500">(Optional)</span>
+              <Label htmlFor="edit-phone" className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number <span className="text-gray-400">(Optional)</span>
               </Label>
               <Input
-                id="edit-address"
-                value={editForm.address || ''}
-                onChange={(e) => handleEditFormChange('address', e.target.value)}
-                placeholder="YAMETHIN"
+                id="edit-phone"
+                value={editForm.phone}
+                onChange={(e) => handleEditFormChange('phone', e.target.value)}
+                placeholder="09960476738"
+                className="w-full"
               />
             </div>
           </div>
 
+          {/* Footer with improved button styling */}
           <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
-            <Button variant="outline" onClick={handleCancelEdit} className="px-6">
+            <Button
+              variant="outline"
+              onClick={handleCancelEdit}
+              className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400"
+            >
               Cancel
             </Button>
-            <Button onClick={handleSaveEdit} className="px-6 bg-blue-600 hover:bg-blue-700">
+            <Button
+              onClick={handleSaveEdit}
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+            >
               Save Changes
             </Button>
           </div>
@@ -847,15 +705,15 @@ const EmployeeLists: React.FC = () => {
           </DialogHeader>
           {deletingEmployee && (
             <div className="py-4">
-              <div className="bg-muted/20 p-4 rounded-lg border">
-                <h4 className="font-semibold text-foreground mb-2">Employee Details:</h4>
-                <p className="text-sm text-muted-foreground">
+              <div className="bg-gray-50 p-4 rounded-lg border">
+                <h4 className="font-semibold text-gray-900 mb-2">Employee Details:</h4>
+                <p className="text-sm text-gray-600">
                   <span className="font-medium">Name:</span> {deletingEmployee.name}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600">
                   <span className="font-medium">Position:</span> {deletingEmployee.position}
                 </p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600">
                   <span className="font-medium">Phone:</span> {deletingEmployee.phone}
                 </p>
               </div>
