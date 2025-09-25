@@ -10,6 +10,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 
 type Employee = {
@@ -20,9 +37,11 @@ type Employee = {
   gender: 'Male' | 'Female';
   dob: string;
   phone: string;
+  nrc?: string;
+  address?: string;
 };
 
-const employees: Employee[] = [
+const initialEmployees: Employee[] = [
   { id: 1, name: 'SOE MOE HTUN', joinDate: '2021-07-01', position: 'Super', gender: 'Male', dob: '1998-04-21', phone: '09899947118' },
   { id: 2, name: 'AUNG SWE PHYO', joinDate: '2021-07-01', position: 'Leader', gender: 'Male', dob: '2001-05-24', phone: '09960476738' },
   { id: 3, name: 'AUNG KHANT', joinDate: '2021-09-21', position: 'Leader', gender: 'Male', dob: '1999-04-17', phone: '09762800400' },
@@ -83,6 +102,7 @@ const calculateServiceYears = (joinDate: string) => {
 };
 
 const EmployeeLists: React.FC = () => {
+  const [employees, setEmployees] = useState<Employee[]>(initialEmployees);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
@@ -91,10 +111,28 @@ const EmployeeLists: React.FC = () => {
   const [selectedServiceYears, setSelectedServiceYears] = useState('Any Service Years');
   const [showFullTable, setShowFullTable] = useState(true);
 
+  // Edit Modal States
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState<Employee>({
+    id: 0,
+    name: '',
+    joinDate: '',
+    position: 'Leader',
+    gender: 'Male',
+    dob: '',
+    phone: '',
+    nrc: '',
+    address: ''
+  });
+
+  // Delete Modal States
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
+
   // Detect screen size changes and update table visibility
   useEffect(() => {
     const checkScreenSize = () => {
-      setShowFullTable(window.innerWidth >= 768); // md breakpoint
+      setShowFullTable(window.innerWidth >= 1024); // lg breakpoint - show all columns on larger screens
     };
 
     checkScreenSize();
@@ -141,6 +179,77 @@ const EmployeeLists: React.FC = () => {
     setCurrentPage(1);
   };
 
+  // Edit Employee Functions
+  const handleEditEmployee = (employee: Employee) => {
+    setEditForm({ ...employee, nrc: employee.nrc || '', address: employee.address || '' });
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditFormChange = (field: keyof Employee, value: string) => {
+    setEditForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSaveEdit = () => {
+    if (!editForm.name.trim() || !editForm.joinDate) {
+      toast.error('Please fill in all required fields (Name and Join Date)');
+      return;
+    }
+
+    setEmployees(prev =>
+      prev.map(emp =>
+        emp.id === editForm.id ? editForm : emp
+      )
+    );
+
+    setIsEditModalOpen(false);
+    toast.success(`Employee ${editForm.name} updated successfully!`);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditModalOpen(false);
+    setEditForm({
+      id: 0,
+      name: '',
+      joinDate: '',
+      position: 'Leader',
+      gender: 'Male',
+      dob: '',
+      phone: '',
+      nrc: '',
+      address: ''
+    });
+  };
+
+  // Delete Employee Functions
+  const handleDeleteEmployee = (employee: Employee) => {
+    setDeletingEmployee(employee);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deletingEmployee) {
+      setEmployees(prev => prev.filter(emp => emp.id !== deletingEmployee.id));
+      toast.success(`Employee ${deletingEmployee.name} deleted successfully!`);
+      setIsDeleteModalOpen(false);
+      setDeletingEmployee(null);
+
+      // Reset to first page if current page becomes empty
+      const newFilteredEmployees = employees.filter(emp => emp.id !== deletingEmployee.id);
+      const newTotalPages = Math.ceil(newFilteredEmployees.length / rowsPerPage);
+      if (currentPage > newTotalPages && newTotalPages > 0) {
+        setCurrentPage(1);
+      }
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setDeletingEmployee(null);
+  };
+
   // Filter employees based on search and filter criteria
   const filteredEmployees = employees.filter((employee) => {
     const matchesSearch = searchTerm === '' ||
@@ -175,11 +284,11 @@ const EmployeeLists: React.FC = () => {
   );
 
   return (
-    <div className="bg-background p-6 md:p-8 rounded-lg shadow-lg w-full max-w-full">
+    <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border w-full max-w-full relative z-0">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Employee List</h2>
-          <p className="text-muted-foreground mt-1">Manage all employees in your organization.</p>
+          <h2 className="text-2xl font-bold text-gray-900">Employee List</h2>
+          <p className="text-gray-600 mt-1">Manage all employees in your organization.</p>
         </div>
         <button
           className="mt-4 sm:mt-0 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm"
@@ -191,29 +300,29 @@ const EmployeeLists: React.FC = () => {
       </div>
 
       {/* Search and Filter Section */}
-      <div className="mb-6 p-4 bg-muted/20 rounded-lg border border-border">
+      <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
           {/* Search Bar */}
           <div className="flex-1 min-w-0">
-            <label htmlFor="search" className="block text-sm font-medium text-foreground mb-2">
+            <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
               Search
             </label>
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <input
                 type="text"
                 id="search"
                 placeholder="Search by name, position, phone, NRC..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="w-full pl-10 pr-4 py-2 border border-border rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
 
           {/* Position Filter */}
           <div className="w-full lg:w-48">
-            <label className="block text-sm font-medium text-foreground mb-2">Position</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-full justify-between">
@@ -226,7 +335,7 @@ const EmployeeLists: React.FC = () => {
                   <DropdownMenuItem
                     key={position}
                     onSelect={() => handlePositionChange(position)}
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200 focus:bg-gray-100 focus:text-gray-900"
                   >
                     {position}
                   </DropdownMenuItem>
@@ -237,7 +346,7 @@ const EmployeeLists: React.FC = () => {
 
           {/* Gender Filter */}
           <div className="w-full lg:w-48">
-            <label className="block text-sm font-medium text-foreground mb-2">Gender</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-full justify-between">
@@ -250,7 +359,7 @@ const EmployeeLists: React.FC = () => {
                   <DropdownMenuItem
                     key={gender}
                     onSelect={() => handleGenderChange(gender)}
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200 focus:bg-gray-100 focus:text-gray-900"
                   >
                     {gender}
                   </DropdownMenuItem>
@@ -261,7 +370,7 @@ const EmployeeLists: React.FC = () => {
 
           {/* Service Years Filter */}
           <div className="w-full lg:w-48">
-            <label className="block text-sm font-medium text-foreground mb-2">Service Years</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Service Years</label>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-full justify-between">
@@ -274,7 +383,7 @@ const EmployeeLists: React.FC = () => {
                   <DropdownMenuItem
                     key={years}
                     onSelect={() => handleServiceYearsChange(years)}
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200 focus:bg-gray-100 focus:text-gray-900"
                   >
                     {years}
                   </DropdownMenuItem>
@@ -285,117 +394,143 @@ const EmployeeLists: React.FC = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
-        <table className="w-full bg-background text-xs table-auto"
+      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm relative z-0">
+        <table className="w-full bg-white text-sm table-auto"
           style={{
-            minWidth: '800px',
+            minWidth: showFullTable ? '800px' : '400px',
             width: '100%',
             tableLayout: 'auto'
           }}>
           <thead>
-            <tr className="text-left text-muted-foreground border-b border-border">
+            <tr className="text-left text-gray-600 border-b border-gray-200">
+              {/* NAME - Always show */}
+              <th
+                className="px-4 py-3 font-semibold text-sm sticky left-0 z-10 border-r border-gray-200"
+                style={{
+                  width: showFullTable ? '18%' : '50%',
+                  minWidth: showFullTable ? '180px' : '200px',
+                  backgroundColor: 'rgb(248 250 252)',
+                  boxShadow: '2px 0 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                NAME
+              </th>
+
+              {/* Show these columns only on larger screens */}
               {showFullTable && (
-                <th
-                  className="px-4 py-3 font-semibold text-xs sticky left-0 z-50 border-r border-border"
+                <>
+                  <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: '12%', minWidth: '130px', backgroundColor: 'rgb(248 250 252)' }}>JOIN DATE</th>
+                  <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: '14%', minWidth: '140px', backgroundColor: 'rgb(248 250 252)' }}>SERVICE YEARS</th>
+                  <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: '8%', minWidth: '80px', backgroundColor: 'rgb(248 250 252)' }}>GENDER</th>
+                  <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: '12%', minWidth: '130px', backgroundColor: 'rgb(248 250 252)' }}>DOB</th>
+                  <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: '12%', minWidth: '120px', backgroundColor: 'rgb(248 250 252)' }}>PHONE NO.</th>
+                </>
+              )}
+
+              {/* POSITION - Always show */}
+              <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: showFullTable ? '16%' : '30%', minWidth: '160px', backgroundColor: 'rgb(248 250 252)' }}>POSITION</th>
+
+              {/* ACTION - Always show */}
+              <th
+                className="px-4 py-3 font-semibold text-sm text-center sticky right-0 z-10 border-l border-gray-200"
+                style={{
+                  width: showFullTable ? '14%' : '20%',
+                  minWidth: '120px',
+                  backgroundColor: 'rgb(248 250 252)',
+                  boxShadow: '-2px 0 4px rgba(0,0,0,0.1)'
+                }}
+              >
+                ACTION
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {paginatedEmployees.map((employee) => (
+              <tr key={employee.id} className="hover:bg-gray-50 transition-colors">
+                {/* NAME - Always show */}
+                <td
+                  className="px-4 py-3 font-medium text-gray-900 sticky left-0 z-10 border-r border-gray-200"
                   style={{
-                    width: '18%',
-                    minWidth: '180px',
+                    width: showFullTable ? '18%' : '50%',
+                    minWidth: showFullTable ? '180px' : '200px',
                     backgroundColor: 'rgb(248 250 252)',
                     boxShadow: '2px 0 4px rgba(0,0,0,0.1)'
                   }}
+                  title={employee.name}
                 >
-                  NAME
-                </th>
-              )}
-              <th className="px-4 py-3 font-semibold text-xs border-b border-border" style={{ width: '10%', minWidth: '100px', backgroundColor: 'rgb(248 250 252)' }}>JOIN DATE</th>
-              <th className="px-4 py-3 font-semibold text-xs border-b border-border" style={{ width: '12%', minWidth: '120px', backgroundColor: 'rgb(248 250 252)' }}>SERVICE YEARS</th>
-              <th className="px-4 py-3 font-semibold text-xs border-b border-border" style={{ width: '16%', minWidth: '160px', backgroundColor: 'rgb(248 250 252)' }}>POSITION</th>
-              <th className="px-4 py-3 font-semibold text-xs border-b border-border" style={{ width: '8%', minWidth: '80px', backgroundColor: 'rgb(248 250 252)' }}>GENDER</th>
-              <th className="px-4 py-3 font-semibold text-xs border-b border-border" style={{ width: '10%', minWidth: '100px', backgroundColor: 'rgb(248 250 252)' }}>DOB</th>
-              <th className="px-4 py-3 font-semibold text-xs border-b border-border" style={{ width: '12%', minWidth: '120px', backgroundColor: 'rgb(248 250 252)' }}>PHONE NO.</th>
-              {showFullTable && (
-                <th
-                  className="px-4 py-3 font-semibold text-xs text-center sticky right-0 z-50 border-l border-border"
+                  <div className="truncate">{employee.name}</div>
+                </td>
+
+                {/* Show these columns only on larger screens */}
+                {showFullTable && (
+                  <>
+                    <td className="px-4 py-3 text-gray-600" style={{ width: '12%', minWidth: '130px' }}>{employee.joinDate}</td>
+                    <td className="px-4 py-3 text-gray-600" style={{ width: '14%', minWidth: '140px' }}>{calculateServiceYears(employee.joinDate)}</td>
+                    <td className="px-4 py-3" style={{ width: '8%', minWidth: '80px' }}>
+                      <span className={`px-2 py-1 text-sm font-medium rounded-full ${getGenderColor(employee.gender)} block text-center`}>
+                        {employee.gender}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-gray-600" style={{ width: '12%', minWidth: '130px' }}>{employee.dob}</td>
+                    <td className="px-4 py-3 text-gray-600" style={{ width: '12%', minWidth: '120px' }}>{employee.phone}</td>
+                  </>
+                )}
+
+                {/* POSITION - Always show */}
+                <td className="px-4 py-3" style={{ width: showFullTable ? '16%' : '30%', minWidth: '160px' }}>
+                  <span className={`px-2 py-1 text-sm font-medium rounded-full ${getPositionColor(employee.position)} block text-center`}>
+                    {employee.position}
+                  </span>
+                </td>
+
+                {/* ACTION - Always show */}
+                <td
+                  className="px-4 py-3 sticky right-0 z-10 border-l border-gray-200"
                   style={{
-                    width: '14%',
-                    minWidth: '140px',
+                    width: showFullTable ? '14%' : '20%',
+                    minWidth: '120px',
                     backgroundColor: 'rgb(248 250 252)',
                     boxShadow: '-2px 0 4px rgba(0,0,0,0.1)'
                   }}
                 >
-                  ACTION
-                </th>
-              )}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-border">
-            {paginatedEmployees.map((employee) => (
-              <tr key={employee.id} className="hover:bg-muted/30 transition-colors">
-                {showFullTable && (
-                  <td
-                    className="px-4 py-3 font-medium text-foreground sticky left-0 z-40 border-r border-border"
-                    style={{
-                      width: '18%',
-                      minWidth: '180px',
-                      backgroundColor: 'rgb(248 250 252)',
-                      boxShadow: '2px 0 4px rgba(0,0,0,0.1)'
-                    }}
-                    title={employee.name}
-                  >
-                    <div className="truncate">{employee.name}</div>
-                  </td>
-                )}
-                <td className="px-4 py-3 text-muted-foreground" style={{ width: '10%', minWidth: '100px' }}>{employee.joinDate}</td>
-                <td className="px-4 py-3 text-muted-foreground" style={{ width: '12%', minWidth: '120px' }}>{calculateServiceYears(employee.joinDate)}</td>
-                <td className="px-4 py-3" style={{ width: '16%', minWidth: '160px' }}>
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPositionColor(employee.position)} block text-center`}>
-                    {employee.position}
-                  </span>
+                  <div className={`flex items-center justify-center ${showFullTable ? 'space-x-1' : 'space-x-0.5'}`}>
+                    <button
+                      className={`${showFullTable ? 'p-2.5' : 'p-1.5'} text-blue-600 hover:bg-blue-50 rounded-lg transition-colors`}
+                      onClick={() => toast.info(`Viewing employee: ${employee.name}`)}
+                      title="View Employee"
+                    >
+                      <Eye size={showFullTable ? 22 : 16} />
+                    </button>
+                    <button
+                      className={`${showFullTable ? 'p-2.5' : 'p-1.5'} text-green-600 hover:bg-green-50 rounded-lg transition-colors`}
+                      onClick={() => handleEditEmployee(employee)}
+                      title="Edit Employee"
+                    >
+                      <Pencil size={showFullTable ? 22 : 16} />
+                    </button>
+                    <button
+                      className={`${showFullTable ? 'p-2.5' : 'p-1.5'} text-red-600 hover:bg-red-50 rounded-lg transition-colors`}
+                      onClick={() => handleDeleteEmployee(employee)}
+                      title="Delete Employee"
+                    >
+                      <Trash2 size={showFullTable ? 22 : 16} />
+                    </button>
+                  </div>
                 </td>
-                <td className="px-4 py-3" style={{ width: '8%', minWidth: '80px' }}>
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getGenderColor(employee.gender)} block text-center`}>
-                    {employee.gender}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-muted-foreground" style={{ width: '10%', minWidth: '100px' }}>{employee.dob}</td>
-                <td className="px-4 py-3 text-muted-foreground" style={{ width: '12%', minWidth: '120px' }}>{employee.phone}</td>
-                {showFullTable && (
-                  <td
-                    className="px-4 py-3 sticky right-0 z-40 border-l border-border"
-                    style={{
-                      width: '14%',
-                      minWidth: '140px',
-                      backgroundColor: 'rgb(248 250 252)',
-                      boxShadow: '-2px 0 4px rgba(0,0,0,0.1)'
-                    }}
-                  >
-                    <div className="flex items-center justify-center space-x-1">
-                      <button className="p-2.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" onClick={() => toast.info(`Viewing employee: ${employee.name}`)}>
-                        <Eye size={22} />
-                      </button>
-                      <button className="p-2.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors" onClick={() => toast.info(`Editing employee: ${employee.name}`)}>
-                        <Pencil size={22} />
-                      </button>
-                      <button className="p-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors" onClick={() => toast.error(`Failed to delete employee: ${employee.name}`)}>
-                        <Trash2 size={22} />
-                      </button>
-                    </div>
-                  </td>
-                )}
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-center mt-6 px-2 py-3 bg-muted/20 rounded-lg">
-        <div className="mb-3 sm:mb-0 text-sm text-muted-foreground">
-          Showing <span className="font-semibold text-foreground">{paginatedEmployees.length}</span> of{' '}
-          <span className="font-semibold text-foreground">{filteredEmployees.length}</span> employees.
+      <div className="flex flex-col sm:flex-row justify-between items-center mt-6 px-2 py-3 bg-gray-50 rounded-lg border border-gray-200">
+        <div className="mb-3 sm:mb-0 text-sm text-gray-600">
+          Showing <span className="font-semibold text-gray-900">{paginatedEmployees.length}</span> of{' '}
+          <span className="font-semibold text-gray-900">{filteredEmployees.length}</span> employees.
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <label htmlFor="rows-per-page" className="text-sm text-muted-foreground">Rows per page:</label>
+            <label htmlFor="rows-per-page" className="text-sm text-gray-600">Rows per page:</label>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="w-[70px] justify-between">
@@ -408,7 +543,7 @@ const EmployeeLists: React.FC = () => {
                   <DropdownMenuItem
                     key={value}
                     onSelect={() => handleRowsPerPageChange(value)}
-                    className="cursor-pointer"
+                    className="cursor-pointer hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200 focus:bg-gray-100 focus:text-gray-900"
                   >
                     {value}
                   </DropdownMenuItem>
@@ -416,14 +551,14 @@ const EmployeeLists: React.FC = () => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="text-sm text-muted-foreground">
-            Page <span className="font-semibold text-foreground">{currentPage}</span> of <span className="font-semibold text-foreground">{totalPages}</span>
+          <div className="text-sm text-gray-600">
+            Page <span className="font-semibold text-gray-900">{currentPage}</span> of <span className="font-semibold text-gray-900">{totalPages}</span>
           </div>
           <div className="flex items-center space-x-1">
             <button
               onClick={handlePrevPage}
               disabled={currentPage === 1}
-              className="p-1.5 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent transition-colors"
+              className="p-1.5 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
               aria-label="Previous Page"
             >
               <ChevronLeft size={16} />
@@ -431,7 +566,7 @@ const EmployeeLists: React.FC = () => {
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-accent transition-colors"
+              className="p-1.5 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors"
               aria-label="Next Page"
             >
               <ChevronRight size={16} />
@@ -439,6 +574,303 @@ const EmployeeLists: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Employee Modal */}
+      <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+        <DialogContent className="sm:max-w-[600px] bg-white border-0 shadow-lg">
+          <div className="flex items-center justify-between p-6 border-b">
+            <div>
+              <DialogTitle className="text-lg font-semibold text-gray-900">Edit Employee</DialogTitle>
+              <DialogDescription className="text-sm text-gray-500 mt-1">
+                Update the employee's details below.
+              </DialogDescription>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            {/* Full Name */}
+            <div>
+              <Label htmlFor="edit-name" className="block text-sm font-medium text-gray-700 mb-2">
+                Full Name
+              </Label>
+              <Input
+                id="edit-name"
+                value={editForm.name}
+                onChange={(e) => handleEditFormChange('name', e.target.value)}
+                className="w-full"
+                placeholder="AUNG SWE PHYO"
+              />
+            </div>
+
+            {/* Join Date and Position Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-joinDate" className="block text-sm font-medium text-gray-700 mb-2">
+                  Join Date
+                </Label>
+                <div className="flex gap-2">
+                  <Select
+                    value={editForm.joinDate.split('-')[0] || '2021'}
+                    onValueChange={(year) => {
+                      const [, month, day] = editForm.joinDate.split('-');
+                      handleEditFormChange('joinDate', `${year}-${month || '07'}-${day || '01'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 10 }, (_, i) => 2020 + i).map((year) => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={(() => {
+                      const monthNum = editForm.joinDate.split('-')[1] || '07';
+                      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+                      return monthNames[parseInt(monthNum) - 1] || 'July';
+                    })()}
+                    onValueChange={(month) => {
+                      const [year, , day] = editForm.joinDate.split('-');
+                      const monthMap: { [key: string]: string } = {
+                        'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                        'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                        'September': '09', 'October': '10', 'November': '11', 'December': '12'
+                      };
+                      handleEditFormChange('joinDate', `${year || '2021'}-${monthMap[month] || '07'}-${day || '01'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-24">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
+                          <SelectItem key={month} value={month}>{month}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={editForm.joinDate.split('-')[2] || '1'}
+                    onValueChange={(day) => {
+                      const [year, month] = editForm.joinDate.split('-');
+                      handleEditFormChange('joinDate', `${year || '2021'}-${month || '07'}-${day.padStart(2, '0')}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-16">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                        <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-position" className="block text-sm font-medium text-gray-700 mb-2">
+                  Position
+                </Label>
+                <Select
+                  value={editForm.position}
+                  onValueChange={(value) => handleEditFormChange('position', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select position" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Super">Super</SelectItem>
+                    <SelectItem value="Leader">Leader</SelectItem>
+                    <SelectItem value="Account Department">Account Department</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Gender and Date of Birth Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-gender" className="block text-sm font-medium text-gray-700 mb-2">
+                  Gender
+                </Label>
+                <Select
+                  value={editForm.gender}
+                  onValueChange={(value) => handleEditFormChange('gender', value as 'Male' | 'Female')}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="edit-dob" className="block text-sm font-medium text-gray-700 mb-2">
+                  Date of Birth
+                </Label>
+                <div className="flex gap-2">
+                  <Select
+                    value={editForm.dob.split('-')[0] || '2001'}
+                    onValueChange={(year) => {
+                      const [, month, day] = editForm.dob.split('-');
+                      handleEditFormChange('dob', `${year}-${month || '05'}-${day || '24'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 50 }, (_, i) => 1970 + i).map((year) => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={(() => {
+                      const monthNum = editForm.dob.split('-')[1] || '05';
+                      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+                      return monthNames[parseInt(monthNum) - 1] || 'May';
+                    })()}
+                    onValueChange={(month) => {
+                      const [year, , day] = editForm.dob.split('-');
+                      const monthMap: { [key: string]: string } = {
+                        'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                        'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                        'September': '09', 'October': '10', 'November': '11', 'December': '12'
+                      };
+                      handleEditFormChange('dob', `${year || '2001'}-${monthMap[month] || '05'}-${day || '24'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-24">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
+                          <SelectItem key={month} value={month}>{month}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={editForm.dob.split('-')[2] || '24'}
+                    onValueChange={(day) => {
+                      const [year, month] = editForm.dob.split('-');
+                      handleEditFormChange('dob', `${year || '2001'}-${month || '05'}-${day.padStart(2, '0')}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-16">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                        <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Phone Number and NRC Number Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-phone" className="block text-sm font-medium text-gray-700 mb-2">
+                  Phone Number <span className="text-red-500">(Optional)</span>
+                </Label>
+                <Input
+                  id="edit-phone"
+                  value={editForm.phone}
+                  onChange={(e) => handleEditFormChange('phone', e.target.value)}
+                  placeholder="09960476738"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="edit-nrc" className="block text-sm font-medium text-gray-700 mb-2">
+                  NRC Number <span className="text-red-500">(Optional)</span>
+                </Label>
+                <Input
+                  id="edit-nrc"
+                  value={editForm.nrc || ''}
+                  onChange={(e) => handleEditFormChange('nrc', e.target.value)}
+                  placeholder="****"
+                  className="text-center"
+                />
+              </div>
+            </div>
+
+            {/* Address */}
+            <div>
+              <Label htmlFor="edit-address" className="block text-sm font-medium text-gray-700 mb-2">
+                Address <span className="text-red-500">(Optional)</span>
+              </Label>
+              <Input
+                id="edit-address"
+                value={editForm.address || ''}
+                onChange={(e) => handleEditFormChange('address', e.target.value)}
+                placeholder="YAMETHIN"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
+            <Button variant="outline" onClick={handleCancelEdit} className="px-6">
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit} className="px-6 bg-blue-600 hover:bg-blue-700">
+              Save Changes
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Delete Employee</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this employee? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          {deletingEmployee && (
+            <div className="py-4">
+              <div className="bg-muted/20 p-4 rounded-lg border">
+                <h4 className="font-semibold text-foreground mb-2">Employee Details:</h4>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium">Name:</span> {deletingEmployee.name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium">Position:</span> {deletingEmployee.position}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium">Phone:</span> {deletingEmployee.phone}
+                </p>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCancelDelete}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>
+              Delete Employee
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
