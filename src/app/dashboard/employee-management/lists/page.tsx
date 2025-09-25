@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Eye, Pencil, Trash2, PlusCircle, ChevronLeft, ChevronRight, ChevronsUpDown, Search, CheckCircle, XCircle, AlertCircle, Info } from 'lucide-react';
+import { Eye, Pencil, Trash2, PlusCircle, ChevronLeft, ChevronRight, ChevronsUpDown, Search, CheckCircle, XCircle, Info } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -663,7 +663,7 @@ const EmployeeLists: React.FC = () => {
             {/* Join Date and Position Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-joinDate" className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
                   Join Date
                 </Label>
                 <div className="flex gap-1 sm:gap-2">
@@ -735,7 +735,7 @@ const EmployeeLists: React.FC = () => {
               </div>
 
               <div>
-                <Label htmlFor="edit-position" className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
                   Position
                 </Label>
                 <Select
@@ -758,7 +758,7 @@ const EmployeeLists: React.FC = () => {
             {/* Gender and Date of Birth Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="edit-gender" className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
                   Gender
                 </Label>
                 <Select
@@ -776,7 +776,7 @@ const EmployeeLists: React.FC = () => {
               </div>
 
               <div>
-                <Label htmlFor="edit-dob" className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
                   Date of Birth
                 </Label>
                 <div className="flex gap-1 sm:gap-2">
@@ -912,7 +912,7 @@ const EmployeeLists: React.FC = () => {
             {/* Join Date and Position Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="add-joinDate" className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
                   Join Date
                 </Label>
                 <div className="flex gap-1 sm:gap-2">
@@ -984,7 +984,7 @@ const EmployeeLists: React.FC = () => {
               </div>
 
               <div>
-                <Label htmlFor="add-position" className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
                   Position
                 </Label>
                 <Select
@@ -1007,7 +1007,7 @@ const EmployeeLists: React.FC = () => {
             {/* Gender and Date of Birth Row */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="add-gender" className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
                   Gender
                 </Label>
                 <Select
@@ -1025,7 +1025,7 @@ const EmployeeLists: React.FC = () => {
               </div>
 
               <div>
-                <Label htmlFor="add-dob" className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
                   Date of Birth
                 </Label>
                 <div className="flex gap-1 sm:gap-2">
