@@ -367,9 +367,9 @@ const EmployeeLists: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
           {/* Search Bar */}
           <div className="flex-1 min-w-0">
-            <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
+            <Label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
               Search
-            </label>
+            </Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <input
@@ -589,7 +589,7 @@ const EmployeeLists: React.FC = () => {
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <label htmlFor="rows-per-page" className="text-sm text-gray-600">Rows per page:</label>
+            <label className="text-sm text-gray-600">Rows per page:</label>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="w-[70px] justify-between">
