@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Eye, Pencil, Trash2, PlusCircle, ChevronLeft, ChevronRight, ChevronsUpDown, Search } from 'lucide-react';
+import { Eye, Pencil, Trash2, PlusCircle, ChevronLeft, ChevronRight, ChevronsUpDown, Search, CheckCircle, XCircle, AlertCircle, Info } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -200,7 +200,9 @@ const EmployeeLists: React.FC = () => {
 
   const handleSaveEdit = () => {
     if (!editForm.name.trim() || !editForm.joinDate) {
-      toast.error('Please fill in all required fields (Name and Join Date)');
+      toast.error('Please fill in all required fields (Name and Join Date)', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
       return;
     }
 
@@ -211,7 +213,9 @@ const EmployeeLists: React.FC = () => {
     );
 
     setIsEditModalOpen(false);
-    toast.success(`Employee ${editForm.name} updated successfully!`);
+    toast.success(`Employee ${editForm.name} updated successfully!`, {
+      icon: <CheckCircle className="w-5 h-5" />,
+    });
   };
 
   const handleCancelEdit = () => {
@@ -241,7 +245,9 @@ const EmployeeLists: React.FC = () => {
 
   const handleSaveAdd = () => {
     if (!addForm.name.trim() || !addForm.joinDate) {
-      toast.error('Please fill in all required fields (Name and Join Date)');
+      toast.error('Please fill in all required fields (Name and Join Date)', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
       return;
     }
 
@@ -262,7 +268,9 @@ const EmployeeLists: React.FC = () => {
       dob: '',
       phone: ''
     });
-    toast.success(`Employee ${addForm.name} added successfully!`);
+    toast.success(`Employee ${addForm.name} added successfully!`, {
+      icon: <CheckCircle className="w-5 h-5" />,
+    });
   };
 
   const handleCancelAdd = () => {
@@ -286,7 +294,9 @@ const EmployeeLists: React.FC = () => {
   const handleConfirmDelete = () => {
     if (deletingEmployee) {
       setEmployees(prev => prev.filter(emp => emp.id !== deletingEmployee.id));
-      toast.success(`Employee ${deletingEmployee.name} deleted successfully!`);
+      toast.success(`Employee ${deletingEmployee.name} deleted successfully!`, {
+        icon: <CheckCircle className="w-5 h-5" />,
+      });
       setIsDeleteModalOpen(false);
       setDeletingEmployee(null);
 
@@ -337,11 +347,11 @@ const EmployeeLists: React.FC = () => {
   );
 
   return (
-    <div className="bg-white p-6 md:p-8 rounded-lg shadow-sm border w-full max-w-full relative z-0">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+    <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border w-full max-w-full relative z-0">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Employee List</h2>
-          <p className="text-gray-600 mt-1">Manage all employees in your organization.</p>
+          <h2 className="text-xl font-bold text-gray-900">Employee List</h2>
+          <p className="text-gray-600 text-sm mt-1">Manage all employees in your organization.</p>
         </div>
         <button
           className="mt-4 sm:mt-0 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm"
@@ -353,7 +363,7 @@ const EmployeeLists: React.FC = () => {
       </div>
 
       {/* Search and Filter Section */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
           {/* Search Bar */}
           <div className="flex-1 min-w-0">
@@ -447,20 +457,18 @@ const EmployeeLists: React.FC = () => {
         </div>
       </div>
       <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm relative z-0">
-        <table className="w-full bg-white text-sm table-auto"
+        <table className="w-full bg-white text-sm table-fixed"
           style={{
-            minWidth: showFullTable ? '800px' : '400px',
-            width: '100%',
-            tableLayout: 'auto'
+            minWidth: showFullTable ? '900px' : '400px',
+            width: '100%'
           }}>
           <thead>
             <tr className="text-left text-gray-600 border-b border-gray-200">
               {/* NAME - Always show */}
               <th
-                className="px-4 py-3 font-semibold text-sm sticky left-0 z-10 border-r border-gray-200"
+                className="px-3 py-2 font-semibold text-xs sticky left-0 z-10 border-r border-gray-200"
                 style={{
-                  width: showFullTable ? '18%' : '50%',
-                  minWidth: showFullTable ? '180px' : '200px',
+                  width: showFullTable ? '16%' : '50%',
                   backgroundColor: 'rgb(248 250 252)',
                   boxShadow: '2px 0 4px rgba(0,0,0,0.1)'
                 }}
@@ -471,23 +479,22 @@ const EmployeeLists: React.FC = () => {
               {/* Show these columns only on larger screens */}
               {showFullTable && (
                 <>
-                  <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: '12%', minWidth: '130px', backgroundColor: 'rgb(248 250 252)' }}>JOIN DATE</th>
-                  <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: '14%', minWidth: '140px', backgroundColor: 'rgb(248 250 252)' }}>SERVICE YEARS</th>
-                  <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: '8%', minWidth: '80px', backgroundColor: 'rgb(248 250 252)' }}>GENDER</th>
-                  <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: '12%', minWidth: '130px', backgroundColor: 'rgb(248 250 252)' }}>DOB</th>
-                  <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: '12%', minWidth: '120px', backgroundColor: 'rgb(248 250 252)' }}>PHONE NO.</th>
+                  <th className="px-3 py-2 font-semibold text-xs border-b border-gray-200" style={{ width: '11%', backgroundColor: 'rgb(248 250 252)' }}>JOIN DATE</th>
+                  <th className="px-3 py-2 font-semibold text-xs border-b border-gray-200" style={{ width: '12%', backgroundColor: 'rgb(248 250 252)' }}>SERVICE YEARS</th>
+                  <th className="px-3 py-2 font-semibold text-xs border-b border-gray-200" style={{ width: '8%', backgroundColor: 'rgb(248 250 252)' }}>GENDER</th>
+                  <th className="px-3 py-2 font-semibold text-xs border-b border-gray-200" style={{ width: '10%', backgroundColor: 'rgb(248 250 252)' }}>DOB</th>
+                  <th className="px-3 py-2 font-semibold text-xs border-b border-gray-200" style={{ width: '11%', backgroundColor: 'rgb(248 250 252)' }}>PHONE NO.</th>
                 </>
               )}
 
               {/* POSITION - Always show */}
-              <th className="px-4 py-3 font-semibold text-sm border-b border-gray-200" style={{ width: showFullTable ? '16%' : '30%', minWidth: '160px', backgroundColor: 'rgb(248 250 252)' }}>POSITION</th>
+              <th className="px-3 py-2 font-semibold text-xs border-b border-gray-200" style={{ width: showFullTable ? '14%' : '30%', backgroundColor: 'rgb(248 250 252)' }}>POSITION</th>
 
               {/* ACTION - Always show */}
               <th
-                className="px-4 py-3 font-semibold text-sm text-center sticky right-0 z-10 border-l border-gray-200"
+                className="px-3 py-2 font-semibold text-xs text-center sticky right-0 z-10 border-l border-gray-200"
                 style={{
-                  width: showFullTable ? '14%' : '20%',
-                  minWidth: '120px',
+                  width: showFullTable ? '12%' : '20%',
                   backgroundColor: 'rgb(248 250 252)',
                   boxShadow: '-2px 0 4px rgba(0,0,0,0.1)'
                 }}
@@ -501,71 +508,71 @@ const EmployeeLists: React.FC = () => {
               <tr key={employee.id} className="hover:bg-gray-50 transition-colors">
                 {/* NAME - Always show */}
                 <td
-                  className="px-4 py-3 font-medium text-gray-900 sticky left-0 z-10 border-r border-gray-200"
+                  className="px-3 py-2 font-medium text-gray-900 sticky left-0 z-10 border-r border-gray-200"
                   style={{
-                    width: showFullTable ? '18%' : '50%',
-                    minWidth: showFullTable ? '180px' : '200px',
+                    width: showFullTable ? '16%' : '50%',
                     backgroundColor: 'rgb(248 250 252)',
                     boxShadow: '2px 0 4px rgba(0,0,0,0.1)'
                   }}
                   title={employee.name}
                 >
-                  <div className="truncate">{employee.name}</div>
+                  <div className="truncate text-sm">{employee.name}</div>
                 </td>
 
                 {/* Show these columns only on larger screens */}
                 {showFullTable && (
                   <>
-                    <td className="px-4 py-3 text-gray-600" style={{ width: '12%', minWidth: '130px' }}>{employee.joinDate}</td>
-                    <td className="px-4 py-3 text-gray-600" style={{ width: '14%', minWidth: '140px' }}>{calculateServiceYears(employee.joinDate)}</td>
-                    <td className="px-4 py-3" style={{ width: '8%', minWidth: '80px' }}>
-                      <span className={`px-2 py-1 text-sm font-medium rounded-full ${getGenderColor(employee.gender)} block text-center`}>
+                    <td className="px-3 py-2 text-gray-600 text-sm" style={{ width: '11%' }}>{employee.joinDate}</td>
+                    <td className="px-3 py-2 text-gray-600 text-sm" style={{ width: '12%' }}>{calculateServiceYears(employee.joinDate)}</td>
+                    <td className="px-3 py-2" style={{ width: '8%' }}>
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${getGenderColor(employee.gender)} block text-center`}>
                         {employee.gender}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-600" style={{ width: '12%', minWidth: '130px' }}>{employee.dob}</td>
-                    <td className="px-4 py-3 text-gray-600" style={{ width: '12%', minWidth: '120px' }}>{employee.phone}</td>
+                    <td className="px-3 py-2 text-gray-600 text-sm" style={{ width: '10%' }}>{employee.dob}</td>
+                    <td className="px-3 py-2 text-gray-600 text-sm" style={{ width: '11%' }}>{employee.phone}</td>
                   </>
                 )}
 
                 {/* POSITION - Always show */}
-                <td className="px-4 py-3" style={{ width: showFullTable ? '16%' : '30%', minWidth: '160px' }}>
-                  <span className={`px-2 py-1 text-sm font-medium rounded-full ${getPositionColor(employee.position)} block text-center`}>
+                <td className="px-3 py-2" style={{ width: showFullTable ? '14%' : '30%' }}>
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPositionColor(employee.position)} block text-center`}>
                     {employee.position}
                   </span>
                 </td>
 
                 {/* ACTION - Always show */}
                 <td
-                  className="px-4 py-3 sticky right-0 z-10 border-l border-gray-200"
+                  className="px-3 py-2 sticky right-0 z-10 border-l border-gray-200"
                   style={{
-                    width: showFullTable ? '14%' : '20%',
-                    minWidth: '120px',
+                    width: showFullTable ? '12%' : '20%',
                     backgroundColor: 'rgb(248 250 252)',
                     boxShadow: '-2px 0 4px rgba(0,0,0,0.1)'
                   }}
                 >
                   <div className={`flex items-center justify-center ${showFullTable ? 'space-x-1' : 'space-x-0.5'}`}>
                     <button
-                      className={`${showFullTable ? 'p-2.5' : 'p-1.5'} text-blue-600 hover:bg-blue-50 rounded-lg transition-colors`}
-                      onClick={() => toast.info(`Viewing employee: ${employee.name}`)}
+                      className={`${showFullTable ? 'p-2' : 'p-1.5'} text-blue-600 hover:bg-blue-50 rounded-lg transition-colors`}
+                      onClick={() => toast.info(`Viewing employee: ${employee.name}`, {
+                        icon: <Info className="w-5 h-5" />,
+                      })}
                       title="View Employee"
                     >
-                      <Eye size={showFullTable ? 22 : 16} />
+                      <Eye size={showFullTable ? 18 : 16} />
                     </button>
                     <button
-                      className={`${showFullTable ? 'p-2.5' : 'p-1.5'} text-green-600 hover:bg-green-50 rounded-lg transition-colors`}
+                      className={`${showFullTable ? 'p-2' : 'p-1.5'} text-green-600 hover:bg-green-50 rounded-lg transition-colors`}
                       onClick={() => handleEditEmployee(employee)}
                       title="Edit Employee"
                     >
-                      <Pencil size={showFullTable ? 22 : 16} />
+                      <Pencil size={showFullTable ? 18 : 16} />
                     </button>
                     <button
-                      className={`${showFullTable ? 'p-2.5' : 'p-1.5'} text-red-600 hover:bg-red-50 rounded-lg transition-colors`}
+                      className={`${showFullTable ? 'p-2' : 'p-1.5'} text-red-600 hover:bg-red-50 rounded-lg transition-colors`}
                       onClick={() => handleDeleteEmployee(employee)}
                       title="Delete Employee"
                     >
-                      <Trash2 size={showFullTable ? 22 : 16} />
+                      <Trash2 size={showFullTable ? 18 : 16} />
                     </button>
                   </div>
                 </td>
@@ -575,7 +582,7 @@ const EmployeeLists: React.FC = () => {
         </table>
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-center mt-6 px-2 py-3 bg-gray-50 rounded-lg border border-gray-200">
+      <div className="flex flex-col sm:flex-row justify-between items-center mt-4 px-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
         <div className="mb-3 sm:mb-0 text-sm text-gray-600">
           Showing <span className="font-semibold text-gray-900">{paginatedEmployees.length}</span> of{' '}
           <span className="font-semibold text-gray-900">{filteredEmployees.length}</span> employees.
@@ -628,8 +635,8 @@ const EmployeeLists: React.FC = () => {
       </div>
       {/* Edit Employee Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="sm:max-w-[600px] bg-white border-0 shadow-lg">
-          <div className="flex items-center justify-between p-6 border-b">
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b">
             <div>
               <DialogTitle className="text-lg font-semibold text-gray-900">Edit Employee</DialogTitle>
               <DialogDescription className="text-sm text-gray-500 mt-1">
@@ -638,7 +645,7 @@ const EmployeeLists: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             {/* Full Name */}
             <div>
               <Label htmlFor="edit-name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -654,12 +661,12 @@ const EmployeeLists: React.FC = () => {
             </div>
 
             {/* Join Date and Position Row */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="edit-joinDate" className="block text-sm font-medium text-gray-700 mb-2">
                   Join Date
                 </Label>
-                <div className="flex gap-2">
+                <div className="flex gap-1 sm:gap-2">
                   <Select
                     value={editForm.joinDate.split('-')[0] || '2021'}
                     onValueChange={(year) => {
@@ -667,7 +674,7 @@ const EmployeeLists: React.FC = () => {
                       handleEditFormChange('joinDate', `${year}-${month || '07'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="w-20">
+                    <SelectTrigger className="w-16 sm:w-20">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -694,7 +701,7 @@ const EmployeeLists: React.FC = () => {
                       handleEditFormChange('joinDate', `${year || '2021'}-${monthMap[month] || '07'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="w-24">
+                    <SelectTrigger className="flex-1 sm:w-24">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
@@ -715,7 +722,7 @@ const EmployeeLists: React.FC = () => {
                       handleEditFormChange('joinDate', `${year || '2021'}-${month || '07'}-${day.padStart(2, '0')}`);
                     }}
                   >
-                    <SelectTrigger className="w-16">
+                    <SelectTrigger className="w-14 sm:w-16">
                       <SelectValue placeholder="Day" />
                     </SelectTrigger>
                     <SelectContent>
@@ -749,7 +756,7 @@ const EmployeeLists: React.FC = () => {
             </div>
 
             {/* Gender and Date of Birth Row */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="edit-gender" className="block text-sm font-medium text-gray-700 mb-2">
                   Gender
@@ -772,7 +779,7 @@ const EmployeeLists: React.FC = () => {
                 <Label htmlFor="edit-dob" className="block text-sm font-medium text-gray-700 mb-2">
                   Date of Birth
                 </Label>
-                <div className="flex gap-2">
+                <div className="flex gap-1 sm:gap-2">
                   <Select
                     value={editForm.dob.split('-')[0] || '1998'}
                     onValueChange={(year) => {
@@ -780,7 +787,7 @@ const EmployeeLists: React.FC = () => {
                       handleEditFormChange('dob', `${year}-${month || '04'}-${day || '21'}`);
                     }}
                   >
-                    <SelectTrigger className="w-20">
+                    <SelectTrigger className="w-16 sm:w-20">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -807,7 +814,7 @@ const EmployeeLists: React.FC = () => {
                       handleEditFormChange('dob', `${year || '1998'}-${monthMap[month] || '04'}-${day || '21'}`);
                     }}
                   >
-                    <SelectTrigger className="w-24">
+                    <SelectTrigger className="flex-1 sm:w-24">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
@@ -828,7 +835,7 @@ const EmployeeLists: React.FC = () => {
                       handleEditFormChange('dob', `${year || '1998'}-${month || '04'}-${day.padStart(2, '0')}`);
                     }}
                   >
-                    <SelectTrigger className="w-16">
+                    <SelectTrigger className="w-14 sm:w-16">
                       <SelectValue placeholder="Day" />
                     </SelectTrigger>
                     <SelectContent>
@@ -857,17 +864,17 @@ const EmployeeLists: React.FC = () => {
           </div>
 
           {/* Footer with improved button styling */}
-          <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 p-4 sm:p-6 border-t bg-gray-50">
             <Button
               variant="outline"
               onClick={handleCancelEdit}
-              className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400"
+              className="w-full sm:w-auto px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSaveEdit}
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+              className="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
             >
               Save Changes
             </Button>
@@ -877,8 +884,8 @@ const EmployeeLists: React.FC = () => {
 
       {/* Add Employee Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="sm:max-w-[600px] bg-white border-0 shadow-lg">
-          <div className="flex items-center justify-between p-6 border-b">
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg">
+          <div className="flex items-center justify-between p-4 sm:p-6 border-b">
             <div>
               <DialogTitle className="text-lg font-semibold text-gray-900">Add New Employee</DialogTitle>
               <DialogDescription className="text-sm text-gray-500 mt-1">
@@ -887,7 +894,7 @@ const EmployeeLists: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             {/* Full Name */}
             <div>
               <Label htmlFor="add-name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -903,12 +910,12 @@ const EmployeeLists: React.FC = () => {
             </div>
 
             {/* Join Date and Position Row */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="add-joinDate" className="block text-sm font-medium text-gray-700 mb-2">
                   Join Date
                 </Label>
-                <div className="flex gap-2">
+                <div className="flex gap-1 sm:gap-2">
                   <Select
                     value={addForm.joinDate.split('-')[0] || '2024'}
                     onValueChange={(year) => {
@@ -916,7 +923,7 @@ const EmployeeLists: React.FC = () => {
                       handleAddFormChange('joinDate', `${year}-${month || '01'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="w-20">
+                    <SelectTrigger className="w-16 sm:w-20">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -943,7 +950,7 @@ const EmployeeLists: React.FC = () => {
                       handleAddFormChange('joinDate', `${year || '2024'}-${monthMap[month] || '01'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="w-24">
+                    <SelectTrigger className="flex-1 sm:w-24">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
@@ -964,7 +971,7 @@ const EmployeeLists: React.FC = () => {
                       handleAddFormChange('joinDate', `${year || '2024'}-${month || '01'}-${day.padStart(2, '0')}`);
                     }}
                   >
-                    <SelectTrigger className="w-16">
+                    <SelectTrigger className="w-14 sm:w-16">
                       <SelectValue placeholder="Day" />
                     </SelectTrigger>
                     <SelectContent>
@@ -998,7 +1005,7 @@ const EmployeeLists: React.FC = () => {
             </div>
 
             {/* Gender and Date of Birth Row */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="add-gender" className="block text-sm font-medium text-gray-700 mb-2">
                   Gender
@@ -1021,7 +1028,7 @@ const EmployeeLists: React.FC = () => {
                 <Label htmlFor="add-dob" className="block text-sm font-medium text-gray-700 mb-2">
                   Date of Birth
                 </Label>
-                <div className="flex gap-2">
+                <div className="flex gap-1 sm:gap-2">
                   <Select
                     value={addForm.dob.split('-')[0] || '2000'}
                     onValueChange={(year) => {
@@ -1029,7 +1036,7 @@ const EmployeeLists: React.FC = () => {
                       handleAddFormChange('dob', `${year}-${month || '01'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="w-20">
+                    <SelectTrigger className="w-16 sm:w-20">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1056,7 +1063,7 @@ const EmployeeLists: React.FC = () => {
                       handleAddFormChange('dob', `${year || '2000'}-${monthMap[month] || '01'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="w-24">
+                    <SelectTrigger className="flex-1 sm:w-24">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1077,7 +1084,7 @@ const EmployeeLists: React.FC = () => {
                       handleAddFormChange('dob', `${year || '2000'}-${month || '01'}-${day.padStart(2, '0')}`);
                     }}
                   >
-                    <SelectTrigger className="w-16">
+                    <SelectTrigger className="w-14 sm:w-16">
                       <SelectValue placeholder="Day" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1106,17 +1113,17 @@ const EmployeeLists: React.FC = () => {
           </div>
 
           {/* Footer with improved button styling */}
-          <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 p-4 sm:p-6 border-t bg-gray-50">
             <Button
               variant="outline"
               onClick={handleCancelAdd}
-              className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400"
+              className="w-full sm:w-auto px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400"
             >
               Cancel
             </Button>
             <Button
               onClick={handleSaveAdd}
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+              className="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
             >
               Add Employee
             </Button>
