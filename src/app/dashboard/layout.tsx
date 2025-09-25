@@ -18,9 +18,24 @@ const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Initialize sidebar state from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedSidebarState = localStorage.getItem('sidebarCollapsed');
+      if (savedSidebarState !== null) {
+        setSidebarCollapsed(JSON.parse(savedSidebarState));
+      }
+    }
+  }, []);
 
   const toggleSidebar = () => {
-    setSidebarCollapsed(!isSidebarCollapsed);
+    const newState = !isSidebarCollapsed;
+    setSidebarCollapsed(newState);
+    
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebarCollapsed', JSON.stringify(newState));
+    }
   };
 
   const toggleMobileMenu = () => {
