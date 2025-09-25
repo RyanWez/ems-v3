@@ -62,6 +62,7 @@ const getPositionColor = (position: string) => {
     case 'Super': return 'bg-purple-100 text-purple-800 border border-purple-200';
     case 'Leader': return 'bg-green-100 text-green-800 border border-green-200';
     case 'Account Department': return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+    case 'Operation': return 'bg-orange-100 text-orange-800 border border-orange-200';
     default: return 'bg-gray-100 text-gray-800 border border-gray-200';
   }
 };
@@ -112,6 +113,17 @@ const EmployeeLists: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState<Employee>({
     id: 0,
+    name: '',
+    joinDate: '',
+    position: 'Leader',
+    gender: 'Male',
+    dob: '',
+    phone: ''
+  });
+
+  // Add Modal States
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [addForm, setAddForm] = useState<Omit<Employee, 'id'>>({
     name: '',
     joinDate: '',
     position: 'Leader',
@@ -215,6 +227,56 @@ const EmployeeLists: React.FC = () => {
     });
   };
 
+  // Add Employee Functions
+  const handleAddEmployee = () => {
+    setIsAddModalOpen(true);
+  };
+
+  const handleAddFormChange = (field: keyof Omit<Employee, 'id'>, value: string) => {
+    setAddForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSaveAdd = () => {
+    if (!addForm.name.trim() || !addForm.joinDate) {
+      toast.error('Please fill in all required fields (Name and Join Date)');
+      return;
+    }
+
+    // Generate new ID
+    const newId = Math.max(...employees.map(emp => emp.id)) + 1;
+    const newEmployee: Employee = {
+      ...addForm,
+      id: newId
+    };
+
+    setEmployees(prev => [...prev, newEmployee]);
+    setIsAddModalOpen(false);
+    setAddForm({
+      name: '',
+      joinDate: '',
+      position: 'Leader',
+      gender: 'Male',
+      dob: '',
+      phone: ''
+    });
+    toast.success(`Employee ${addForm.name} added successfully!`);
+  };
+
+  const handleCancelAdd = () => {
+    setIsAddModalOpen(false);
+    setAddForm({
+      name: '',
+      joinDate: '',
+      position: 'Leader',
+      gender: 'Male',
+      dob: '',
+      phone: ''
+    });
+  };
+
   // Delete Employee Functions
   const handleDeleteEmployee = (employee: Employee) => {
     setDeletingEmployee(employee);
@@ -283,7 +345,7 @@ const EmployeeLists: React.FC = () => {
         </div>
         <button
           className="mt-4 sm:mt-0 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm"
-          onClick={() => toast.success('Add New Employee form opened!')}
+          onClick={handleAddEmployee}
         >
           <PlusCircle size={18} className="mr-2" />
           Add New Employee
@@ -322,7 +384,7 @@ const EmployeeLists: React.FC = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-48">
-                {['All Positions', 'Super', 'Leader', 'Account Department'].map((position) => (
+                {['All Positions', 'Super', 'Leader', 'Account Department', 'Operation'].map((position) => (
                   <DropdownMenuItem
                     key={position}
                     onSelect={() => handlePositionChange(position)}
@@ -597,13 +659,72 @@ const EmployeeLists: React.FC = () => {
                 <Label htmlFor="edit-joinDate" className="block text-sm font-medium text-gray-700 mb-2">
                   Join Date
                 </Label>
-                <Input
-                  id="edit-joinDate"
-                  type="date"
-                  value={editForm.joinDate}
-                  onChange={(e) => handleEditFormChange('joinDate', e.target.value)}
-                  className="w-full"
-                />
+                <div className="flex gap-2">
+                  <Select
+                    value={editForm.joinDate.split('-')[0] || '2021'}
+                    onValueChange={(year) => {
+                      const [, month, day] = editForm.joinDate.split('-');
+                      handleEditFormChange('joinDate', `${year}-${month || '07'}-${day || '01'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 10 }, (_, i) => 2020 + i).map((year) => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={(() => {
+                      const monthNum = editForm.joinDate.split('-')[1] || '07';
+                      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+                      return monthNames[parseInt(monthNum) - 1] || 'July';
+                    })()}
+                    onValueChange={(month) => {
+                      const [year, , day] = editForm.joinDate.split('-');
+                      const monthMap: { [key: string]: string } = {
+                        'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                        'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                        'September': '09', 'October': '10', 'November': '11', 'December': '12'
+                      };
+                      handleEditFormChange('joinDate', `${year || '2021'}-${monthMap[month] || '07'}-${day || '01'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-24">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
+                          <SelectItem key={month} value={month}>{month}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={(() => {
+                      const dayNum = editForm.joinDate.split('-')[2] || '01';
+                      return parseInt(dayNum).toString();
+                    })()}
+                    onValueChange={(day) => {
+                      const [year, month] = editForm.joinDate.split('-');
+                      handleEditFormChange('joinDate', `${year || '2021'}-${month || '07'}-${day.padStart(2, '0')}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-16">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                        <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div>
@@ -621,6 +742,7 @@ const EmployeeLists: React.FC = () => {
                     <SelectItem value="Super">Super</SelectItem>
                     <SelectItem value="Leader">Leader</SelectItem>
                     <SelectItem value="Account Department">Account Department</SelectItem>
+                    <SelectItem value="Operation">Operation</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -650,13 +772,72 @@ const EmployeeLists: React.FC = () => {
                 <Label htmlFor="edit-dob" className="block text-sm font-medium text-gray-700 mb-2">
                   Date of Birth
                 </Label>
-                <Input
-                  id="edit-dob"
-                  type="date"
-                  value={editForm.dob}
-                  onChange={(e) => handleEditFormChange('dob', e.target.value)}
-                  className="w-full"
-                />
+                <div className="flex gap-2">
+                  <Select
+                    value={editForm.dob.split('-')[0] || '1998'}
+                    onValueChange={(year) => {
+                      const [, month, day] = editForm.dob.split('-');
+                      handleEditFormChange('dob', `${year}-${month || '04'}-${day || '21'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 50 }, (_, i) => 1970 + i).map((year) => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={(() => {
+                      const monthNum = editForm.dob.split('-')[1] || '04';
+                      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+                      return monthNames[parseInt(monthNum) - 1] || 'April';
+                    })()}
+                    onValueChange={(month) => {
+                      const [year, , day] = editForm.dob.split('-');
+                      const monthMap: { [key: string]: string } = {
+                        'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                        'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                        'September': '09', 'October': '10', 'November': '11', 'December': '12'
+                      };
+                      handleEditFormChange('dob', `${year || '1998'}-${monthMap[month] || '04'}-${day || '21'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-24">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
+                          <SelectItem key={month} value={month}>{month}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={(() => {
+                      const dayNum = editForm.dob.split('-')[2] || '21';
+                      return parseInt(dayNum).toString();
+                    })()}
+                    onValueChange={(day) => {
+                      const [year, month] = editForm.dob.split('-');
+                      handleEditFormChange('dob', `${year || '1998'}-${month || '04'}-${day.padStart(2, '0')}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-16">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                        <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             </div>
 
@@ -689,6 +870,255 @@ const EmployeeLists: React.FC = () => {
               className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
             >
               Save Changes
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Employee Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="sm:max-w-[600px] bg-white border-0 shadow-lg">
+          <div className="flex items-center justify-between p-6 border-b">
+            <div>
+              <DialogTitle className="text-lg font-semibold text-gray-900">Add New Employee</DialogTitle>
+              <DialogDescription className="text-sm text-gray-500 mt-1">
+                Enter the new employee's details below.
+              </DialogDescription>
+            </div>
+          </div>
+
+          <div className="p-6 space-y-6">
+            {/* Full Name */}
+            <div>
+              <Label htmlFor="add-name" className="block text-sm font-medium text-gray-700 mb-2">
+                Full Name
+              </Label>
+              <Input
+                id="add-name"
+                value={addForm.name}
+                onChange={(e) => handleAddFormChange('name', e.target.value)}
+                className="w-full"
+                placeholder="Enter employee name"
+              />
+            </div>
+
+            {/* Join Date and Position Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="add-joinDate" className="block text-sm font-medium text-gray-700 mb-2">
+                  Join Date
+                </Label>
+                <div className="flex gap-2">
+                  <Select
+                    value={addForm.joinDate.split('-')[0] || '2024'}
+                    onValueChange={(year) => {
+                      const [, month, day] = addForm.joinDate.split('-');
+                      handleAddFormChange('joinDate', `${year}-${month || '01'}-${day || '01'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 10 }, (_, i) => 2020 + i).map((year) => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={(() => {
+                      const monthNum = addForm.joinDate.split('-')[1] || '01';
+                      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+                      return monthNames[parseInt(monthNum) - 1] || 'January';
+                    })()}
+                    onValueChange={(month) => {
+                      const [year, , day] = addForm.joinDate.split('-');
+                      const monthMap: { [key: string]: string } = {
+                        'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                        'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                        'September': '09', 'October': '10', 'November': '11', 'December': '12'
+                      };
+                      handleAddFormChange('joinDate', `${year || '2024'}-${monthMap[month] || '01'}-${day || '01'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-24">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
+                          <SelectItem key={month} value={month}>{month}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={(() => {
+                      const dayNum = addForm.joinDate.split('-')[2] || '01';
+                      return parseInt(dayNum).toString();
+                    })()}
+                    onValueChange={(day) => {
+                      const [year, month] = addForm.joinDate.split('-');
+                      handleAddFormChange('joinDate', `${year || '2024'}-${month || '01'}-${day.padStart(2, '0')}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-16">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                        <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="add-position" className="block text-sm font-medium text-gray-700 mb-2">
+                  Position
+                </Label>
+                <Select
+                  value={addForm.position}
+                  onValueChange={(value) => handleAddFormChange('position', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select position" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Super">Super</SelectItem>
+                    <SelectItem value="Leader">Leader</SelectItem>
+                    <SelectItem value="Account Department">Account Department</SelectItem>
+                    <SelectItem value="Operation">Operation</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Gender and Date of Birth Row */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="add-gender" className="block text-sm font-medium text-gray-700 mb-2">
+                  Gender
+                </Label>
+                <Select
+                  value={addForm.gender}
+                  onValueChange={(value) => handleAddFormChange('gender', value as 'Male' | 'Female')}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="add-dob" className="block text-sm font-medium text-gray-700 mb-2">
+                  Date of Birth
+                </Label>
+                <div className="flex gap-2">
+                  <Select
+                    value={addForm.dob.split('-')[0] || '2000'}
+                    onValueChange={(year) => {
+                      const [, month, day] = addForm.dob.split('-');
+                      handleAddFormChange('dob', `${year}-${month || '01'}-${day || '01'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue placeholder="Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 50 }, (_, i) => 1970 + i).map((year) => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={(() => {
+                      const monthNum = addForm.dob.split('-')[1] || '01';
+                      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'];
+                      return monthNames[parseInt(monthNum) - 1] || 'January';
+                    })()}
+                    onValueChange={(month) => {
+                      const [year, , day] = addForm.dob.split('-');
+                      const monthMap: { [key: string]: string } = {
+                        'January': '01', 'February': '02', 'March': '03', 'April': '04',
+                        'May': '05', 'June': '06', 'July': '07', 'August': '08',
+                        'September': '09', 'October': '10', 'November': '11', 'December': '12'
+                      };
+                      handleAddFormChange('dob', `${year || '2000'}-${monthMap[month] || '01'}-${day || '01'}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-24">
+                      <SelectValue placeholder="Month" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {['January', 'February', 'March', 'April', 'May', 'June',
+                        'July', 'August', 'September', 'October', 'November', 'December'].map((month) => (
+                          <SelectItem key={month} value={month}>{month}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+
+                  <Select
+                    value={(() => {
+                      const dayNum = addForm.dob.split('-')[2] || '01';
+                      return parseInt(dayNum).toString();
+                    })()}
+                    onValueChange={(day) => {
+                      const [year, month] = addForm.dob.split('-');
+                      handleAddFormChange('dob', `${year || '2000'}-${month || '01'}-${day.padStart(2, '0')}`);
+                    }}
+                  >
+                    <SelectTrigger className="w-16">
+                      <SelectValue placeholder="Day" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                        <SelectItem key={day} value={day.toString()}>{day}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Phone Number */}
+            <div>
+              <Label htmlFor="add-phone" className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number <span className="text-gray-400">(Optional)</span>
+              </Label>
+              <Input
+                id="add-phone"
+                value={addForm.phone}
+                onChange={(e) => handleAddFormChange('phone', e.target.value)}
+                placeholder="09xxxxxxxxx"
+                className="w-full"
+              />
+            </div>
+          </div>
+
+          {/* Footer with improved button styling */}
+          <div className="flex justify-end gap-3 p-6 border-t bg-gray-50">
+            <Button
+              variant="outline"
+              onClick={handleCancelAdd}
+              className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveAdd}
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+            >
+              Add Employee
             </Button>
           </div>
         </DialogContent>
