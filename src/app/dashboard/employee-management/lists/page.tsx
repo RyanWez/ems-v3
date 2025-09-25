@@ -674,7 +674,7 @@ const EmployeeLists: React.FC = () => {
                       handleEditFormChange('joinDate', `${year}-${month || '07'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="w-16 sm:w-20">
+                    <SelectTrigger className="w-20 sm:w-24">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -701,7 +701,7 @@ const EmployeeLists: React.FC = () => {
                       handleEditFormChange('joinDate', `${year || '2021'}-${monthMap[month] || '07'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="flex-1 sm:w-24">
+                    <SelectTrigger className="w-28 sm:w-32">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
@@ -787,7 +787,7 @@ const EmployeeLists: React.FC = () => {
                       handleEditFormChange('dob', `${year}-${month || '04'}-${day || '21'}`);
                     }}
                   >
-                    <SelectTrigger className="w-16 sm:w-20">
+                    <SelectTrigger className="w-20 sm:w-24">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -814,7 +814,7 @@ const EmployeeLists: React.FC = () => {
                       handleEditFormChange('dob', `${year || '1998'}-${monthMap[month] || '04'}-${day || '21'}`);
                     }}
                   >
-                    <SelectTrigger className="flex-1 sm:w-24">
+                    <SelectTrigger className="w-28 sm:w-32">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
@@ -923,7 +923,7 @@ const EmployeeLists: React.FC = () => {
                       handleAddFormChange('joinDate', `${year}-${month || '01'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="w-16 sm:w-20">
+                    <SelectTrigger className="w-20 sm:w-24">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -950,7 +950,7 @@ const EmployeeLists: React.FC = () => {
                       handleAddFormChange('joinDate', `${year || '2024'}-${monthMap[month] || '01'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="flex-1 sm:w-24">
+                    <SelectTrigger className="w-28 sm:w-32">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1036,7 +1036,7 @@ const EmployeeLists: React.FC = () => {
                       handleAddFormChange('dob', `${year}-${month || '01'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="w-16 sm:w-20">
+                    <SelectTrigger className="w-20 sm:w-24">
                       <SelectValue placeholder="Year" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1063,7 +1063,7 @@ const EmployeeLists: React.FC = () => {
                       handleAddFormChange('dob', `${year || '2000'}-${monthMap[month] || '01'}-${day || '01'}`);
                     }}
                   >
-                    <SelectTrigger className="flex-1 sm:w-24">
+                    <SelectTrigger className="w-28 sm:w-32">
                       <SelectValue placeholder="Month" />
                     </SelectTrigger>
                     <SelectContent>
