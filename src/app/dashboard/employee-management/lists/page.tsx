@@ -100,14 +100,19 @@ const calculateServiceYears = (joinDate: string) => {
 };
 
 const generateAvatarUrl = (name: string, gender: 'Male' | 'Female') => {
-  // Use DiceBear API with lorelei style
+  // Use DiceBear API with lorelei style for better gender representation
   const seed = encodeURIComponent(name);
   const style = 'lorelei';
 
-  // Generate gender-appropriate avatar
+  // Generate gender-appropriate avatar with better styling
   const genderParam = gender === 'Female' ? 'female' : 'male';
 
-  return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}&gender=${genderParam}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf&size=64`;
+  // Different color schemes for male and female
+  const maleColors = 'b6e3f4,c0aede,d1d4f9,e0e7ff,dbeafe';
+  const femaleColors = 'ffd5dc,ffdfbf,fce7f3,f3e8ff,fef3c7';
+  const backgroundColor = gender === 'Female' ? femaleColors : maleColors;
+
+  return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}&gender=${genderParam}&backgroundColor=${backgroundColor}&size=80&radius=50`;
 };
 
 const EmployeeLists: React.FC = () => {
@@ -659,7 +664,7 @@ const EmployeeLists: React.FC = () => {
       </div>
       {/* Edit Employee Modal */}
       <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg">
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg rounded-xl">
           <div className="flex items-center justify-between p-4 sm:p-6 border-b">
             <div>
               <DialogTitle className="text-lg font-semibold text-gray-900">Edit Employee</DialogTitle>
@@ -908,7 +913,7 @@ const EmployeeLists: React.FC = () => {
 
       {/* Add Employee Modal */}
       <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg">
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg rounded-xl">
           <div className="flex items-center justify-between p-4 sm:p-6 border-b">
             <div>
               <DialogTitle className="text-lg font-semibold text-gray-900">Add New Employee</DialogTitle>
@@ -1157,7 +1162,7 @@ const EmployeeLists: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] rounded-xl">
           <DialogHeader>
             <DialogTitle>Delete Employee</DialogTitle>
             <DialogDescription>
@@ -1184,7 +1189,11 @@ const EmployeeLists: React.FC = () => {
             <Button variant="outline" onClick={handleCancelDelete}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleConfirmDelete}>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white shadow-sm"
+            >
               Delete Employee
             </Button>
           </DialogFooter>
@@ -1193,7 +1202,7 @@ const EmployeeLists: React.FC = () => {
 
       {/* View Employee Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg">
+        <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg rounded-xl">
           <div className="flex items-center justify-between p-4 sm:p-6 border-b">
             <div>
               <DialogTitle className="text-lg font-semibold text-gray-900">Employee Details</DialogTitle>
