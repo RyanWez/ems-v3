@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Eye, Pencil, Trash2, PlusCircle, ChevronLeft, ChevronRight, ChevronsUpDown, Search, CheckCircle, XCircle, Info } from 'lucide-react';
+import { Eye, Pencil, Trash2, PlusCircle, ChevronLeft, ChevronRight, ChevronsUpDown, Search, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -97,6 +97,17 @@ const calculateServiceYears = (joinDate: string) => {
   }
 
   return result || '0 D';
+};
+
+const generateAvatarUrl = (name: string, gender: 'Male' | 'Female') => {
+  // Use DiceBear API with lorelei style
+  const seed = encodeURIComponent(name);
+  const style = 'lorelei';
+
+  // Generate gender-appropriate avatar
+  const genderParam = gender === 'Female' ? 'female' : 'male';
+
+  return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}&gender=${genderParam}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf&size=64`;
 };
 
 const EmployeeLists: React.FC = () => {
@@ -1193,74 +1204,104 @@ const EmployeeLists: React.FC = () => {
           </div>
 
           {viewingEmployee && (
-            <div className="p-4 sm:p-6 space-y-6">
+            <div className="p-3 sm:p-6 space-y-4 sm:space-y-6">
               {/* Employee Header */}
-              <div className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xl">
-                  {viewingEmployee.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+                <div className="flex-shrink-0">
+                  <img
+                    src={generateAvatarUrl(viewingEmployee.name, viewingEmployee.gender)}
+                    alt={`${viewingEmployee.name} avatar`}
+                    className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white shadow-md"
+                    onError={(e) => {
+                      // Fallback to initials if image fails to load
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const fallback = target.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-600 rounded-full hidden items-center justify-center text-white font-bold text-lg sm:text-xl border-2 border-white shadow-md">
+                    {viewingEmployee.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">{viewingEmployee.name}</h3>
-                  <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getPositionColor(viewingEmployee.position)} mt-1`}>
-                    {viewingEmployee.position}
-                  </span>
+                <div className="text-center sm:text-left flex-1">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{viewingEmployee.name}</h3>
+                  <div className="flex flex-wrap justify-center sm:justify-start gap-2">
+                    <span className={`inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${getPositionColor(viewingEmployee.position)}`}>
+                      {viewingEmployee.position}
+                    </span>
+                    <span className={`inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${getGenderColor(viewingEmployee.gender)}`}>
+                      {viewingEmployee.gender}
+                    </span>
+                  </div>
+                  <div className="mt-2 text-sm text-gray-600">
+                    <span className="font-medium">Employee ID:</span> EMP-{viewingEmployee.id.toString().padStart(4, '0')}
+                  </div>
                 </div>
               </div>
 
-              {/* Personal Information */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">Personal Information</h4>
+              {/* Information Cards */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                {/* Personal Information Card */}
+                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                  <h4 className="text-base sm:text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4 flex items-center">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                    Personal Information
+                  </h4>
 
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">Full Name</label>
-                      <p className="text-gray-900 font-medium">{viewingEmployee.name}</p>
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Full Name</label>
+                      <p className="text-gray-900 font-medium text-sm sm:text-base">{viewingEmployee.name}</p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">Gender</label>
-                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getGenderColor(viewingEmployee.gender)}`}>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Gender</label>
+                      <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getGenderColor(viewingEmployee.gender)} self-start sm:self-center`}>
                         {viewingEmployee.gender}
                       </span>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">Date of Birth</label>
-                      <p className="text-gray-900">{viewingEmployee.dob}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Date of Birth</label>
+                      <p className="text-gray-900 text-sm sm:text-base">{viewingEmployee.dob}</p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">Phone Number</label>
-                      <p className="text-gray-900">{viewingEmployee.phone}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Phone Number</label>
+                      <p className="text-gray-900 text-sm sm:text-base font-mono">{viewingEmployee.phone}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">Work Information</h4>
+                {/* Work Information Card */}
+                <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                  <h4 className="text-base sm:text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4 flex items-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                    Work Information
+                  </h4>
 
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">Position</label>
-                      <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getPositionColor(viewingEmployee.position)}`}>
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Position</label>
+                      <span className={`inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${getPositionColor(viewingEmployee.position)} self-start sm:self-center`}>
                         {viewingEmployee.position}
                       </span>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">Join Date</label>
-                      <p className="text-gray-900">{viewingEmployee.joinDate}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Join Date</label>
+                      <p className="text-gray-900 text-sm sm:text-base">{viewingEmployee.joinDate}</p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">Service Years</label>
-                      <p className="text-gray-900 font-medium text-green-600">{calculateServiceYears(viewingEmployee.joinDate)}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Service Years</label>
+                      <p className="text-gray-900 font-medium text-green-600 text-sm sm:text-base">{calculateServiceYears(viewingEmployee.joinDate)}</p>
                     </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-600 mb-1">Employee ID</label>
-                      <p className="text-gray-900 font-mono">EMP-{viewingEmployee.id.toString().padStart(4, '0')}</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                      <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Employee ID</label>
+                      <p className="text-gray-900 font-mono text-sm sm:text-base">EMP-{viewingEmployee.id.toString().padStart(4, '0')}</p>
                     </div>
                   </div>
                 </div>
@@ -1292,11 +1333,11 @@ const EmployeeLists: React.FC = () => {
           )}
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 p-4 sm:p-6 border-t bg-gray-50">
+          <div className="flex flex-col sm:flex-row justify-end gap-3 p-4 sm:p-6 border-t bg-gray-50">
             <Button
               variant="outline"
               onClick={handleCloseView}
-              className="px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400"
+              className="w-full sm:w-auto px-6 py-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400"
             >
               Close
             </Button>
@@ -1307,7 +1348,7 @@ const EmployeeLists: React.FC = () => {
                   handleEditEmployee(viewingEmployee);
                 }
               }}
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+              className="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
             >
               Edit Employee
             </Button>
