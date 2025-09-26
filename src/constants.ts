@@ -10,7 +10,9 @@ import {
   BirthdayIcon,
   LeaveIcon,
   UserListIcon,
-  UserRoleIcon
+  UserRoleIcon,
+  EmployeeManagementIcon,
+  UserManagementIcon
 } from './components/icons';
 
 export const menuItems: NavItem[] = [
@@ -22,7 +24,7 @@ export const menuItems: NavItem[] = [
   {
     path: '/dashboard/employee-management',
     name: 'Employee Management',
-    icon: NestedIcon,
+    icon: EmployeeManagementIcon,
     children: [
       {
         path: '/dashboard/employee-management/lists',
@@ -44,7 +46,7 @@ export const menuItems: NavItem[] = [
   {
     path: '/dashboard/user-management',
     name: 'User Management',
-    icon: NestedIcon,
+    icon: UserManagementIcon,
     children: [
       {
         path: '/dashboard/user-management/list',

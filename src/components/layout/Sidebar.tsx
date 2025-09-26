@@ -107,7 +107,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5-10-5-10 5z" />
           </svg>
-          {!isCollapsed && <span className="ml-3 text-white text-xl font-semibold">Admin Panel</span>}
+          {!isCollapsed && <span className="ml-3 text-white text-xl font-semibold">EMS</span>}
         </div>
         <button
           onClick={onMobileClose}

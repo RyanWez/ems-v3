@@ -9,3 +9,5 @@ export { default as BirthdayIcon } from './BirthdayIcon';
 export { default as LeaveIcon } from './LeaveIcon';
 export { default as UserListIcon } from './UserListIcon';
 export { default as UserRoleIcon } from './UserRoleIcon';
+export { default as EmployeeManagementIcon } from './EmployeeManagementIcon';
+export { default as UserManagementIcon } from './UserManagementIcon';
