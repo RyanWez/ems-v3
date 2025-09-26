@@ -88,7 +88,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
     }
   };
 
-  const isActive = pathname === item.path || (hasChildren && item.children?.some(child => pathname === child.path));
+  // Only show active state for direct path matches, not for parent items
+  const isActive = pathname === item.path;
   const isParentActive = hasChildren && item.children?.some(child => pathname.startsWith(child.path));
 
   const itemBaseStyle = `
@@ -96,9 +97,11 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
     transition-all duration-200 ease-in-out
     hover:bg-[#263445] hover:text-white
     ${isClicked ? 'bg-[#1e3a5f] scale-95' : ''}
+    ${isParentActive && !isActive ? 'bg-[#263445]/50' : ''}
   `;
 
-  const activeStyle = isActive || isParentActive ? 'bg-[#409EFF] text-white' : '';
+  // Only apply active style to direct matches, not parent items
+  const activeStyle = isActive ? 'bg-[#409EFF] text-white' : '';
 
   const collapsedItemStyle = isCollapsed ? 'justify-center' : '';
 
@@ -131,11 +134,21 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      {(isActive || isParentActive) && !isCollapsed && (
+      {isActive && !isCollapsed && (
         <div className="absolute left-0 top-0 h-full w-1 bg-[#409EFF]"></div>
       )}
-      <Icon className={`w-5 h-5 flex-shrink-0 ${(isActive || isParentActive) ? 'text-white' : ''}`} />
-      {!isCollapsed && <span className="ml-3 flex-1 font-medium">{item.name}</span>}
+      {isParentActive && !isActive && !isCollapsed && (
+        <div className="absolute left-0 top-0 h-full w-1 bg-[#409EFF]/40"></div>
+      )}
+      <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-white' : isParentActive ? 'text-[#409EFF]' : ''}`} />
+      {!isCollapsed && (
+        <span className={`ml-3 flex-1 font-medium ${isParentActive && !isActive ? 'text-[#BFCBD9]' : ''}`}>
+          {item.name}
+        </span>
+      )}
+      {!isCollapsed && isParentActive && !isActive && (
+        <div className="w-2 h-2 bg-[#409EFF] rounded-full mr-2"></div>
+      )}
       {!isCollapsed && hasChildren && (
         <ChevronDownIcon
           className={`w-4 h-4 transition-all duration-300 ease-in-out ${isOpen ? 'rotate-180' : 'rotate-0'}`}
@@ -209,12 +222,26 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         onMouseLeave={handleFlyoutMouseLeave}
       >
         {/* Header */}
-        <div className="px-4 py-3 text-white text-sm font-semibold border-b border-gray-600/50 bg-gradient-to-r from-[#409EFF]/15 via-[#409EFF]/5 to-transparent">
-          <div className="flex items-center">
-            <div className="w-6 h-6 rounded-md bg-[#409EFF]/20 flex items-center justify-center mr-2">
-              <Icon className="w-3.5 h-3.5 text-[#409EFF]" />
+        <div
+          className="px-4 py-3 text-white text-sm font-semibold border-b border-gray-600/50 bg-gradient-to-r from-[#409EFF]/15 via-[#409EFF]/5 to-transparent cursor-pointer hover:from-[#409EFF]/25 hover:via-[#409EFF]/10 transition-all duration-200 group/header"
+          onClick={() => setShowFlyout(false)}
+          title="Click to close"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="w-6 h-6 rounded-md bg-[#409EFF]/20 flex items-center justify-center mr-2">
+                <Icon className="w-3.5 h-3.5 text-[#409EFF]" />
+              </div>
+              <span className="text-gray-100">{item.name}</span>
             </div>
-            <span className="text-gray-100">{item.name}</span>
+            <svg
+              className="w-4 h-4 text-gray-400 group-hover/header:text-white group-hover/header:rotate-90 transition-all duration-200"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </div>
         </div>
 
