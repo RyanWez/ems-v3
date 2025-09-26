@@ -89,6 +89,100 @@ A modern, secure, and comprehensive employee management system built with Next.j
 5. **Open Application**
     Navigate to `http://localhost:9002` in your browser
 
+## 🐳 Docker Deployment
+
+### Docker Prerequisites
+- **Docker Desktop** or **Docker Engine** installed on your system
+- **Docker Compose** (included with Docker Desktop)
+
+### Docker Quick Start
+
+1. **Clone and Navigate**
+    ```bash
+    git clone <repository-url>
+    cd ems-v3
+    ```
+
+2. **Build and Run with Docker Compose**
+    ```bash
+    docker-compose up --build
+    ```
+
+3. **Access Application**
+    Open `http://localhost:9002` in your browser
+
+### Docker Commands
+
+```bash
+# Build and start containers
+docker-compose up --build
+
+# Start in background
+docker-compose up -d --build
+
+# Stop containers
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Rebuild without cache
+docker-compose up --build --no-cache
+
+# Stop and remove containers and volumes
+docker-compose down -v
+```
+
+### Docker Login Credentials
+
+When running with Docker, use these credentials:
+
+- **Username**: `YOUR_USERNAME`
+- **Password**: `YOUR_PASSWORD`
+
+### Docker Architecture
+
+The Docker setup uses a multi-stage build:
+
+- **Base Stage**: Node.js 18 Alpine Linux
+- **Dependencies Stage**: Install all project dependencies
+- **Builder Stage**: Build the Next.js application
+- **Production Stage**: Lightweight image with only runtime dependencies
+
+### Docker Port Configuration
+
+- **Internal Port**: Next.js runs on port 3000 inside the container
+- **External Port**: Mapped to port 9002 on your host machine
+- **Access**: Available at `http://localhost:9002`
+
+### Docker Troubleshooting
+
+**Container won't start:**
+```bash
+docker-compose logs
+```
+
+**Port already in use:**
+```bash
+# Stop other services on port 9002 or change the port in docker-compose.yml
+docker-compose down
+```
+
+**Rebuild after code changes:**
+```bash
+docker-compose up --build
+```
+
+**Permission issues on Windows:**
+```bash
+# Run Docker Desktop as Administrator
+```
+
+**Out of memory:**
+```bash
+# Increase Docker Desktop memory allocation to at least 4GB
+```
+
 ## 🏗️ Project Structure
 
 ```
@@ -261,10 +355,12 @@ DATABASE_URL=your_production_database_url
 ```
 
 ### Deployment Platforms
+- **Docker**: Containerized deployment (Recommended)
 - **Vercel**: Zero-configuration deployment with Next.js optimization
 - **Netlify**: Static site hosting with environment variables
 - **AWS Amplify**: Full-stack deployment with CI/CD
-- **Docker**: Containerized deployment ready
+- **Railway**: Docker-based cloud deployment
+- **Google Cloud Run**: Serverless container deployment
 
 ### Production Checklist
 - [ ] Update environment variables
