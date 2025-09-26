@@ -252,6 +252,69 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+/* Flyout menu animations */
+@keyframes flyoutEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) translateX(-8px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(-8px) translateX(0) scale(1);
+  }
+}
+
+@keyframes flyoutExit {
+  0% {
+    opacity: 1;
+    transform: translateY(-8px) translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px) translateX(-8px) scale(0.95);
+  }
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Flyout menu item stagger animation */
+.flyout-menu-item {
+  animation: slideInFromLeft 0.3s ease-out forwards;
+  opacity: 0;
+}
+
+/* Custom scrollbar for sidebar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
 /* Mobile menu backdrop blur effect */
 @media (max-width: 768px) {
   .main-header.mobile-blur {
