@@ -98,6 +98,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
     hover:bg-[#263445] hover:text-white
     ${isClicked ? 'bg-[#1e3a5f] scale-95' : ''}
     ${isParentActive && !isActive ? 'bg-[#263445]/50' : ''}
+    ${isOpen && hasChildren && !isCollapsed ? 'bg-[#263445]/30 shadow-sm' : ''}
   `;
 
   // Only apply active style to direct matches, not parent items
@@ -146,12 +147,12 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
           {item.name}
         </span>
       )}
-      {!isCollapsed && isParentActive && !isActive && (
-        <div className="w-2 h-2 bg-[#409EFF] rounded-full mr-2"></div>
+      {!isCollapsed && isOpen && hasChildren && (
+        <div className="w-2 h-2 bg-[#409EFF] rounded-full mr-2 animate-pulse"></div>
       )}
       {!isCollapsed && hasChildren && (
         <ChevronDownIcon
-          className={`w-4 h-4 transition-all duration-300 ease-in-out ${isOpen ? 'rotate-180' : 'rotate-0'}`}
+          className={`w-4 h-4 transition-all duration-300 ease-in-out ${isOpen ? 'rotate-180 text-[#409EFF]' : 'rotate-0'}`}
         />
       )}
       {isCollapsed && (
@@ -297,13 +298,15 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       {!isCollapsed && hasChildren && (
         <ul
           className={`
-            bg-[#1f2d3d] overflow-hidden
+            bg-[#1f2d3d] overflow-hidden relative
             ${isOpen ? 'sidebar-enter-active' : 'sidebar-exit-active'}
           `}
           style={{
             transformOrigin: 'top'
           }}
         >
+          {/* Removed Collapse Button */}
+
           {item.children?.map((child) => (
             <SidebarItem
               key={child.path}

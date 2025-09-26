@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onMobileClose
 }) => {
   const pathname = usePathname();
-  const [manuallyExpandedDropdown, setManuallyExpandedDropdown] = useState<string | null>(null);
+  const [manuallyExpandedDropdowns, setManuallyExpandedDropdowns] = useState<Set<string>>(new Set());
 
   const handleBackdropClick = () => {
     if (onMobileClose) {
@@ -41,30 +41,40 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleDropdownToggle = (itemPath: string) => {
-    setManuallyExpandedDropdown(
-      manuallyExpandedDropdown === itemPath ? null : itemPath
-    );
+    setManuallyExpandedDropdowns(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(itemPath)) {
+        newSet.delete(itemPath);
+      } else {
+        newSet.add(itemPath);
+      }
+      return newSet;
+    });
   };
 
   const getShouldBeOpen = (itemPath: string) => {
     if (isCollapsed) return false;
-    return manuallyExpandedDropdown === itemPath || pathname.startsWith(itemPath);
+
+    // Check if this dropdown should be open
+    const isManuallyExpanded = manuallyExpandedDropdowns.has(itemPath);
+    const isAutoExpanded = pathname.startsWith(itemPath);
+
+    // Open if manually expanded OR if current path is within this dropdown
+    return isManuallyExpanded || isAutoExpanded;
   };
   
   const handleNavigation = (path: string) => {
-    const currentParent = menuItems.find(item =>
-      item.children?.some(child => pathname.startsWith(child.path))
-    );
-
     const newParent = menuItems.find(item =>
       item.children?.some(child => path.startsWith(child.path))
     );
 
-    if (currentParent && newParent && currentParent.path !== newParent.path) {
-      setManuallyExpandedDropdown(newParent.path);
-    }
-    else if (newParent && manuallyExpandedDropdown !== newParent.path) {
-      setManuallyExpandedDropdown(newParent.path);
+    // Auto-expand for navigation if the dropdown isn't already manually expanded
+    if (newParent && !manuallyExpandedDropdowns.has(newParent.path)) {
+      setManuallyExpandedDropdowns(prev => {
+        const newSet = new Set(prev);
+        newSet.add(newParent.path);
+        return newSet;
+      });
     }
   };
 
