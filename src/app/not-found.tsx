@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
+import EmployeeListIcon from '../components/icons/EmployeeListIcon';
 
 const NotFound: React.FC = () => {
   return (
@@ -27,9 +28,7 @@ const NotFound: React.FC = () => {
             href="/dashboard/employee-management/lists"
             className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors inline-flex items-center justify-center"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-            </svg>
+            <EmployeeListIcon className="mr-2" />
             Employee Lists
           </Link>
         </div>
