@@ -32,11 +32,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>{children}</AuthProvider>
-        <Toaster 
-          position="top-right"
+        <Toaster
+          position="top-center"
           expand={true}
           richColors={true}
-          closeButton={true}
           duration={4000}
         />
       </body>
