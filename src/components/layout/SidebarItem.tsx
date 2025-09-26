@@ -69,8 +69,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current);
       }
-      // Show flyout immediately on hover
-      setShowFlyout(true);
+      // Add delay before showing flyout for smoother UX
+      hoverTimeoutRef.current = setTimeout(() => {
+        setShowFlyout(true);
+      }, 250); // 250ms delay for smoother hover experience
     }
   };
 
@@ -83,7 +85,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       // Delay hiding to allow mouse to move to flyout menu
       hoverTimeoutRef.current = setTimeout(() => {
         setShowFlyout(false);
-      }, 150);
+      }, 200); // Slightly longer delay to allow smooth transition to flyout
     }
   };
 
@@ -169,6 +171,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current);
       }
+      // Ensure flyout stays visible when hovering over it
       setShowFlyout(true);
     }
   };
@@ -179,10 +182,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current);
       }
-      // Delay hiding
+      // Delay hiding to allow smooth transition
       hoverTimeoutRef.current = setTimeout(() => {
         setShowFlyout(false);
-      }, 150);
+      }, 200); // Consistent delay with main hover
     }
   };
 
@@ -196,10 +199,23 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 
     const rect = itemRef.current.getBoundingClientRect();
     const sidebarWidth = 64;
+    const flyoutHeight = 200; // Estimated flyout height
+    const viewportHeight = window.innerHeight;
+    const gap = 8; // Gap from sidebar
+
+    // Calculate optimal top position to keep flyout in viewport
+    let top = rect.top + rect.height / 2; // Center vertically with item
+
+    // Adjust if flyout would go off-screen
+    if (top + flyoutHeight / 2 > viewportHeight) {
+      top = viewportHeight - flyoutHeight / 2 - 10; // Keep 10px from bottom
+    } else if (top - flyoutHeight / 2 < 0) {
+      top = flyoutHeight / 2 + 10; // Keep 10px from top
+    }
 
     return {
-      top: rect.top,
-      left: sidebarWidth + 8, // 8px gap from sidebar
+      top: Math.max(10, Math.min(top, viewportHeight - flyoutHeight - 10)),
+      left: sidebarWidth + gap,
     };
   };
 
@@ -210,12 +226,12 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 
     return (
       <div
-        className="fixed z-[60] bg-[#1f2d3d]/95 backdrop-blur-sm border border-gray-600/80 rounded-lg shadow-2xl py-1 min-w-[220px] max-w-[280px]"
+        className={`fixed z-[60] bg-[#1f2d3d]/95 backdrop-blur-sm border border-gray-600/80 rounded-lg shadow-2xl py-1 min-w-[220px] max-w-[280px] flyout-container ${
+          showFlyout ? 'animate-flyout-enter' : 'animate-flyout-exit'
+        }`}
         style={{
           top: `${position.top}px`,
           left: `${position.left}px`,
-          transform: 'translateY(-8px)',
-          animation: showFlyout ? 'flyoutEnter 0.2s ease-out' : 'flyoutExit 0.15s ease-in',
           boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2)',
         }}
         onMouseEnter={handleFlyoutMouseEnter}

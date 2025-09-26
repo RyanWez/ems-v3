@@ -292,6 +292,20 @@
   opacity: 0;
 }
 
+/* Improved flyout animations with CSS classes */
+.flyout-container {
+  transform: translateY(-8px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-flyout-enter {
+  animation: flyoutEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-flyout-exit {
+  animation: flyoutExit 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
 /* Custom scrollbar for sidebar */
 .custom-scrollbar {
   scrollbar-width: thin;
