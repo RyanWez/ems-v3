@@ -97,9 +97,8 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
             />
           </div>
 
-          {/* Join Date and Position Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
+          {/* Join Date */}
+          <div>
               <Label className="block text-sm font-medium text-gray-700 mb-2">
                 Join Date
               </Label>
@@ -177,25 +176,25 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
               </div>
             </div>
 
-            <div>
-              <Label className="block text-sm font-medium text-gray-700 mb-2">
-                Position
-              </Label>
-              <Select
-                value={editForm.position}
-                onValueChange={(value) => handleFormChange('position', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select position" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Super">Super</SelectItem>
-                  <SelectItem value="Leader">Leader</SelectItem>
-                  <SelectItem value="Account Department">Account Department</SelectItem>
-                  <SelectItem value="Operation">Operation</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Position */}
+          <div>
+            <Label className="block text-sm font-medium text-gray-700 mb-2">
+              Position
+            </Label>
+            <Select
+              value={editForm.position}
+              onValueChange={(value) => handleFormChange('position', value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select position" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Super">Super</SelectItem>
+                <SelectItem value="Leader">Leader</SelectItem>
+                <SelectItem value="Account Department">Account Department</SelectItem>
+                <SelectItem value="Operation">Operation</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Gender and Date of Birth Row */}

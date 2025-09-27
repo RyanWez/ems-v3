@@ -116,13 +116,12 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
             />
           </div>
 
-          {/* Join Date and Position Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <Label className="block text-sm font-medium text-gray-700 mb-2">
-                Join Date
-              </Label>
-              <div className="flex gap-1 sm:gap-2">
+          {/* Join Date */}
+          <div>
+            <Label className="block text-sm font-medium text-gray-700 mb-2">
+              Join Date
+            </Label>
+            <div className="flex gap-1 sm:gap-2">
                 <Select
                   value={addForm.joinDate.split('-')[0] || new Date().getFullYear().toString()}
                   onValueChange={(year) => {
@@ -194,12 +193,13 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-            </div>
+          </div>
 
-            <div>
-              <Label className="block text-sm font-medium text-gray-700 mb-2">
-                Position
-              </Label>
+          {/* Position */}
+          <div>
+            <Label className="block text-sm font-medium text-gray-700 mb-2">
+              Position
+            </Label>
               <Select
                 value={addForm.position}
                 onValueChange={(value) => handleFormChange('position', value)}
@@ -214,7 +214,6 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   <SelectItem value="Operation">Operation</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
           </div>
 
           {/* Gender and Date of Birth Row */}
