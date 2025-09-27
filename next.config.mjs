@@ -1,4 +1,3 @@
-
 /** @type {import('next').NextConfig} */
 import withPWA from "@ducanh2912/next-pwa";
 
@@ -51,6 +50,17 @@ const nextConfig = withPWA({
   webpack: (config, { dev, isServer }) => {
     // Let Next.js handle devtool automatically for better performance
     // Removed custom devtool override to prevent warning
+    
+    // Add better error handling for development
+    if (dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        removeAvailableModules: false,
+        removeEmptyChunks: false,
+        splitChunks: false,
+      };
+    }
+    
     return config;
   },
   // Add headers for better development experience
@@ -70,6 +80,15 @@ const nextConfig = withPWA({
         ],
       },
     ];
+  },
+  // Add better error handling
+  async rewrites() {
+    return [];
+  },
+  // Improve development experience
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
   },
 });
 

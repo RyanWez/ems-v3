@@ -44,7 +44,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
             <input
               type="text"
               id="search"
-              placeholder="Search by name, position, phone, NRC..."
+              placeholder="Search by Name, Position, Phone Number..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
