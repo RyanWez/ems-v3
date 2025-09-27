@@ -131,6 +131,39 @@ export const useEmployees = () => {
       return false;
     }
 
+    // Check for duplicate employees (Name + Join Date + Phone Number)
+    const existingEmployees = employees.filter(emp => {
+      // Normalize names for comparison (remove spaces and convert to uppercase)
+      const normalizeName = (name: string) => name.replace(/\s+/g, '').toUpperCase();
+
+      const normalizedNewName = normalizeName(employeeData.name);
+      const normalizedExistingName = normalizeName(emp.name);
+
+      const sameName = normalizedNewName === normalizedExistingName;
+      const sameJoinDate = employeeData.joinDate === emp.joinDate;
+      const samePhone = employeeData.phone && emp.phone ?
+        employeeData.phone.replace(/[\s\-\(\)]/g, '') === emp.phone.replace(/[\s\-\(\)]/g, '') : false;
+
+      // If all three match, it's a duplicate
+      if (sameName && sameJoinDate && samePhone) {
+        return true;
+      }
+
+      // If name and join date match (and phone is empty for both), it's a duplicate
+      if (sameName && sameJoinDate && !employeeData.phone && !emp.phone) {
+        return true;
+      }
+
+      return false;
+    });
+
+    if (existingEmployees.length > 0) {
+      toast.error(`Employee "${employeeData.name}" with the same join date and phone number already exists!`, {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
     // Validate date formats
     const joinDate = new Date(employeeData.joinDate);
     const dobDate = new Date(employeeData.dob);
@@ -196,6 +229,41 @@ export const useEmployees = () => {
 
     if (!updatedEmployee.dob || updatedEmployee.dob === '' || updatedEmployee.dob.split('-').length !== 3) {
       toast.error('Please select a valid date of birth', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    // Check for duplicate employees (Name + Join Date + Phone Number) - exclude current employee
+    const existingEmployees = employees.filter(emp => {
+      if (emp.id === updatedEmployee.id) return false; // Skip current employee
+
+      // Normalize names for comparison (remove spaces and convert to uppercase)
+      const normalizeName = (name: string) => name.replace(/\s+/g, '').toUpperCase();
+
+      const normalizedUpdatedName = normalizeName(updatedEmployee.name);
+      const normalizedExistingName = normalizeName(emp.name);
+
+      const sameName = normalizedUpdatedName === normalizedExistingName;
+      const sameJoinDate = updatedEmployee.joinDate === emp.joinDate;
+      const samePhone = updatedEmployee.phone && emp.phone ?
+        updatedEmployee.phone.replace(/[\s\-\(\)]/g, '') === emp.phone.replace(/[\s\-\(\)]/g, '') : false;
+
+      // If all three match, it's a duplicate
+      if (sameName && sameJoinDate && samePhone) {
+        return true;
+      }
+
+      // If name and join date match (and phone is empty for both), it's a duplicate
+      if (sameName && sameJoinDate && !updatedEmployee.phone && !emp.phone) {
+        return true;
+      }
+
+      return false;
+    });
+
+    if (existingEmployees.length > 0) {
+      toast.error(`Employee "${updatedEmployee.name}" with the same join date and phone number already exists!`, {
         icon: <XCircle className="w-5 h-5" />,
       });
       return false;

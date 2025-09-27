@@ -54,9 +54,12 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   });
 
   const handleFormChange = (field: keyof EmployeeFormData, value: string) => {
+    // Convert name to uppercase for consistency
+    const processedValue = field === 'name' ? value.toUpperCase() : value;
+
     setAddForm(prev => ({
       ...prev,
-      [field]: value
+      [field]: processedValue
     }));
   };
 

@@ -1,6 +1,5 @@
 'use client';
 import React from 'react';
-import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -51,11 +50,9 @@ export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
           <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
             <div className="flex-shrink-0">
               <div className="relative">
-                <Image
+                <img
                   src={generateAvatarUrl(employee.name, employee.gender, employee.position)}
                   alt={`${employee.name} avatar`}
-                  width={80}
-                  height={80}
                   className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white shadow-md"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;

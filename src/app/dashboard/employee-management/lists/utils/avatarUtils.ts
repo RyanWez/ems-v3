@@ -1,40 +1,37 @@
+// Available local avatar images (excluding Andrea.svg which is reserved for specific employees)
+const maleAvatars = [
+  '/images/avatars/male/Adrian-M.svg',
+  '/images/avatars/male/Easton-M.svg',
+  '/images/avatars/male/Nolan-M.svg'
+];
+
+const femaleAvatars = [
+  '/images/avatars/female/Amaya.svg',
+  '/images/avatars/female/Jameson.svg',
+  '/images/avatars/female/Kingston.svg',
+  '/images/avatars/female/Luis.svg'
+];
+
 export const generateAvatarUrl = (name: string, gender: 'Male' | 'Female', position?: string) => {
-  // Use DiceBear API with enhanced styling for better representation
-  const seed = encodeURIComponent(name + gender);
-  const style = 'avataaars';
-
-  // Enhanced gender-specific styling with better visual distinction
-  const genderParam = gender === 'Female' ? 'female' : 'male';
-
-  // Professional color schemes with better contrast
-  const maleColors = '4F46E5,7C3AED,059669,DC2626,EA580C,B8860B';
-  const femaleColors = 'EC4899,E11D48,BE185D,7C2D92,059669,DC2626';
-
-  // Role-based color restrictions
-  const restrictedRoles = ['Super', 'Leader'];
-  const isRestrictedRole = position && restrictedRoles.includes(position);
-
-  let backgroundColor;
-  if (isRestrictedRole) {
-    // Use neutral professional colors for Super and Leader
-    backgroundColor = '0F172A,1E293B,334155,475569,64748B,94A3B8';
-  } else {
-    backgroundColor = gender === 'Female' ? femaleColors : maleColors;
+  // Special cases: Assign Andrea.svg to specific employees
+  if (name === 'AUNG SWE PHYO' || name === 'SOE MOE HTUN') {
+    return '/images/avatars/male/Andrea.svg';
   }
 
-  // Enhanced parameters for better avatar quality
-  const baseParams = [
-    `seed=${seed}`,
-    `backgroundColor=${backgroundColor}`,
-    `size=120`,
-    `radius=50`,
-    ` accessoriesProbability=30`,
-    `facialHairProbability=${gender === 'Male' ? 70 : 0}`,
-    `hairProbability=95`,
-    `clothingProbability=90`
-  ];
+  // Use local avatar images for other employees
+  const avatarList = gender === 'Female' ? femaleAvatars : maleAvatars;
 
-  return `https://api.dicebear.com/7.x/${style}/svg?${baseParams.join('&')}`;
+  // Create a simple hash from the name to consistently assign the same avatar
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    const char = name.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+
+  // Use the hash to select an avatar consistently for the same name
+  const avatarIndex = Math.abs(hash) % avatarList.length;
+  return avatarList[avatarIndex];
 };
 
 export const generateAvatarForRole = (name: string, gender: 'Male' | 'Female', position: string) => {
