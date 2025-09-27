@@ -68,7 +68,7 @@ const ErrorBoundary: React.FC<Props> = ({ children, fallback }) => {
               </div>
               <h1 className="text-2xl font-bold text-red-800 mb-2">Something went wrong</h1>
               <p className="text-red-600">
-                We're sorry, but something unexpected happened. Please try refreshing the page or contact support if the problem persists.
+                We&apos;re sorry, but something unexpected happened. Please try refreshing the page or contact support if the problem persists.
               </p>
             </div>
 

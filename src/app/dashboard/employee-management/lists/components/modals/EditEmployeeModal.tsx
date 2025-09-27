@@ -79,7 +79,7 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
           <div>
             <DialogTitle className="text-lg font-semibold text-gray-900">Edit Employee</DialogTitle>
             <DialogDescription className="text-sm text-gray-500 mt-1">
-              Update the employee's details below.
+              Update the employee&apos;s details below.
             </DialogDescription>
           </div>
         </div>

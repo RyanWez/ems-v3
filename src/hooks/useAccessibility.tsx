@@ -343,9 +343,13 @@ export function useAccessibility(options: UseAccessibilityOptions = {}) {
 
   // Cleanup timeouts on unmount
   useEffect(() => {
+    // Capture current timeouts Map at effect run time
+    const currentTimeouts = announcementTimeouts.current;
+
     return () => {
-      announcementTimeouts.current.forEach(timeoutId => clearTimeout(timeoutId));
-      announcementTimeouts.current.clear();
+      // Use the captured Map reference for cleanup
+      currentTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+      currentTimeouts.clear();
     };
   }, []);
 

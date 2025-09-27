@@ -61,7 +61,7 @@ const EmployeeBirthday: React.FC = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Employee Birthdays</h2>
         <p className="text-gray-600 mb-6">
-          Track and celebrate employee birthdays. Today's birthdays and upcoming birthdays within 15 days are highlighted for easy planning.
+          Track and celebrate employee birthdays. Today&apos;s birthdays and upcoming birthdays within 15 days are highlighted for easy planning.
         </p>
 
         {/* Loading State */}
@@ -82,7 +82,7 @@ const EmployeeBirthday: React.FC = () => {
       <div className="bg-white p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-4 text-gray-800">Employee Birthdays</h2>
         <p className="text-gray-600 mb-6">
-          Track and celebrate employee birthdays. Today's birthdays and upcoming birthdays within 15 days are highlighted for easy planning.
+          Track and celebrate employee birthdays. Today&apos;s birthdays and upcoming birthdays within 15 days are highlighted for easy planning.
         </p>
 
         {/* Error State */}
@@ -100,14 +100,14 @@ const EmployeeBirthday: React.FC = () => {
     <div className="bg-white p-8 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">Employee Birthdays</h2>
       <p className="text-gray-600 mb-6">
-        Track and celebrate employee birthdays. Today's birthdays and upcoming birthdays within 15 days are highlighted for easy planning.
+        Track and celebrate employee birthdays. Today&apos;s birthdays and upcoming birthdays within 15 days are highlighted for easy planning.
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Today's Birthdays */}
         <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-6 rounded-lg">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-pink-800">🎉 Today's Birthdays</h3>
+            <h3 className="text-lg font-semibold text-pink-800">🎉 Today&apos;s Birthdays</h3>
             {todayBirthdays.length > 5 && (
               <span className="text-xs bg-pink-200 text-pink-800 px-2 py-1 rounded-full">
                 {todayBirthdays.length} total
@@ -225,7 +225,7 @@ const EmployeeBirthday: React.FC = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
               </svg>
               <p className="text-sm text-red-800">
-                No employee found with name "<span className="font-medium">{searchTerm}</span>"
+                No employee found with name &quot;<span className="font-medium">{searchTerm}</span>&quot;
               </p>
             </div>
           </div>

@@ -68,7 +68,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
             </h1>
             
             <p className="text-gray-600 mb-6">
-              We're sorry, but something unexpected happened. Please try refreshing the page or go back to the dashboard.
+              We&apos;re sorry, but something unexpected happened. Please try refreshing the page or go back to the dashboard.
             </p>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (

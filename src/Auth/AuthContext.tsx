@@ -1,6 +1,6 @@
 
 'use client';
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { getSession as getServerSession } from '@/app/lib/session';
 import NetworkErrorBoundary from '@/components/NetworkErrorBoundary';
 
@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const validateSession = async (retryCount = 0) => {
+  const validateSession = useCallback(async (retryCount = 0) => {
     setIsLoading(true);
     try {
       const session = await getServerSession();
@@ -53,11 +53,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     validateSession();
-  }, []);
+  }, [validateSession]);
 
   const value: AuthContextType = {
     isAuthenticated,

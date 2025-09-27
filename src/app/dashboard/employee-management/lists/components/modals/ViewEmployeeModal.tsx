@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Employee } from '../../types/employee';
 import { getPositionColor, getGenderColor, calculateServiceYears } from '../../utils/employeeUtils';
-import { generateAvatarUrl } from '../../utils/avatarUtils';
+import { generateAvatarUrl, getAvatarFallback } from '../../utils/avatarUtils';
 
 interface ViewEmployeeModalProps {
   isOpen: boolean;
@@ -31,6 +32,8 @@ export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
     onEdit(employee);
   };
 
+  const avatarFallback = getAvatarFallback(employee.name, employee.gender, employee.position);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg rounded-xl">
@@ -47,19 +50,23 @@ export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
           {/* Employee Header */}
           <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
             <div className="flex-shrink-0">
-              <img 
-                src={generateAvatarUrl(employee.name, employee.gender)}
-                alt={`${employee.name} avatar`}
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white shadow-md"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const fallback = target.nextElementSibling as HTMLElement;
-                  if (fallback) fallback.style.display = 'flex';
-                }}
-              />
-              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-600 rounded-full hidden items-center justify-center text-white font-bold text-lg sm:text-xl border-2 border-white shadow-md">
-                {employee.name.split(' ').map(n => n[0]).join('').substring(0, 2)}
+              <div className="relative">
+                <Image
+                  src={generateAvatarUrl(employee.name, employee.gender, employee.position)}
+                  alt={`${employee.name} avatar`}
+                  width={80}
+                  height={80}
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-white shadow-md"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const fallback = target.nextElementSibling as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+                <div className={`${avatarFallback.className} ${avatarFallback.bgColor} hidden w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center text-white font-bold text-lg`}>
+                  {avatarFallback.initials}
+                </div>
               </div>
             </div>
             <div className="text-center sm:text-left flex-1">
