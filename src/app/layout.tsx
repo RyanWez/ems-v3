@@ -5,6 +5,7 @@ import "./globals.css";
 import { AuthProvider } from "@/Auth";
 import { Toaster } from "@/components/ui/sonner";
 import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
+import { QueryProvider } from "@/providers/QueryProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,15 +33,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <GlobalErrorBoundary>
-          <AuthProvider>{children}</AuthProvider>
-          <Toaster
-            position="top-center"
-            expand={true}
-            richColors={true}
-            duration={4000}
-          />
-        </GlobalErrorBoundary>
+        <QueryProvider>
+          <GlobalErrorBoundary>
+            <AuthProvider>{children}</AuthProvider>
+            <Toaster
+              position="top-center"
+              expand={true}
+              richColors={true}
+              duration={4000}
+            />
+          </GlobalErrorBoundary>
+        </QueryProvider>
       </body>
     </html>
   );

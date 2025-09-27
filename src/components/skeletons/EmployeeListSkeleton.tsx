@@ -64,4 +64,5 @@ const EmployeeListSkeleton: React.FC = () => {
   );
 };
 
+export { EmployeeListSkeleton };
 export default EmployeeListSkeleton;
