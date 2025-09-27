@@ -10,7 +10,15 @@ export const useFilters = (employees: Employee[]) => {
   const [selectedServiceYears, setSelectedServiceYears] = useState('Any Service Years');
 
   const filteredEmployees = useMemo(() => {
-    return employees.filter((employee) => {
+    // Position hierarchy for sorting
+    const positionOrder = {
+      'Super': 1,
+      'Leader': 2,
+      'Account Department': 3,
+      'Operation': 4
+    };
+
+    const filtered = employees.filter((employee) => {
       const matchesSearch = searchTerm === '' ||
         employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         employee.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -37,6 +45,23 @@ export const useFilters = (employees: Employee[]) => {
       }
 
       return matchesSearch && matchesPosition && matchesGender && matchesServiceYears;
+    });
+
+    // Sort by position hierarchy first, then by join date (earliest first)
+    return filtered.sort((a, b) => {
+      // Get position order (lower number = higher priority)
+      const aPositionOrder = positionOrder[a.position as keyof typeof positionOrder] || 999;
+      const bPositionOrder = positionOrder[b.position as keyof typeof positionOrder] || 999;
+
+      // If positions are different, sort by position hierarchy
+      if (aPositionOrder !== bPositionOrder) {
+        return aPositionOrder - bPositionOrder;
+      }
+
+      // If positions are the same, sort by join date (earliest first)
+      const aJoinDate = new Date(a.joinDate);
+      const bJoinDate = new Date(b.joinDate);
+      return aJoinDate.getTime() - bJoinDate.getTime();
     });
   }, [employees, searchTerm, selectedPosition, selectedGender, selectedServiceYears]);
 
