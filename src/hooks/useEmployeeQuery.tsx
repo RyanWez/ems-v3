@@ -7,21 +7,21 @@ import { CheckCircle, XCircle } from 'lucide-react';
 
 // Mock initial data
 const initialEmployees: Employee[] = [
-  { id: 1, name: 'SOE MOE HTUN', joinDate: '2021-07-01', position: 'Super', gender: 'Male', dob: '1998-04-21', phone: '09899947118' },
-  { id: 2, name: 'AUNG SWE PHYO', joinDate: '2021-07-01', position: 'Leader', gender: 'Male', dob: '2001-05-24', phone: '09960476738' },
-  { id: 3, name: 'AUNG KHANT', joinDate: '2021-09-21', position: 'Leader', gender: 'Male', dob: '1999-04-17', phone: '09762800400' },
-  { id: 4, name: 'SITHU AUNG', joinDate: '2021-10-28', position: 'Leader', gender: 'Male', dob: '2000-03-14', phone: '09795343868' },
-  { id: 5, name: 'MIN HTET THAR', joinDate: '2022-01-30', position: 'Leader', gender: 'Male', dob: '2004-09-30', phone: '09965324618' },
-  { id: 6, name: 'TIN HTUN WIN', joinDate: '2023-02-26', position: 'Leader', gender: 'Male', dob: '2002-07-13', phone: '09404035278' },
-  { id: 7, name: 'TIN ZAR MAW', joinDate: '2021-07-23', position: 'Account Department', gender: 'Female', dob: '1997-07-12', phone: '09767864112' },
-  { id: 8, name: 'SU PO PO SAN', joinDate: '2021-09-22', position: 'Account Department', gender: 'Female', dob: '1999-01-15', phone: '09767745868' },
-  { id: 9, name: 'TIN THANDAR WIN', joinDate: '2021-09-29', position: 'Account Department', gender: 'Female', dob: '1999-04-17', phone: '09797851643' },
-  { id: 10, name: 'TUE TUE AUNG', joinDate: '2021-10-06', position: 'Account Department', gender: 'Female', dob: '2000-05-12', phone: '0953988106' },
-  { id: 11, name: 'KYAW KYAW', joinDate: '2021-08-15', position: 'Leader', gender: 'Male', dob: '1996-12-08', phone: '09876543210' },
-  { id: 12, name: 'MYA MYA', joinDate: '2021-11-20', position: 'Account Department', gender: 'Female', dob: '1998-03-25', phone: '09712345678' },
-  { id: 13, name: 'ZAW ZAW', joinDate: '2022-02-14', position: 'Leader', gender: 'Male', dob: '1997-09-30', phone: '09987654321' },
-  { id: 14, name: 'HLA HLA', joinDate: '2022-05-10', position: 'Account Department', gender: 'Female', dob: '1999-11-22', phone: '09543219876' },
-  { id: 15, name: 'THAN THAN', joinDate: '2022-08-30', position: 'Leader', gender: 'Male', dob: '1995-06-15', phone: '09811223344' },
+  { id: 1, name: 'SOE MOE HTUN', joinDate: '2021-07-01', position: 'Super', gender: 'Male', dob: '1998-04-21', phone: '09899947118', createdAt: '2021-07-01T00:00:00.000Z', updatedAt: '2021-07-01T00:00:00.000Z' },
+  { id: 2, name: 'AUNG SWE PHYO', joinDate: '2021-07-01', position: 'Leader', gender: 'Male', dob: '2001-05-24', phone: '09960476738', createdAt: '2021-07-01T00:00:00.000Z', updatedAt: '2021-07-01T00:00:00.000Z' },
+  { id: 3, name: 'AUNG KHANT', joinDate: '2021-09-21', position: 'Leader', gender: 'Male', dob: '1999-04-17', phone: '09762800400', createdAt: '2021-09-21T00:00:00.000Z', updatedAt: '2021-09-21T00:00:00.000Z' },
+  { id: 4, name: 'SITHU AUNG', joinDate: '2021-10-28', position: 'Leader', gender: 'Male', dob: '2000-03-14', phone: '09795343868', createdAt: '2021-10-28T00:00:00.000Z', updatedAt: '2021-10-28T00:00:00.000Z' },
+  { id: 5, name: 'MIN HTET THAR', joinDate: '2022-01-30', position: 'Leader', gender: 'Male', dob: '2004-09-30', phone: '09965324618', createdAt: '2022-01-30T00:00:00.000Z', updatedAt: '2022-01-30T00:00:00.000Z' },
+  { id: 6, name: 'TIN HTUN WIN', joinDate: '2023-02-26', position: 'Leader', gender: 'Male', dob: '2002-07-13', phone: '09404035278', createdAt: '2023-02-26T00:00:00.000Z', updatedAt: '2023-02-26T00:00:00.000Z' },
+  { id: 7, name: 'TIN ZAR MAW', joinDate: '2021-07-23', position: 'Account Department', gender: 'Female', dob: '1997-07-12', phone: '09767864112', createdAt: '2021-07-23T00:00:00.000Z', updatedAt: '2021-07-23T00:00:00.000Z' },
+  { id: 8, name: 'SU PO PO SAN', joinDate: '2021-09-22', position: 'Account Department', gender: 'Female', dob: '1999-01-15', phone: '09767745868', createdAt: '2021-09-22T00:00:00.000Z', updatedAt: '2021-09-22T00:00:00.000Z' },
+  { id: 9, name: 'TIN THANDAR WIN', joinDate: '2021-09-29', position: 'Account Department', gender: 'Female', dob: '1999-04-17', phone: '09797851643', createdAt: '2021-09-29T00:00:00.000Z', updatedAt: '2021-09-29T00:00:00.000Z' },
+  { id: 10, name: 'TUE TUE AUNG', joinDate: '2021-10-06', position: 'Account Department', gender: 'Female', dob: '2000-05-12', phone: '0953988106', createdAt: '2021-10-06T00:00:00.000Z', updatedAt: '2021-10-06T00:00:00.000Z' },
+  { id: 11, name: 'KYAW KYAW', joinDate: '2021-08-15', position: 'Leader', gender: 'Male', dob: '1996-12-08', phone: '09876543210', createdAt: '2021-08-15T00:00:00.000Z', updatedAt: '2021-08-15T00:00:00.000Z' },
+  { id: 12, name: 'MYA MYA', joinDate: '2021-11-20', position: 'Account Department', gender: 'Female', dob: '1998-03-25', phone: '09712345678', createdAt: '2021-11-20T00:00:00.000Z', updatedAt: '2021-11-20T00:00:00.000Z' },
+  { id: 13, name: 'ZAW ZAW', joinDate: '2022-02-14', position: 'Leader', gender: 'Male', dob: '1997-09-30', phone: '09987654321', createdAt: '2022-02-14T00:00:00.000Z', updatedAt: '2022-02-14T00:00:00.000Z' },
+  { id: 14, name: 'HLA HLA', joinDate: '2022-05-10', position: 'Account Department', gender: 'Female', dob: '1999-11-22', phone: '09543219876', createdAt: '2022-05-10T00:00:00.000Z', updatedAt: '2022-05-10T00:00:00.000Z' },
+  { id: 15, name: 'THAN THAN', joinDate: '2022-08-30', position: 'Leader', gender: 'Male', dob: '1995-06-15', phone: '09811223344', createdAt: '2022-08-30T00:00:00.000Z', updatedAt: '2022-08-30T00:00:00.000Z' },
 ];
 
 // Query keys
@@ -46,27 +46,34 @@ const employeeApi = {
 
   addEmployee: async (employee: EmployeeFormData): Promise<Employee> => {
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     const employees = await employeeApi.getEmployees();
     const newId = Math.max(...employees.map(emp => emp.id)) + 1;
-    const newEmployee: Employee = { ...employee, id: newId };
-    
+    const now = new Date().toISOString();
+    const newEmployee: Employee = {
+      ...employee,
+      id: newId,
+      createdAt: now,
+      updatedAt: now
+    };
+
     const updatedEmployees = [...employees, newEmployee];
     localStorage.setItem('employees', JSON.stringify(updatedEmployees));
-    
+
     return newEmployee;
   },
 
   updateEmployee: async (employee: Employee): Promise<Employee> => {
     await new Promise(resolve => setTimeout(resolve, 500));
-    
+
     const employees = await employeeApi.getEmployees();
-    const updatedEmployees = employees.map(emp => 
-      emp.id === employee.id ? employee : emp
+    const updatedEmployee = { ...employee, updatedAt: new Date().toISOString() };
+    const updatedEmployees = employees.map(emp =>
+      emp.id === employee.id ? updatedEmployee : emp
     );
-    
+
     localStorage.setItem('employees', JSON.stringify(updatedEmployees));
-    return employee;
+    return updatedEmployee;
   },
 
   deleteEmployee: async (id: number): Promise<void> => {

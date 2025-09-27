@@ -38,7 +38,9 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
     position: 'Leader',
     gender: 'Male',
     dob: '',
-    phone: ''
+    phone: '',
+    createdAt: '',
+    updatedAt: ''
   });
 
   useEffect(() => {
