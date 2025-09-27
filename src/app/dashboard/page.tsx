@@ -1,28 +1,160 @@
+'use client';
 import React from 'react';
+import { Users, Calendar, Building, TrendingUp } from 'lucide-react';
+import { useEmployees } from './employee-management/lists/hooks/useEmployees';
+import { useEmployeeStatistics } from '../../hooks/useEmployeeStatistics';
+import { StatCard } from '../../components/dashboard/StatCard';
+import { ChartCard } from '../../components/dashboard/ChartCard';
+import { RecentJoinersCard } from '../../components/dashboard/RecentJoinersCard';
 
 const Dashboard: React.FC = () => {
-  return (
-    <div className="bg-white p-8 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">Dashboard</h2>
-      <p className="text-gray-600 mb-6">
-        Welcome to your Employee Management System dashboard. Here you can manage employees, track birthdays, and handle leave requests.
-      </p>
+  const { employees } = useEmployees();
+  const statistics = useEmployeeStatistics(employees);
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div className="bg-blue-50 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-blue-800 mb-2">Total Employees</h3>
-          <p className="text-3xl font-bold text-blue-600">150</p>
-        </div>
-        <div className="bg-green-50 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-green-800 mb-2">Today's Birthdays</h3>
-          <p className="text-3xl font-bold text-green-600">3</p>
-        </div>
-        <div className="bg-yellow-50 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-yellow-800 mb-2">Pending Leave Requests</h3>
-          <p className="text-3xl font-bold text-yellow-600">7</p>
-        </div>
+  // Get today's birthdays
+  const today = new Date();
+  const todaysBirthdays = employees.filter(emp => {
+    const birthDate = new Date(emp.dob);
+    return birthDate.getMonth() === today.getMonth() &&
+      birthDate.getDate() === today.getDate();
+  });
+
+  // Department colors
+  const departmentColors = [
+    '#3B82F6', // blue
+    '#10B981', // green
+    '#F59E0B', // yellow
+    '#8B5CF6', // purple
+    '#EF4444', // red
+    '#6366F1', // indigo
+    '#EC4899', // pink
+    '#14B8A6'  // teal
+  ];
+
+  // Gender colors
+  const genderColors = {
+    'Male': '#3B82F6',
+    'Female': '#EC4899'
+  };
+
+  // Age group colors
+  const ageColors = [
+    '#10B981', // green
+    '#3B82F6', // blue
+    '#F59E0B', // yellow
+    '#8B5CF6', // purple
+    '#EF4444'  // red
+  ];
+
+  // Service years colors
+  const serviceColors = [
+    '#6366F1', // indigo
+    '#3B82F6', // blue
+    '#10B981', // green
+    '#F59E0B', // yellow
+    '#EF4444'  // red
+  ];
+
+  const departmentChartData = statistics.departmentBreakdown.map((dept, index) => ({
+    label: dept.department,
+    value: dept.count,
+    percentage: dept.percentage,
+    color: departmentColors[index % departmentColors.length] || '#3B82F6'
+  }));
+
+  const genderChartData = statistics.genderDistribution.map(gender => ({
+    label: gender.gender,
+    value: gender.count,
+    percentage: gender.percentage,
+    color: genderColors[gender.gender as keyof typeof genderColors] || '#6B7280'
+  }));
+
+  const ageChartData = statistics.ageGroups.map((age, index) => ({
+    label: age.ageGroup,
+    value: age.count,
+    percentage: age.percentage,
+    color: ageColors[index % ageColors.length] || '#10B981'
+  }));
+
+  const serviceChartData = statistics.serviceYears.map((service, index) => ({
+    label: service.serviceGroup,
+    value: service.count,
+    percentage: service.percentage,
+    color: serviceColors[index % serviceColors.length] || '#6366F1'
+  }));
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg shadow-sm border border-gray-100 
+                      hover:shadow-md transition-all duration-300 transform hover:scale-[1.01]">
+        <h1 className="text-2xl font-bold text-gray-800 mb-2 animate-fade-in">
+          Employee Dashboard 📊
+        </h1>
+        <p className="text-gray-600 animate-fade-in-delay">
+          Overview and statistics of your employee management system
+        </p>
       </div>
 
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Total Employees"
+          value={statistics.totalEmployees}
+          icon={Users}
+          color="blue"
+        />
+        <StatCard
+          title="Today's Birthdays"
+          value={todaysBirthdays.length}
+          icon={Calendar}
+          color="green"
+          subtitle={todaysBirthdays.length > 0 ? `${todaysBirthdays.map(emp => emp.name).join(', ')}` : 'No birthdays today'}
+        />
+        <StatCard
+          title="Departments"
+          value={statistics.departmentBreakdown.length}
+          icon={Building}
+          color="purple"
+        />
+        <StatCard
+          title="Recent Joiners"
+          value={statistics.recentJoiners.length}
+          icon={TrendingUp}
+          color="indigo"
+          subtitle="Last 6 months"
+        />
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ChartCard
+          title="Department Breakdown"
+          data={departmentChartData}
+          type="bar"
+        />
+        <ChartCard
+          title="Gender Distribution"
+          data={genderChartData}
+          type="pie"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <ChartCard
+          title="Age Demographics"
+          data={ageChartData}
+          type="bar"
+        />
+        <ChartCard
+          title="Service Years"
+          data={serviceChartData}
+          type="bar"
+        />
+      </div>
+
+      {/* Recent Joiners */}
+      <RecentJoinersCard recentJoiners={statistics.recentJoiners} />
     </div>
   );
 };
