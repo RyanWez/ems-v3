@@ -1,11 +1,13 @@
 # 🏢 Employee Management System (EMS)
 
-A modern, secure, and comprehensive employee management system built with Next.js 14, featuring JWT authentication, responsive design, and full CRUD operations. This is a production-ready frontend application with PWA support and enterprise-grade architecture.
+A modern, secure, and comprehensive employee management system built with Next.js 14, featuring JWT authentication, responsive design, full CRUD operations, and complete database integration. This is a production-ready full-stack application with PWA support, SQLite database, and enterprise-grade architecture.
 
 ![Next.js](https://img.shields.io/badge/Next.js-14.2.5-000000?style=flat&logo=nextdotjs)
 ![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=flat&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-3178C6?style=flat&logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.4-38B2AC?style=flat&logo=tailwind-css)
+![SQLite](https://img.shields.io/badge/SQLite-Ready-003B57?style=flat&logo=sqlite)
+![Prisma](https://img.shields.io/badge/Prisma-Ready-2D3748?style=flat&logo=prisma)
 ![PWA](https://img.shields.io/badge/PWA-Ready-5A0FC8?style=flat&logo=pwa)
 
 ## 🌟 Key Features
@@ -30,6 +32,13 @@ A modern, secure, and comprehensive employee management system built with Next.j
 - **Data Validation**: Comprehensive form validation with real-time feedback
 - **Service Year Calculation**: Automatic calculation of employee tenure
 
+### 🎭 **Advanced Role Management**
+- **Complete Role System**: Full CRUD operations for user roles with database persistence
+- **Permission Management**: Granular permission control for different system features
+- **Role-based Access Control**: Protect routes and features based on user roles
+- **Default Roles**: Pre-configured Administrator, Manager, Employee, and Contractor roles
+- **Dynamic User Assignment**: Assign and manage user roles with real-time updates
+
 ### 📱 **Modern User Interface**
 - **Responsive Design**: Fully responsive across all devices and screen sizes
 - **Mobile-First**: Optimized mobile navigation with touch-friendly interactions
@@ -43,6 +52,14 @@ A modern, secure, and comprehensive employee management system built with Next.j
 - **Error Boundaries**: Graceful error handling and user feedback
 - **Toast Notifications**: Real-time user feedback with Sonner
 - **Type Safety**: Full TypeScript integration for better development experience
+
+### 🗄️ **Database Integration**
+- **SQLite Database**: Local SQLite database for development and testing
+- **Prisma ORM**: Type-safe database operations with auto-generated client
+- **Database Seeding**: Automatic creation of default roles and data
+- **API Endpoints**: RESTful API for all CRUD operations
+- **Data Persistence**: All data survives server restarts and page reloads
+- **Migration Support**: Database schema management with Prisma
 
 ## 🚀 Quick Start
 
@@ -75,19 +92,40 @@ A modern, secure, and comprehensive employee management system built with Next.j
     SESSION_SECRET=your-super-secret-jwt-key-change-this-in-production
     NEXTAUTH_URL=http://localhost:9002
 
-    # Database (for future backend integration - Neon PostgreSQL)
-    DATABASE_URL='postgresql://neondb_owner:your_password@your_host.neon.tech/neondb?sslmode=require'
+    # Database (SQLite for development - no additional setup required)
+    # The DATABASE_URL is not needed for SQLite setup
     ```
 
     > **🔒 Security Warning**: Never commit your `.env.local` file to version control. Always use strong, unique credentials for production.
 
-4. **Start Development Server**
+4. **Database Setup**
+    ```bash
+    # Generate Prisma client
+    npm run db:generate
+
+    # Create database and apply schema
+    npm run db:push
+
+    # Seed database with default roles
+    npm run db:seed
+    ```
+
+    > **Note**: The database setup will automatically create:
+    > - SQLite database file (`dev.db`)
+    > - Administrator, Manager, Employee, and Contractor roles
+    > - All necessary database tables and relationships
+
+5. **Start Development Server**
     ```bash
     npm run dev
     ```
 
-5. **Open Application**
+6. **Open Application**
     Navigate to `http://localhost:9002` in your browser
+
+    **Default Login Credentials:**
+    - **Username**: `YOUR_USERNAME` (or your configured ADMIN_USERNAME)
+    - **Password**: `YOUR_PASSWORD` (or your configured ADMIN_PASSWORD)
 
 ## 🐳 Docker Deployment
 
@@ -194,6 +232,9 @@ ems-v3/
 │   └── workbox-*.js          # Workbox files
 ├── 📁 src/
 │   ├── 📁 app/               # Next.js 14 App Router
+│   │   ├── 📁 api/           # API routes (employees, roles)
+│   │   │   ├── employees/    # Employee API endpoints
+│   │   │   └── roles/        # Role management API endpoints
 │   │   ├── 📁 dashboard/     # Dashboard pages
 │   │   ├── 📁 login/         # Authentication pages
 │   │   ├── 📁 globals.css    # Global styles
@@ -215,7 +256,11 @@ ems-v3/
 │   │   └── utils.ts          # Utility functions
 │   └── 📁 services/          # API services
 │       └── api.ts            # API configuration
+├── 📁 prisma/                # Database configuration
+│   ├── schema.prisma         # Database schema and models
+│   └── seed.ts              # Database seeding script
 ├── 📁 .next/                 # Next.js build output (auto-generated)
+├── 📄 dev.db                 # SQLite database (auto-generated)
 ├── 📄 package.json           # Dependencies and scripts
 ├── 📄 next.config.mjs        # Next.js configuration
 ├── 📄 tailwind.config.ts     # Tailwind CSS configuration
@@ -248,6 +293,12 @@ ems-v3/
 - **Workbox** - Service worker and caching strategies
 - **Web App Manifest** - Native app-like experience
 
+### Database & Backend
+- **SQLite** - Embedded database for development and testing
+- **Prisma ORM** - Type-safe database toolkit and query builder
+- **RESTful APIs** - Complete API endpoints for all operations
+- **Database Seeding** - Automated initial data setup
+
 ### Development Tools
 - **ESLint** - Code linting and formatting
 - **PostCSS** - CSS processing
@@ -267,6 +318,12 @@ npm run start
 
 # Lint code
 npm run lint
+
+# Database operations
+npm run db:generate    # Generate Prisma client
+npm run db:push        # Create database and apply schema
+npm run db:seed        # Seed database with default data
+npm run db:setup       # One command to setup everything (generate + push + seed)
 ```
 
 ## 🎯 Core Modules
@@ -286,9 +343,24 @@ npm run lint
 - **Quick Actions**: Direct access to common tasks
 
 ### User Management
-- **Role-based Access**: Different permission levels
-- **User Authentication**: Secure login system
-- **Session Management**: Automatic session handling
+- **Role-based Access**: Different permission levels with database persistence
+- **User Authentication**: Secure login system with JWT tokens
+- **Session Management**: Automatic session handling with refresh logic
+- **Complete Role System**: Full CRUD operations for user roles
+- **Permission Management**: Granular permission control for system features
+- **Default Roles**: Pre-configured Administrator, Manager, Employee, and Contractor roles
+
+### Database Models
+- **User Model**: User accounts with role assignments and authentication
+- **Role Model**: Role definitions with permissions stored as JSON
+- **Employee Model**: Complete employee information with timestamps
+- **Relationships**: Proper foreign key relationships between models
+
+### API Endpoints
+- **Employee API**: Complete CRUD operations for employee management
+- **Role API**: Full role management with permission handling
+- **Error Handling**: Comprehensive error responses and validation
+- **Type Safety**: Full TypeScript integration with generated types
 
 ## 🔐 Authentication Flow
 
@@ -411,7 +483,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🔄 Future Enhancements
 
 ### Planned Features
-- [ ] **Backend API Integration**: Connect to real database with REST API
 - [ ] **Advanced Analytics**: Comprehensive dashboard metrics and reporting
 - [ ] **File Management**: Document upload and management system
 - [ ] **Email Integration**: SMTP email notifications for events
@@ -421,6 +492,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] **Advanced Search**: Full-text search with filters
 - [ ] **Export Features**: PDF/Excel export capabilities
 - [ ] **Bulk Operations**: Enhanced bulk employee operations
+- [ ] **PostgreSQL Migration**: Upgrade from SQLite to PostgreSQL for production
 
 ### Security Enhancements
 - [ ] **Two-Factor Authentication**: 2FA support for enhanced security
