@@ -29,7 +29,10 @@ export const useFilters = (employees: Employee[]) => {
         } else if (selectedServiceYears === '3-5 years') {
           matchesServiceYears = serviceYears.includes('3 Y') || serviceYears.includes('4 Y');
         } else if (selectedServiceYears === 'More than 5 years') {
-          matchesServiceYears = parseInt(serviceYears.split(' Y')[0]) >= 5;
+          const yearsPart = serviceYears.split(' Y')[0];
+          if (yearsPart) {
+            matchesServiceYears = parseInt(yearsPart) >= 5;
+          }
         }
       }
 

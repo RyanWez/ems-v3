@@ -58,6 +58,9 @@ const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         document.body.classList.remove('mobile-menu-open');
       };
     }
+    
+    // Return undefined for server-side rendering
+    return undefined;
   }, [isMobileMenuOpen]);
 
   const handleLogout = async () => {

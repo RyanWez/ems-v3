@@ -9,11 +9,23 @@ export async function middleware(request: NextRequest) {
   // Add CORS headers for all requests
   const response = NextResponse.next();
 
-  // Set CORS headers
-  response.headers.set('Access-Control-Allow-Origin', '*');
+  // Environment-based CORS configuration
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const allowedOrigins = isDevelopment 
+    ? ['http://localhost:3000', 'http://localhost:9002', 'http://127.0.0.1:3000', 'http://127.0.0.1:9002']
+    : [process.env['NEXTAUTH_URL'] || 'https://your-production-domain.com'];
+
+  const origin = request.headers.get('origin');
+  const isAllowedOrigin = !origin || allowedOrigins.includes(origin);
+
+  // Set CORS headers based on environment
+  if (isAllowedOrigin) {
+    response.headers.set('Access-Control-Allow-Origin', origin || allowedOrigins[0]!);
+  }
   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
   response.headers.set('Access-Control-Allow-Credentials', 'true');
+  response.headers.set('Access-Control-Max-Age', '86400'); // 24 hours
 
   // Handle preflight requests
   if (request.method === 'OPTIONS') {

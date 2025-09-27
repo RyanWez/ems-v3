@@ -28,10 +28,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     try {
       const session = await getServerSession();
-      if (session && typeof session.username === 'string') {
+      if (session && typeof session['username'] === 'string') {
         setIsAuthenticated(true);
-        setUser(session.username);
-        setUserRole(session.role as string);
+        setUser(session['username']);
+        setUserRole(session['role'] as string);
       } else {
         setIsAuthenticated(false);
         setUser(null);

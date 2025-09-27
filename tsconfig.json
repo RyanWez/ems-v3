@@ -12,6 +12,17 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    // Enhanced strict mode settings (gradually enable these)
+    "noUncheckedIndexedAccess": true,
+    // "exactOptionalPropertyTypes": true, // Temporarily disabled for build
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "allowUnusedLabels": false,
+    "allowUnreachableCode": false,
+    // Additional type checking
+    "forceConsistentCasingInFileNames": true,
+    "noPropertyAccessFromIndexSignature": true,
     "plugins": [
       {
         "name": "next"

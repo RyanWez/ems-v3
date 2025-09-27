@@ -7,10 +7,10 @@ import Link from 'next/link';
 interface SidebarItemProps {
   item: NavItem;
   isCollapsed: boolean;
-  shouldBeOpen?: boolean;
-  onToggle?: () => void;
-  onNavigate?: (path: string) => void;
-  depth?: number;
+  shouldBeOpen?: boolean | undefined;
+  onToggle?: (() => void) | undefined;
+  onNavigate?: ((path: string) => void) | undefined;
+  depth?: number | undefined;
 }
 
 const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (

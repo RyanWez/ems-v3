@@ -6,8 +6,8 @@ import { redirect } from 'next/navigation';
 
 export async function authenticate(username: string, password: string): Promise<{ error?: string } | undefined> {
   try {
-    const correctUsername = process.env.ADMIN_USERNAME;
-    const correctPassword = process.env.ADMIN_PASSWORD;
+    const correctUsername = process.env['ADMIN_USERNAME'];
+    const correctPassword = process.env['ADMIN_PASSWORD'];
 
     if (!correctUsername || !correctPassword) {
       console.error('Server configuration error: Admin credentials are not set in .env');

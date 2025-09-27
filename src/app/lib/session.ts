@@ -4,7 +4,7 @@ import 'server-only';
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
-const secretKey = process.env.SESSION_SECRET;
+const secretKey = process.env['SESSION_SECRET'];
 const encodedKey = new TextEncoder().encode(secretKey);
 
 export async function encrypt(payload: any) {
@@ -47,12 +47,12 @@ export async function getSession() {
 }
 
 
-export async function updateSession() {
+export async function updateSession(): Promise<void> {
   const session = cookies().get('session')?.value;
   const payload = await decrypt(session);
 
   if (!session || !payload) {
-    return null;
+    return;
   }
 
   const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);

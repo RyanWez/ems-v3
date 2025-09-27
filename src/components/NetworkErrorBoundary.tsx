@@ -37,13 +37,13 @@ class NetworkErrorBoundary extends React.Component<
     throw error;
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('Network Error Boundary caught an error:', error, errorInfo);
 
     // Only handle network errors
     if (error.message.includes('fetch') ||
-        error.message.includes('NetworkError') ||
-        error.message.includes('Failed to fetch')) {
+      error.message.includes('NetworkError') ||
+      error.message.includes('Failed to fetch')) {
       this.setState({ hasError: true, error });
     }
   }
@@ -52,7 +52,7 @@ class NetworkErrorBoundary extends React.Component<
     this.setState({ hasError: false, error: null });
   };
 
-  render() {
+  override render() {
     if (this.state.hasError && this.state.error) {
       if (this.props.fallback) {
         const FallbackComponent = this.props.fallback;

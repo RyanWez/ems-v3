@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/Auth";
 import { Toaster } from "@/components/ui/sonner";
+import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,13 +32,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
-        <Toaster
-          position="top-center"
-          expand={true}
-          richColors={true}
-          duration={4000}
-        />
+        <GlobalErrorBoundary>
+          <AuthProvider>{children}</AuthProvider>
+          <Toaster
+            position="top-center"
+            expand={true}
+            richColors={true}
+            duration={4000}
+          />
+        </GlobalErrorBoundary>
       </body>
     </html>
   );
