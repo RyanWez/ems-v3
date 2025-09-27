@@ -49,10 +49,8 @@ const nextConfig = withPWA({
   productionBrowserSourceMaps: false,
   // Configure webpack to handle source maps better
   webpack: (config, { dev, isServer }) => {
-    if (dev && !isServer) {
-      // Use eval for better development performance while keeping debugging support
-      config.devtool = 'eval';
-    }
+    // Let Next.js handle devtool automatically for better performance
+    // Removed custom devtool override to prevent warning
     return config;
   },
   // Add headers for better development experience
