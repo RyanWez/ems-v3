@@ -25,14 +25,21 @@ const EmployeeBirthday: React.FC = () => {
     <div className="bg-white p-8 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">Employee Birthdays</h2>
       <p className="text-gray-600 mb-6">
-        Track and celebrate employee birthdays. Never miss an important date again!
+        Track and celebrate employee birthdays. Today's birthdays and upcoming birthdays within 15 days are highlighted for easy planning.
       </p>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Today's Birthdays */}
         <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-pink-800 mb-4">🎉 Today's Birthdays</h3>
-          <div className="space-y-3">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-pink-800">🎉 Today's Birthdays</h3>
+            {todayBirthdays.length > 5 && (
+              <span className="text-xs bg-pink-200 text-pink-800 px-2 py-1 rounded-full">
+                {todayBirthdays.length} total
+              </span>
+            )}
+          </div>
+          <div className={`space-y-3 ${todayBirthdays.length > 5 ? 'max-h-80 overflow-y-auto' : ''}`}>
             {todayBirthdays.length > 0 ? (
               todayBirthdays.map((person) => (
                 <div key={person.id} className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm">
@@ -56,8 +63,15 @@ const EmployeeBirthday: React.FC = () => {
 
         {/* Upcoming Birthdays */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg">
-          <h3 className="text-lg font-semibold text-blue-800 mb-4">📅 Upcoming Birthdays</h3>
-          <div className="space-y-3">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-blue-800">📅 Upcoming Birthdays</h3>
+            {upcomingBirthdays.length > 5 && (
+              <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full">
+                {upcomingBirthdays.length} total
+              </span>
+            )}
+          </div>
+          <div className={`space-y-3 ${upcomingBirthdays.length > 5 ? 'max-h-80 overflow-y-auto' : ''}`}>
             {upcomingBirthdays.length > 0 ? (
               upcomingBirthdays.map((person) => (
                 <div key={person.id} className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm">

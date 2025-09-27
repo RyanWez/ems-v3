@@ -30,7 +30,7 @@ export const isTodayBirthday = (dob: string): boolean => {
          birthDate.getDate() === today.getDate();
 };
 
-export const isUpcomingBirthday = (dob: string, daysAhead: number = 30): boolean => {
+export const isUpcomingBirthday = (dob: string, daysAhead: number = 15): boolean => {
   const birthDate = new Date(dob);
   const today = new Date();
   const currentYear = today.getFullYear();
@@ -46,6 +46,7 @@ export const isUpcomingBirthday = (dob: string, daysAhead: number = 30): boolean
   const diffTime = thisYearBirthday.getTime() - today.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   
+  // Return true if birthday is within the next 15 days (excluding today)
   return diffDays > 0 && diffDays <= daysAhead;
 };
 
