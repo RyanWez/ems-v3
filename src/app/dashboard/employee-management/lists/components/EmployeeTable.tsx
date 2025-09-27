@@ -9,13 +9,19 @@ interface EmployeeTableProps {
   onView: (employee: Employee) => void;
   onEdit: (employee: Employee) => void;
   onDelete: (employee: Employee) => void;
+  isUpdating?: boolean;
+  isDeleting?: boolean;
 }
+
+import { InlineSpinner } from '@/components/LoadingSpinner';
 
 export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   employees,
   onView,
   onEdit,
-  onDelete
+  onDelete,
+  isUpdating = false,
+  isDeleting = false
 }) => {
   const [showFullTable, setShowFullTable] = useState(true);
 
@@ -131,22 +137,33 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
                     className={`${showFullTable ? 'p-2' : 'p-1.5'} text-blue-600 hover:bg-blue-50 rounded-lg transition-colors`}
                     onClick={() => onView(employee)}
                     title="View Employee"
+                    disabled={isUpdating || isDeleting}
                   >
                     <Eye size={showFullTable ? 18 : 16} />
                   </button>
                   <button
-                    className={`${showFullTable ? 'p-2' : 'p-1.5'} text-green-600 hover:bg-green-50 rounded-lg transition-colors`}
+                    className={`${showFullTable ? 'p-2' : 'p-1.5'} text-green-600 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                     onClick={() => onEdit(employee)}
                     title="Edit Employee"
+                    disabled={isUpdating || isDeleting}
                   >
-                    <Pencil size={showFullTable ? 18 : 16} />
+                    {isUpdating ? (
+                      <InlineSpinner className="w-4 h-4" />
+                    ) : (
+                      <Pencil size={showFullTable ? 18 : 16} />
+                    )}
                   </button>
                   <button
-                    className={`${showFullTable ? 'p-2' : 'p-1.5'} text-red-600 hover:bg-red-50 rounded-lg transition-colors`}
+                    className={`${showFullTable ? 'p-2' : 'p-1.5'} text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                     onClick={() => onDelete(employee)}
                     title="Delete Employee"
+                    disabled={isUpdating || isDeleting}
                   >
-                    <Trash2 size={showFullTable ? 18 : 16} />
+                    {isDeleting ? (
+                      <InlineSpinner className="w-4 h-4" />
+                    ) : (
+                      <Trash2 size={showFullTable ? 18 : 16} />
+                    )}
                   </button>
                 </div>
               </td>

@@ -6,9 +6,10 @@ import { useEmployeeStatistics } from '../../hooks/useEmployeeStatistics';
 import { StatCard } from '../../components/dashboard/StatCard';
 import { ChartCard } from '../../components/dashboard/ChartCard';
 import { RecentJoinersCard } from '../../components/dashboard/RecentJoinersCard';
+import { LoadingSpinner } from '../../components/LoadingSpinner';
 
 const Dashboard: React.FC = () => {
-  const { employees } = useEmployees();
+  const { employees, isLoading, error } = useEmployees();
   const statistics = useEmployeeStatistics(employees);
 
   // Get today's birthdays
@@ -83,10 +84,55 @@ const Dashboard: React.FC = () => {
     color: serviceColors[index % serviceColors.length] || '#6366F1'
   }));
 
+  // Show loading spinner while data is loading
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg shadow-sm border border-gray-100">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">
+            Employee Dashboard 📊
+          </h1>
+          <p className="text-gray-600">
+            Overview and statistics of your employee management system
+          </p>
+        </div>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <LoadingSpinner
+            size="lg"
+            text="Loading dashboard data..."
+            className="text-blue-600"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if there's an error
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg shadow-sm border border-gray-100">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">
+            Employee Dashboard 📊
+          </h1>
+          <p className="text-gray-600">
+            Overview and statistics of your employee management system
+          </p>
+        </div>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="text-red-500 text-lg mb-2">⚠️ Error Loading Dashboard</div>
+            <p className="text-gray-600">{error.message}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg shadow-sm border border-gray-100 
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg shadow-sm border border-gray-100
                       hover:shadow-md transition-all duration-300 transform hover:scale-[1.01]">
         <h1 className="text-2xl font-bold text-gray-800 mb-2 animate-fade-in">
           Employee Dashboard 📊

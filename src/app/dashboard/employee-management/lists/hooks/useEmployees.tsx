@@ -258,6 +258,10 @@ export const useEmployees = () => {
     editEmployee,
     deleteEmployee,
     isLoading,
-    error
+    error,
+    // Mutation loading states
+    isCreating: createEmployeeMutation.isPending,
+    isUpdating: updateEmployeeMutation.isPending,
+    isDeleting: deleteEmployeeMutation.isPending
   };
 };

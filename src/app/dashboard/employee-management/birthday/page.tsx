@@ -7,9 +7,10 @@ import {
   getBirthdaysByMonth,
   formatMonthlyBirthdayDate
 } from './utils/birthdayUtils';
+import { LoadingSpinner } from '../../../../components/LoadingSpinner';
 
 const EmployeeBirthday: React.FC = () => {
-  const { employees } = useEmployees();
+  const { employees, isLoading, error } = useEmployees();
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResult, setSearchResult] = useState<{ employee: any, month: string, monthIndex: number } | null>(null);
@@ -53,6 +54,47 @@ const EmployeeBirthday: React.FC = () => {
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
+
+  // Show loading spinner while data is loading
+  if (isLoading) {
+    return (
+      <div className="bg-white p-8 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Employee Birthdays</h2>
+        <p className="text-gray-600 mb-6">
+          Track and celebrate employee birthdays. Today's birthdays and upcoming birthdays within 15 days are highlighted for easy planning.
+        </p>
+
+        {/* Loading State */}
+        <div className="flex items-center justify-center min-h-[400px]">
+          <LoadingSpinner
+            size="lg"
+            text="Loading birthday data..."
+            className="text-blue-600"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if there's an error
+  if (error) {
+    return (
+      <div className="bg-white p-8 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Employee Birthdays</h2>
+        <p className="text-gray-600 mb-6">
+          Track and celebrate employee birthdays. Today's birthdays and upcoming birthdays within 15 days are highlighted for easy planning.
+        </p>
+
+        {/* Error State */}
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="text-red-500 text-lg mb-2">⚠️ Error Loading Birthday Data</div>
+            <p className="text-gray-600">{error.message}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg">
