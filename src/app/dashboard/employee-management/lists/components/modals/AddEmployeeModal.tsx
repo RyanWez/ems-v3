@@ -321,7 +321,7 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
           {/* Phone Number */}
           <div>
             <Label htmlFor="add-phone" className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number <span className="text-gray-400">(Optional)</span>
+              Phone Number <span className="text-gray-400"></span>
             </Label>
             <Input
               id="add-phone"
