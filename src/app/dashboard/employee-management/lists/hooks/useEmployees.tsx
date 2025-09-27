@@ -26,8 +26,66 @@ export const useEmployees = () => {
   const [employees, setEmployees] = useState<Employee[]>(initialEmployees);
 
   const addEmployee = (employeeData: EmployeeFormData) => {
-    if (!employeeData.name.trim() || !employeeData.joinDate) {
-      toast.error('Please fill in all required fields (Name and Join Date)', {
+    // Validate required fields
+    if (!employeeData.name.trim()) {
+      toast.error('Please enter employee name', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    if (!employeeData.joinDate || employeeData.joinDate === '' || employeeData.joinDate.split('-').length !== 3) {
+      toast.error('Please select a valid join date', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    if (!employeeData.dob || employeeData.dob === '' || employeeData.dob.split('-').length !== 3) {
+      toast.error('Please select a valid date of birth', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    // Validate date formats
+    const joinDate = new Date(employeeData.joinDate);
+    const dobDate = new Date(employeeData.dob);
+    const currentDate = new Date();
+
+    if (isNaN(joinDate.getTime())) {
+      toast.error('Please select a valid join date', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    if (isNaN(dobDate.getTime())) {
+      toast.error('Please select a valid date of birth', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    // Validate logical dates
+    if (dobDate >= currentDate) {
+      toast.error('Date of birth cannot be in the future', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    if (joinDate > currentDate) {
+      toast.error('Join date cannot be in the future', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    // Calculate age at join date
+    const ageAtJoin = joinDate.getFullYear() - dobDate.getFullYear();
+    if (ageAtJoin < 16) {
+      toast.error('Employee must be at least 16 years old at join date', {
         icon: <XCircle className="w-5 h-5" />,
       });
       return false;
@@ -47,8 +105,66 @@ export const useEmployees = () => {
   };
 
   const editEmployee = (updatedEmployee: Employee) => {
-    if (!updatedEmployee.name.trim() || !updatedEmployee.joinDate) {
-      toast.error('Please fill in all required fields (Name and Join Date)', {
+    // Validate required fields
+    if (!updatedEmployee.name.trim()) {
+      toast.error('Please enter employee name', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    if (!updatedEmployee.joinDate || updatedEmployee.joinDate === '' || updatedEmployee.joinDate.split('-').length !== 3) {
+      toast.error('Please select a valid join date', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    if (!updatedEmployee.dob || updatedEmployee.dob === '' || updatedEmployee.dob.split('-').length !== 3) {
+      toast.error('Please select a valid date of birth', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    // Validate date formats
+    const joinDate = new Date(updatedEmployee.joinDate);
+    const dobDate = new Date(updatedEmployee.dob);
+    const currentDate = new Date();
+
+    if (isNaN(joinDate.getTime())) {
+      toast.error('Please select a valid join date', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    if (isNaN(dobDate.getTime())) {
+      toast.error('Please select a valid date of birth', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    // Validate logical dates
+    if (dobDate >= currentDate) {
+      toast.error('Date of birth cannot be in the future', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    if (joinDate > currentDate) {
+      toast.error('Join date cannot be in the future', {
+        icon: <XCircle className="w-5 h-5" />,
+      });
+      return false;
+    }
+
+    // Calculate age at join date
+    const ageAtJoin = joinDate.getFullYear() - dobDate.getFullYear();
+    if (ageAtJoin < 16) {
+      toast.error('Employee must be at least 16 years old at join date', {
         icon: <XCircle className="w-5 h-5" />,
       });
       return false;

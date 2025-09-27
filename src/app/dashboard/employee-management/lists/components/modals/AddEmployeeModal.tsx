@@ -29,12 +29,27 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   onClose,
   onSave
 }) => {
+  // Get current date for default values
+  const getCurrentDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const getDefaultBirthDate = () => {
+    const now = new Date();
+    const year = now.getFullYear() - 25; // Default to 25 years old
+    return `${year}-01-01`;
+  };
+
   const [addForm, setAddForm] = useState<EmployeeFormData>({
     name: '',
-    joinDate: '',
+    joinDate: getCurrentDate(),
     position: 'Leader',
     gender: 'Male',
-    dob: '',
+    dob: getDefaultBirthDate(),
     phone: ''
   });
 
@@ -49,13 +64,13 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
     const success = onSave(addForm);
     if (success) {
       onClose();
-      // Reset form
+      // Reset form with default dates
       setAddForm({
         name: '',
-        joinDate: '',
+        joinDate: getCurrentDate(),
         position: 'Leader',
         gender: 'Male',
-        dob: '',
+        dob: getDefaultBirthDate(),
         phone: ''
       });
     }
@@ -63,13 +78,13 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
 
   const handleCancel = () => {
     onClose();
-    // Reset form
+    // Reset form with default dates
     setAddForm({
       name: '',
-      joinDate: '',
+      joinDate: getCurrentDate(),
       position: 'Leader',
       gender: 'Male',
-      dob: '',
+      dob: getDefaultBirthDate(),
       phone: ''
     });
   };
@@ -109,10 +124,12 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
               </Label>
               <div className="flex gap-1 sm:gap-2">
                 <Select
-                  value={addForm.joinDate.split('-')[0] || '2024'}
+                  value={addForm.joinDate.split('-')[0] || new Date().getFullYear().toString()}
                   onValueChange={(year) => {
                     const [, month, day] = addForm.joinDate.split('-');
-                    handleFormChange('joinDate', `${year}-${month || '01'}-${day || '01'}`);
+                    const currentMonth = month || String(new Date().getMonth() + 1).padStart(2, '0');
+                    const currentDay = day || String(new Date().getDate()).padStart(2, '0');
+                    handleFormChange('joinDate', `${year}-${currentMonth}-${currentDay}`);
                   }}
                 >
                   <SelectTrigger className="w-20 sm:w-24">
@@ -139,7 +156,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                       'May': '05', 'June': '06', 'July': '07', 'August': '08',
                       'September': '09', 'October': '10', 'November': '11', 'December': '12'
                     };
-                    handleFormChange('joinDate', `${year || '2024'}-${monthMap[month] || '01'}-${day || '01'}`);
+                    const currentYear = year || new Date().getFullYear().toString();
+                    const currentDay = day || String(new Date().getDate()).padStart(2, '0');
+                    handleFormChange('joinDate', `${currentYear}-${monthMap[month] || '01'}-${currentDay}`);
                   }}
                 >
                   <SelectTrigger className="w-28 sm:w-32">
@@ -160,7 +179,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   })()}
                   onValueChange={(day) => {
                     const [year, month] = addForm.joinDate.split('-');
-                    handleFormChange('joinDate', `${year || '2024'}-${month || '01'}-${day.padStart(2, '0')}`);
+                    const currentYear = year || new Date().getFullYear().toString();
+                    const currentMonth = month || String(new Date().getMonth() + 1).padStart(2, '0');
+                    handleFormChange('joinDate', `${currentYear}-${currentMonth}-${day.padStart(2, '0')}`);
                   }}
                 >
                   <SelectTrigger className="w-14 sm:w-16">
@@ -222,10 +243,12 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
               </Label>
               <div className="flex gap-1 sm:gap-2">
                 <Select
-                  value={addForm.dob.split('-')[0] || '2000'}
+                  value={addForm.dob.split('-')[0] || (new Date().getFullYear() - 25).toString()}
                   onValueChange={(year) => {
                     const [, month, day] = addForm.dob.split('-');
-                    handleFormChange('dob', `${year}-${month || '01'}-${day || '01'}`);
+                    const currentMonth = month || '01';
+                    const currentDay = day || '01';
+                    handleFormChange('dob', `${year}-${currentMonth}-${currentDay}`);
                   }}
                 >
                   <SelectTrigger className="w-20 sm:w-24">
@@ -252,7 +275,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                       'May': '05', 'June': '06', 'July': '07', 'August': '08',
                       'September': '09', 'October': '10', 'November': '11', 'December': '12'
                     };
-                    handleFormChange('dob', `${year || '2000'}-${monthMap[month] || '01'}-${day || '01'}`);
+                    const currentYear = year || (new Date().getFullYear() - 25).toString();
+                    const currentDay = day || '01';
+                    handleFormChange('dob', `${currentYear}-${monthMap[month] || '01'}-${currentDay}`);
                   }}
                 >
                   <SelectTrigger className="w-28 sm:w-32">
@@ -273,7 +298,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   })()}
                   onValueChange={(day) => {
                     const [year, month] = addForm.dob.split('-');
-                    handleFormChange('dob', `${year || '2000'}-${month || '01'}-${day.padStart(2, '0')}`);
+                    const currentYear = year || (new Date().getFullYear() - 25).toString();
+                    const currentMonth = month || '01';
+                    handleFormChange('dob', `${currentYear}-${currentMonth}-${day.padStart(2, '0')}`);
                   }}
                 >
                   <SelectTrigger className="w-14 sm:w-16">
