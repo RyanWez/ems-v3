@@ -31,6 +31,10 @@ dist-ssr
 .DS_Store
 .next
 .idx
+
+# Service Worker files (auto-generated)
+public/sw.js
+public/workbox-*.js
 *.suo
 *.ntvs*
 *.njsproj
