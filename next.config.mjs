@@ -1,6 +1,24 @@
 /** @type {import('next').NextConfig} */
 import withPWA from "@ducanh2912/next-pwa";
 
+// Vercel Database Setup
+const setupDatabase = () => {
+  if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+    try {
+      const { execSync } = require('child_process');
+      console.log('🔄 Setting up database for Vercel deployment...');
+      execSync('npx prisma db push', {
+        stdio: 'inherit',
+        env: { ...process.env, DATABASE_URL: process.env.DATABASE_URL }
+      });
+      console.log('✅ Database setup completed');
+    } catch (error) {
+      console.error('❌ Database setup failed:', error);
+      // Don't fail the build, just log the error
+    }
+  }
+};
+
 const nextConfig = withPWA({
   dest: "public",
   register: true,
@@ -35,6 +53,11 @@ const nextConfig = withPWA({
   ],
 })({
   // your next.js config
+  // Vercel database setup during build
+  generateBuildId: async () => {
+    setupDatabase();
+    return 'build-id-' + Date.now();
+  },
   experimental: {
     // Handle missing chunks gracefully
     missingSuspenseWithCSRBailout: false,
