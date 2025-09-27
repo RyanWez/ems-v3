@@ -50,6 +50,7 @@ export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
           <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-3 sm:space-y-0 sm:space-x-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
             <div className="flex-shrink-0">
               <div className="relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={generateAvatarUrl(employee.name, employee.gender, employee.position)}
                   alt={`${employee.name} avatar`}
