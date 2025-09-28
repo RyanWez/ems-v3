@@ -7,7 +7,6 @@ const prisma = new PrismaClient();
 export async function GET() {
   try {
     const roles = await prisma.role.findMany({
-      orderBy: { createdAt: 'desc' },
       include: {
         _count: {
           select: { users: true }
@@ -15,8 +14,18 @@ export async function GET() {
       }
     });
 
+    // Custom sorting: Administrator (ID 1) first, then rest by creation date (oldest first for chronological order)
+    const sortedRoles = roles.sort((a, b) => {
+      // If role A is Administrator (ID 1), it comes first
+      if (a.id === 1) return -1;
+      // If role B is Administrator (ID 1), it comes first
+      if (b.id === 1) return 1;
+      // For other roles, sort by creation date (oldest first so new roles go to bottom)
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    });
+
     // Transform the data to match the expected format
-    const transformedRoles = roles.map(role => ({
+    const transformedRoles = sortedRoles.map(role => ({
       id: role.id,
       name: role.name,
       description: role.description,
