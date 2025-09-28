@@ -166,14 +166,14 @@ const UserRoles: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-500 to-purple-500 px-4 sm:px-6 py-3 sm:py-4">
+        <div className="bg-[#DCFCE7] px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <div className="bg-white bg-opacity-20 p-1.5 sm:p-2 rounded-lg">
-                <UserRoleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+              <div className="bg-white p-1.5 sm:p-2 rounded-lg shadow-sm">
+                <UserRoleIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-800" />
               </div>
-              <h3 className="text-lg sm:text-xl font-semibold text-white">Role Management</h3>
-              <span className="bg-white bg-opacity-20 text-white text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Role Management</h3>
+              <span className="bg-white text-gray-900 text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-full shadow-sm font-medium">
                 {roles.length} roles
               </span>
             </div>
