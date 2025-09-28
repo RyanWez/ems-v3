@@ -8,6 +8,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   user: string | null;
   userRole: string | null;
+  permissions: any | null;
   isLoading: boolean;
   revalidate: () => Promise<void>;
 }
@@ -22,6 +23,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [permissions, setPermissions] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const validateSession = useCallback(async (retryCount = 0) => {
@@ -32,10 +34,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsAuthenticated(true);
         setUser(session['username']);
         setUserRole(session['role'] as string);
+        setPermissions(session['permissions'] || null);
       } else {
         setIsAuthenticated(false);
         setUser(null);
         setUserRole(null);
+        setPermissions(null);
       }
     } catch (e) {
       console.error('Session validation error:', e);
@@ -50,6 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setIsAuthenticated(false);
       setUser(null);
       setUserRole(null);
+      setPermissions(null);
     } finally {
       setIsLoading(false);
     }
@@ -63,6 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated,
     user,
     userRole,
+    permissions,
     isLoading,
     revalidate: validateSession,
   };

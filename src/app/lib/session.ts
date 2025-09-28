@@ -27,7 +27,7 @@ export async function decrypt(session: string | undefined = '') {
   }
 }
 
-export async function createSession(data: { username: string, role: string }) {
+export async function createSession(data: { username: string, role: string, userId?: number, permissions?: any }) {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const session = await encrypt({ ...data, expiresAt });
 
