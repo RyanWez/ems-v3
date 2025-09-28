@@ -1,10 +1,11 @@
 
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { menuItems } from '../../constants';
 import SidebarItem from './SidebarItem';
 import type { NavItem } from '../../types';
+import { useAuth } from '../../Auth';
 
 const CloseIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
@@ -32,7 +33,45 @@ const Sidebar: React.FC<SidebarProps> = ({
   onMobileClose
 }) => {
   const pathname = usePathname();
+  const { permissions, userRole } = useAuth();
   const [manuallyExpandedDropdowns, setManuallyExpandedDropdowns] = useState<Set<string>>(new Set());
+
+  // Filter menu items based on permissions
+  const filteredMenuItems = useMemo(() => {
+    return menuItems.filter(item => {
+      // Always show dashboard
+      if (item.path === '/dashboard') return true;
+
+      // Check permissions for user management
+      if (item.path === '/dashboard/user-management') {
+        return permissions?.userManagement?.view || userRole === 'Administrator';
+      }
+
+      // Check permissions for employee management
+      if (item.path === '/dashboard/employee-management') {
+        return permissions?.employeeManagement?.view || userRole === 'Administrator';
+      }
+
+      // Filter children of parent items
+      if (item.children) {
+        const filteredChildren = item.children.filter(child => {
+          if (child.path.includes('user-management')) {
+            return permissions?.userManagement?.view || userRole === 'Administrator';
+          }
+          if (child.path.includes('employee-management')) {
+            return permissions?.employeeManagement?.view || userRole === 'Administrator';
+          }
+          return true;
+        });
+
+        // Only show parent if it has children or if user has access to the main section
+        item.children = filteredChildren;
+        return filteredChildren.length > 0;
+      }
+
+      return true;
+    });
+  }, [permissions, userRole]);
 
   const handleBackdropClick = () => {
     if (onMobileClose) {
@@ -64,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
   
   const handleNavigation = (path: string) => {
-    const newParent = menuItems.find(item =>
+    const newParent = filteredMenuItems.find(item =>
       item.children?.some(child => path.startsWith(child.path))
     );
 
@@ -119,7 +158,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
        <nav className={`flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar ${isMobileOpen ? 'mobile-sidebar-content' : ''}`}>
          <ul>
-           {menuItems.map((item: NavItem) => (
+           {filteredMenuItems.map((item: NavItem) => (
              <SidebarItem
                key={item.path}
                item={item}

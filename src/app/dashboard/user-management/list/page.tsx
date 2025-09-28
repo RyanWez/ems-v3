@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from '@/Auth';
 
 interface User {
   id: number;
@@ -24,6 +25,7 @@ interface User {
 }
 
 const UserList: React.FC = () => {
+  const { permissions, userRole } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [roles, setRoles] = useState<{ id: number; name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -43,11 +45,27 @@ const UserList: React.FC = () => {
   });
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
 
+  // Permission checking functions
+  const canViewUsers = permissions?.userManagement?.view || userRole === 'Administrator';
+  const canCreateUsers = permissions?.userManagement?.create || userRole === 'Administrator';
+  const canEditUsers = permissions?.userManagement?.edit || userRole === 'Administrator';
+  const canDeleteUsers = permissions?.userManagement?.delete || userRole === 'Administrator';
+
+  // Redirect if no view permission
+  useEffect(() => {
+    if (!canViewUsers) {
+      toast.error('You do not have permission to view user management');
+      // Could redirect to dashboard or show error
+    }
+  }, [canViewUsers]);
+
   // Fetch users and roles from API
   useEffect(() => {
-    fetchUsers();
-    fetchRoles();
-  }, []);
+    if (canViewUsers) {
+      fetchUsers();
+      fetchRoles();
+    }
+  }, [canViewUsers]);
 
   const fetchUsers = async () => {
     try {
@@ -153,6 +171,11 @@ const UserList: React.FC = () => {
   };
 
   const editUser = (id: number) => {
+    if (!canEditUsers) {
+      toast.error('You do not have permission to edit users!');
+      return;
+    }
+
     const user = users.find(u => u.id === id);
     if (user?.displayName === 'Admin') {
       toast.error('Cannot edit Admin user!');
@@ -172,6 +195,11 @@ const UserList: React.FC = () => {
   };
 
   const deleteUser = (id: number) => {
+    if (!canDeleteUsers) {
+      toast.error('You do not have permission to delete users!');
+      return;
+    }
+
     const user = users.find(u => u.id === id);
     if (user?.displayName === 'Admin') {
       toast.warning('Cannot delete Admin user!');
@@ -291,6 +319,17 @@ const UserList: React.FC = () => {
     }
   };
 
+  if (!canViewUsers) {
+    return (
+      <div className="bg-gradient-to-br from-red-50 to-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg border border-gray-200">
+        <div className="text-center py-8">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
+          <p className="text-gray-600">You do not have permission to view user management.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-gradient-to-br from-green-50 to-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg border border-gray-200" style={{backgroundColor: '#DCFCE7'}}>
       <div className="mb-6 sm:mb-8">
@@ -314,16 +353,18 @@ const UserList: React.FC = () => {
                 {users.length} users
               </span>
             </div>
-            <button
-              className="bg-white text-blue-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-gray-50 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2 w-full sm:w-auto justify-center sm:justify-start"
-              onClick={addUser}
-              disabled={isLoading}
-            >
-              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-              <span className="text-sm sm:text-base">{isLoading ? 'Adding...' : 'Add New User'}</span>
-            </button>
+            {canCreateUsers && (
+              <button
+                className="bg-white text-blue-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-gray-50 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2 w-full sm:w-auto justify-center sm:justify-start"
+                onClick={addUser}
+                disabled={isLoading}
+              >
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                <span className="text-sm sm:text-base">{isLoading ? 'Adding...' : 'Add New User'}</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -361,28 +402,32 @@ const UserList: React.FC = () => {
                   </td>
                   <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-center text-sm font-medium">
                     <div className="flex justify-center space-x-1 sm:space-x-2">
-                      <button
-                        className={`px-2 sm:px-3 py-1 sm:py-2 rounded-md text-xs font-medium transition-all duration-200 ${
-                          user.displayName === 'Admin'
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700'
-                        }`}
-                        onClick={() => editUser(user.id)}
-                        disabled={user.displayName === 'Admin' || isLoading}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className={`px-2 sm:px-3 py-1 sm:py-2 rounded-md text-xs font-medium transition-all duration-200 ${
-                          user.displayName === 'Admin'
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700'
-                        }`}
-                        onClick={() => deleteUser(user.id)}
-                        disabled={user.displayName === 'Admin' || isLoading}
-                      >
-                        Delete
-                      </button>
+                      {canEditUsers && (
+                        <button
+                          className={`px-2 sm:px-3 py-1 sm:py-2 rounded-md text-xs font-medium transition-all duration-200 ${
+                            user.displayName === 'Admin'
+                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                              : 'bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700'
+                          }`}
+                          onClick={() => editUser(user.id)}
+                          disabled={user.displayName === 'Admin' || isLoading}
+                        >
+                          Edit
+                        </button>
+                      )}
+                      {canDeleteUsers && (
+                        <button
+                          className={`px-2 sm:px-3 py-1 sm:py-2 rounded-md text-xs font-medium transition-all duration-200 ${
+                            user.displayName === 'Admin'
+                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                              : 'bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700'
+                          }`}
+                          onClick={() => deleteUser(user.id)}
+                          disabled={user.displayName === 'Admin' || isLoading}
+                        >
+                          Delete
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

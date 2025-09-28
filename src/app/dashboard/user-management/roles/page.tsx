@@ -8,9 +8,15 @@ import EditRoleModal from './components/EditRoleModal';
 import DeleteRoleModal from './components/DeleteRoleModal';
 import { useRoles } from './hooks/useRoles';
 import { UserRole, RolePermissions } from './types/permissions';
+import { useAuth } from '@/Auth';
 
 const UserRoles: React.FC = () => {
+  const { permissions, userRole } = useAuth();
   const { roles, isLoading, error, createRole, updateRole, deleteRole, updateRolePermissions } = useRoles();
+
+  // Permission checking
+  const canManageRoles = permissions?.userManagement?.manageRoles || userRole === 'Administrator';
+  const canManagePermissions = permissions?.userManagement?.managePermissions || userRole === 'Administrator';
 
   const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
@@ -107,6 +113,11 @@ const UserRoles: React.FC = () => {
   };
 
   const openEditModal = (id: number) => {
+    if (!canManageRoles) {
+      toast.error('You do not have permission to edit roles!');
+      return;
+    }
+
     const role = roles.find(r => r.id === id);
     if (role?.name === 'Administrator') {
       toast.error('Cannot edit Administrator role!');
@@ -117,6 +128,11 @@ const UserRoles: React.FC = () => {
   };
 
   const openDeleteModal = (id: number) => {
+    if (!canManageRoles) {
+      toast.error('You do not have permission to delete roles!');
+      return;
+    }
+
     const role = roles.find(r => r.id === id);
     if (role?.name === 'Administrator') {
       toast.warning('Cannot delete Administrator role!');
@@ -129,6 +145,18 @@ const UserRoles: React.FC = () => {
   const getStatusColor = (status: string) => {
     return status === 'Active' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200';
   };
+
+  // Check permissions
+  if (!canManageRoles) {
+    return (
+      <div className="bg-gradient-to-br from-red-50 to-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg border border-gray-200">
+        <div className="text-center py-8">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
+          <p className="text-gray-600">You do not have permission to manage user roles.</p>
+        </div>
+      </div>
+    );
+  }
 
   // Show loading spinner while fetching initial data
   if (isLoading && roles.length === 0) {
@@ -180,7 +208,7 @@ const UserRoles: React.FC = () => {
             <button
               className="bg-white text-blue-600 px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:bg-gray-50 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center space-x-2 w-full sm:w-auto justify-center sm:justify-start"
               onClick={openAddModal}
-              disabled={isLoading}
+              disabled={isLoading || !canManageRoles}
             >
               <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
@@ -246,17 +274,19 @@ const UserRoles: React.FC = () => {
                           'Edit'
                         )}
                       </button>
-                      <button
-                        className={`px-2 sm:px-3 py-1 sm:py-2 rounded-md text-xs font-medium transition-all duration-200 ${
-                          role.name === 'Administrator'
-                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                            : 'bg-green-500 text-white hover:bg-green-600 shadow-md hover:shadow-lg'
-                        }`}
-                        onClick={() => managePermissions(role.id)}
-                        disabled={role.name === 'Administrator' || isLoading}
-                      >
-                        Permissions
-                      </button>
+                      {canManagePermissions && (
+                        <button
+                          className={`px-2 sm:px-3 py-1 sm:py-2 rounded-md text-xs font-medium transition-all duration-200 ${
+                            role.name === 'Administrator'
+                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                              : 'bg-green-500 text-white hover:bg-green-600 shadow-md hover:shadow-lg'
+                          }`}
+                          onClick={() => managePermissions(role.id)}
+                          disabled={role.name === 'Administrator' || isLoading}
+                        >
+                          Permissions
+                        </button>
+                      )}
                       <button
                         className={`px-2 sm:px-3 py-1 sm:py-2 rounded-md text-xs font-medium transition-all duration-200 ${
                           role.name === 'Administrator'
