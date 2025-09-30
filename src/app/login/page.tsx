@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authenticate } from '@/app/lib/actions';
 import { useAuth } from '@/Auth';
+import { toast } from 'sonner';
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -13,7 +14,6 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [formErrors, setFormErrors] = useState<{username?: string; password?: string}>({});
   const [touched, setTouched] = useState<{username: boolean; password: boolean}>({
     username: false,
@@ -43,7 +43,6 @@ const Login: React.FC = () => {
     e.preventDefault();
     
     setTouched({ username: true, password: true });
-    setError(null);
 
     if (!validateForm()) {
       return;
@@ -55,13 +54,14 @@ const Login: React.FC = () => {
         const result = await authenticate(username, password);
 
         if (result?.error) {
-            setError(result.error);
+            toast.error(result.error);
         } else {
+           toast.success('Login successful!');
            await revalidate();
            router.push('/dashboard');
         }
     } catch (e) {
-        setError('An unexpected error occurred. Please try again.');
+        toast.error('An unexpected error occurred. Please try again.');
     } finally {
         setIsLoading(false);
     }
@@ -74,7 +74,6 @@ const Login: React.FC = () => {
       setPassword(value);
     }
 
-    if (error) setError(null);
     if (formErrors[field] && touched[field]) {
       setFormErrors(prev => ({ ...prev, [field]: undefined }));
     }
@@ -162,17 +161,6 @@ const Login: React.FC = () => {
                   )}
                 </div>
               </div>
-
-              {error && (
-                <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl">
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {error}
-                  </div>
-                </div>
-              )}
 
               <button
                 type="submit"
