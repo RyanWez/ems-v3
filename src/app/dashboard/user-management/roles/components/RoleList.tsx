@@ -7,9 +7,9 @@ interface RoleListProps {
   roles: UserRole[];
   isLoading: boolean;
   canManagePermissions: boolean;
-  onEdit: (id: number) => void;
-  onDelete: (id: number) => void;
-  onManagePermissions: (id: number) => void;
+  onEdit: (role: UserRole) => void;
+  onDelete: (role: UserRole) => void;
+  onManagePermissions: (role: UserRole) => void;
 }
 
 export const RoleList: React.FC<RoleListProps> = ({
@@ -69,7 +69,7 @@ export const RoleList: React.FC<RoleListProps> = ({
                           ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                           : 'bg-blue-500 text-white hover:bg-blue-600 shadow-md hover:shadow-lg'
                       }`}
-                      onClick={() => onEdit(role.id)}
+                      onClick={() => onEdit(role)}
                       disabled={role.name === 'Administrator' || isLoading}
                     >
                       Edit
@@ -81,7 +81,7 @@ export const RoleList: React.FC<RoleListProps> = ({
                             ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                             : 'bg-green-500 text-white hover:bg-green-600 shadow-md hover:shadow-lg'
                         }`}
-                        onClick={() => onManagePermissions(role.id)}
+                        onClick={() => onManagePermissions(role)}
                         disabled={role.name === 'Administrator' || isLoading}
                       >
                         Permissions
@@ -93,7 +93,7 @@ export const RoleList: React.FC<RoleListProps> = ({
                           ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                           : 'bg-red-500 text-white hover:bg-red-600 shadow-md hover:shadow-lg'
                       }`}
-                      onClick={() => onDelete(role.id)}
+                      onClick={() => onDelete(role)}
                       disabled={role.name === 'Administrator' || isLoading}
                     >
                       Delete

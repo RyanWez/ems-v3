@@ -30,23 +30,15 @@ const UserRolesPage: React.FC = () => {
   const [modalState, setModalState] = useState<ModalState>({ type: 'closed' });
 
   // Permission checking
-  const canManageRoles = permissions?.userManagement?.manageRoles || userRole === 'Administrator';
-  const canManagePermissions = permissions?.userManagement?.managePermissions || userRole === 'Administrator';
+  // For the new granular permissions, we check the specific permission for managing roles
+  const canManageRoles = permissions?.userManagement?.roles?.manage || userRole === 'Administrator';
 
   // --- Data Handlers ---
-  const handleAddRole = async (data: { name: string; description: string }) => {
-    // Default permissions for a new role
-    const defaultPermissions: RolePermissions = {
-      dashboard: { view: true, viewAnalytics: false, viewReports: false },
-      employeeManagement: { view: true, create: false, edit: false, delete: false, viewDetails: false, manageLeave: false, viewBirthday: false },
-      userManagement: { view: false, create: false, edit: false, delete: false, manageRoles: false, managePermissions: false },
-    };
-
+  const handleAddRole = async (data: { name: string; description: string; permissions: RolePermissions }) => {
     await createRole({ 
       name: data.name, 
       description: data.description, 
-      permissions: defaultPermissions, 
-      color: 'gray' 
+      permissions: data.permissions,
     });
   };
 
@@ -65,47 +57,34 @@ const UserRolesPage: React.FC = () => {
   };
 
   // --- Modal Triggers ---
-  const openEditModal = (id: number) => {
+  const openEditModal = (role: UserRole) => {
     if (!canManageRoles) {
       toast.error('You do not have permission to edit roles!');
       return;
     }
-    const role = roles.find(r => r.id === id);
-    if (role) {
-      if (role.name === 'Administrator') {
-        toast.error('Cannot edit Administrator role!');
-        return;
-      }
-      setModalState({ type: 'edit', data: role });
+    if (role.name === 'Administrator') {
+      toast.error('Cannot edit Administrator role!');
+      return;
     }
+    setModalState({ type: 'edit', data: role });
   };
 
-  const openDeleteModal = (id: number) => {
+  const openDeleteModal = (role: UserRole) => {
     if (!canManageRoles) {
       toast.error('You do not have permission to delete roles!');
       return;
     }
-    const role = roles.find(r => r.id === id);
-    if (role) {
-      if (role.name === 'Administrator') {
-        toast.warning('Cannot delete Administrator role!');
-        return;
-      }
-      setModalState({ type: 'delete', data: role });
+    if (role.name === 'Administrator') {
+      toast.warning('Cannot delete Administrator role!');
+      return;
     }
-  };
-
-  const openPermissionsModal = (id: number) => {
-    const role = roles.find(r => r.id === id);
-    if (role) {
-      setModalState({ type: 'permissions', data: role });
-    }
+    setModalState({ type: 'delete', data: role });
   };
 
   // --- Render Logic ---
   if (!canManageRoles) {
     return (
-      <div className="bg-gradient-to-br from-red-50 to-white p-8 rounded-xl shadow-lg border">
+      <div className="bg-white p-8 rounded-xl shadow-lg border">
         <div className="text-center py-8">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
           <p className="text-gray-600">You do not have permission to manage user roles.</p>
@@ -114,27 +93,16 @@ const UserRolesPage: React.FC = () => {
     );
   }
 
-  if (isLoading && roles.length === 0) {
-    return (
-      <div className="bg-white p-8 rounded-xl shadow-lg border">
-        <div className="flex items-center justify-center min-h-[400px]">
-            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-            <p className="text-gray-600 ml-4">Loading roles...</p>
-        </div>
-      </div>
-    );
+  if (isLoading && !roles.length) {
+    return <div>Loading...</div>; // Replace with a proper skeleton loader if desired
   }
 
   return (
     <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg border border-gray-200">
       <div className="mb-6">
         <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">User Roles</h2>
-        <p className="text-gray-600 text-lg">Manage user roles and permissions for system access control.</p>
-        {error && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
-            Error: {error}
-          </div>
-        )}
+        <p className="text-gray-600 text-lg">Manage user roles and their permissions for system access control.</p>
+        {error && <div className="mt-4 p-3 bg-red-50 text-red-800 rounded-lg">Error: {error}</div>}
       </div>
 
       <div className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden">
@@ -147,10 +115,10 @@ const UserRolesPage: React.FC = () => {
         <RoleList
           roles={roles}
           isLoading={isLoading}
-          canManagePermissions={canManagePermissions}
+          canManagePermissions={canManageRoles}
           onEdit={openEditModal}
           onDelete={openDeleteModal}
-          onManagePermissions={openPermissionsModal}
+          onManagePermissions={(role) => setModalState({ type: 'permissions', data: role })}
         />
       </div>
 
@@ -183,6 +151,7 @@ const UserRolesPage: React.FC = () => {
         onClose={() => setModalState({ type: 'closed' })}
         role={modalState.type === 'permissions' ? modalState.data : null}
         onSave={handlePermissionsSave}
+        isLoading={isLoading}
       />
     </div>
   );
