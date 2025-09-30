@@ -31,7 +31,10 @@ export const PermissionEditor: React.FC<PermissionEditorProps> = ({
   };
 
   const getSubModuleCheckedState = (module: keyof RolePermissions, subModule: string): 'all' | 'some' | 'none' => {
-    const subModulePermissions = permissions[module][subModule];
+    const subModulePermissions = permissions[module]?.[subModule];
+    if (!subModulePermissions || typeof subModulePermissions !== 'object') {
+      return 'none';
+    }
     const permissionKeys = Object.keys(subModulePermissions);
     const checkedCount = permissionKeys.filter(key => subModulePermissions[key]).length;
 
