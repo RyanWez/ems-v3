@@ -17,17 +17,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EmployeeFormData } from '../../types/employee';
+import { RolePermissions } from '@/app/dashboard/user-management/roles/types/permissions';
+import { canViewField } from '../../utils/permissionHelpers';
 
 interface AddEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (employee: EmployeeFormData) => boolean;
+  permissions?: RolePermissions | null;
+  userRole?: string | null;
 }
 
 export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
   isOpen,
   onClose,
-  onSave
+  onSave,
+  permissions = null,
+  userRole = null
 }) => {
   // Get current date for default values
   const getCurrentDate = () => {
@@ -92,6 +98,14 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
     });
   };
 
+  // Check field permissions
+  const showName = canViewField(permissions, 'name', userRole);
+  const showJoinDate = canViewField(permissions, 'joinDate', userRole);
+  const showPosition = canViewField(permissions, 'position', userRole);
+  const showGender = canViewField(permissions, 'gender', userRole);
+  const showDob = canViewField(permissions, 'dob', userRole);
+  const showPhoneNo = canViewField(permissions, 'phoneNo', userRole);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg rounded-xl">
@@ -106,24 +120,27 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
 
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Full Name */}
-          <div>
-            <Label htmlFor="add-name" className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name
-            </Label>
-            <Input
-              id="add-name"
-              value={addForm.name}
-              onChange={(e) => handleFormChange('name', e.target.value)}
-              className="w-full"
-              placeholder="Enter employee name"
-            />
-          </div>
+          {showName && (
+            <div>
+              <Label htmlFor="add-name" className="block text-sm font-medium text-gray-700 mb-2">
+                Full Name
+              </Label>
+              <Input
+                id="add-name"
+                value={addForm.name}
+                onChange={(e) => handleFormChange('name', e.target.value)}
+                className="w-full"
+                placeholder="Enter employee name"
+              />
+            </div>
+          )}
 
           {/* Join Date */}
-          <div>
-            <Label className="block text-sm font-medium text-gray-700 mb-2">
-              Join Date
-            </Label>
+          {showJoinDate && (
+            <div>
+              <Label className="block text-sm font-medium text-gray-700 mb-2">
+                Join Date
+              </Label>
             <div className="flex gap-1 sm:gap-2">
                 <Select
                   value={addForm.joinDate.split('-')[0] || new Date().getFullYear().toString()}
@@ -196,50 +213,57 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   </SelectContent>
                 </Select>
               </div>
-          </div>
+            </div>
+          )}
 
           {/* Position */}
-          <div>
-            <Label className="block text-sm font-medium text-gray-700 mb-2">
-              Position
-            </Label>
-              <Select
-                value={addForm.position}
-                onValueChange={(value) => handleFormChange('position', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select position" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Super">Super</SelectItem>
-                  <SelectItem value="Leader">Leader</SelectItem>
-                  <SelectItem value="Account Department">Account Department</SelectItem>
-                  <SelectItem value="Operation">Operation</SelectItem>
-                </SelectContent>
-              </Select>
-          </div>
-
-          {/* Gender and Date of Birth Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {showPosition && (
             <div>
               <Label className="block text-sm font-medium text-gray-700 mb-2">
-                Gender
+                Position
               </Label>
-              <Select
-                value={addForm.gender}
-                onValueChange={(value) => handleFormChange('gender', value as 'Male' | 'Female')}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Male">Male</SelectItem>
-                  <SelectItem value="Female">Female</SelectItem>
-                </SelectContent>
-              </Select>
+                <Select
+                  value={addForm.position}
+                  onValueChange={(value) => handleFormChange('position', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select position" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Super">Super</SelectItem>
+                    <SelectItem value="Leader">Leader</SelectItem>
+                    <SelectItem value="Account Department">Account Department</SelectItem>
+                    <SelectItem value="Operation">Operation</SelectItem>
+                  </SelectContent>
+                </Select>
             </div>
+          )}
 
-            <div>
+          {/* Gender and Date of Birth Row */}
+          {(showGender || showDob) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {showGender && (
+                <div>
+                  <Label className="block text-sm font-medium text-gray-700 mb-2">
+                    Gender
+                  </Label>
+                  <Select
+                    value={addForm.gender}
+                    onValueChange={(value) => handleFormChange('gender', value as 'Male' | 'Female')}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {showDob && (
+                <div>
               <Label className="block text-sm font-medium text-gray-700 mb-2">
                 Date of Birth
               </Label>
@@ -315,22 +339,26 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   </SelectContent>
                 </Select>
               </div>
+                </div>
+              )}
             </div>
-          </div>
+          )}
 
           {/* Phone Number */}
-          <div>
-            <Label htmlFor="add-phone" className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number <span className="text-gray-400"></span>
-            </Label>
-            <Input
-              id="add-phone"
-              value={addForm.phone}
-              onChange={(e) => handleFormChange('phone', e.target.value)}
-              placeholder="09xxxxxxxxx"
-              className="w-full"
-            />
-          </div>
+          {showPhoneNo && (
+            <div>
+              <Label htmlFor="add-phone" className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number <span className="text-gray-400"></span>
+              </Label>
+              <Input
+                id="add-phone"
+                value={addForm.phone}
+                onChange={(e) => handleFormChange('phone', e.target.value)}
+                placeholder="09xxxxxxxxx"
+                className="w-full"
+              />
+            </div>
+          )}
         </div>
 
         {/* Footer */}

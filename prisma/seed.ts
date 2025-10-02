@@ -19,26 +19,62 @@ async function main() {
         description: 'Full system access with all permissions',
         permissions: {
           dashboard: {
-            view: true,
-            viewAnalytics: true,
-            viewReports: true,
+            general: {
+              view: true,
+            },
+            analytics: {
+              view: true,
+            },
           },
           employeeManagement: {
-            view: true,
-            create: true,
-            edit: true,
-            delete: true,
-            viewDetails: true,
-            manageLeave: true,
-            viewBirthday: true,
+            list: {
+              view: true,
+              create: true,
+            },
+            fields: {
+              name: true,
+              joinDate: true,
+              serviceYears: true,
+              gender: true,
+              dob: true,
+              phoneNo: true,
+              position: true,
+              nrc: true,
+              address: true,
+            },
+            actions: {
+              view: true,
+              edit: true,
+              delete: true,
+              viewDetails: true,
+            },
+            details: {
+              view: true,
+            },
+            detailsFields: {
+              personalInfo: true,
+              contactInfo: true,
+              workInfo: true,
+            },
+            leave: {
+              manage: true,
+              view: true,
+              approve: true,
+            },
+            birthday: {
+              view: true,
+            },
           },
           userManagement: {
-            view: true,
-            create: true,
-            edit: true,
-            delete: true,
-            manageRoles: true,
-            managePermissions: true,
+            list: {
+              view: true,
+              create: true,
+              edit: true,
+              delete: true,
+            },
+            roles: {
+              manage: true,
+            },
           },
         },
         userCount: 0,

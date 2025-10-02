@@ -9,6 +9,27 @@ export interface ModulePermissions {
   [subModule: string]: SubModulePermissions;
 }
 
+// Employee List Field Visibility Permissions
+export interface EmployeeListFieldPermissions {
+  name: boolean;
+  joinDate: boolean;
+  serviceYears: boolean;
+  gender: boolean;
+  dob: boolean;
+  phoneNo: boolean;
+  position: boolean;
+  nrc: boolean;
+  address: boolean;
+}
+
+// Employee List Action Permissions
+export interface EmployeeListActionPermissions {
+  view: boolean;
+  edit: boolean;
+  delete: boolean;
+  viewDetails: boolean;
+}
+
 // This is the primary type for defining all permissions for a role
 export interface RolePermissions {
   dashboard: {
@@ -23,14 +44,24 @@ export interface RolePermissions {
     list: {
       view: boolean;
       create: boolean;
-      edit: boolean;
-      delete: boolean;
     };
+    // Field visibility permissions
+    fields: EmployeeListFieldPermissions;
+    // Action permissions for each employee
+    actions: EmployeeListActionPermissions;
     details: {
       view: boolean;
     };
+    // Field visibility in details page
+    detailsFields: {
+      personalInfo: boolean;
+      contactInfo: boolean;
+      workInfo: boolean;
+    };
     leave: {
       manage: boolean;
+      view: boolean;
+      approve: boolean;
     };
     birthday: {
       view: boolean;

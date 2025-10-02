@@ -18,24 +18,36 @@ export const PermissionEditor: React.FC<PermissionEditorProps> = ({
   const handleSubModuleToggle = (module: keyof RolePermissions, subModule: string, isChecked: boolean) => {
     const newPermissions = { ...permissions };
     const subModulePermissions = permissionConfig[module].subModules[subModule].permissions;
+    
+    // Initialize the submodule if it doesn't exist
+    if (!newPermissions[module][subModule]) {
+      (newPermissions[module] as any)[subModule] = {};
+    }
+    
     for (const key in subModulePermissions) {
-      newPermissions[module][subModule][key] = isChecked;
+      (newPermissions[module] as any)[subModule][key] = isChecked;
     }
     onPermissionsChange(newPermissions);
   };
 
   const handlePermissionChange = (module: keyof RolePermissions, subModule: string, permission: string, isChecked: boolean) => {
     const newPermissions = { ...permissions };
-    newPermissions[module][subModule][permission] = isChecked;
+    
+    // Ensure the nested structure exists
+    if (!newPermissions[module][subModule]) {
+      (newPermissions[module] as any)[subModule] = {};
+    }
+    
+    (newPermissions[module] as any)[subModule][permission] = isChecked;
     onPermissionsChange(newPermissions);
   };
 
   const getSubModuleCheckedState = (module: keyof RolePermissions, subModule: string): 'all' | 'some' | 'none' => {
-    const subModulePermissions = permissions[module]?.[subModule];
+    const subModulePermissions = (permissions[module] as any)?.[subModule];
     if (!subModulePermissions || typeof subModulePermissions !== 'object') {
       return 'none';
     }
-    const permissionKeys = Object.keys(subModulePermissions);
+    const permissionKeys = Object.keys(permissionConfig[module].subModules[subModule].permissions);
     const checkedCount = permissionKeys.filter(key => subModulePermissions[key]).length;
 
     if (checkedCount === 0) return 'none';
@@ -76,7 +88,7 @@ export const PermissionEditor: React.FC<PermissionEditorProps> = ({
                         <input
                           type="checkbox"
                           className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 mt-0.5"
-                          checked={permissions[moduleKey as keyof RolePermissions]?.[subModuleKey]?.[permissionKey] ?? false}
+                          checked={(permissions[moduleKey as keyof RolePermissions] as any)?.[subModuleKey]?.[permissionKey] ?? false}
                           disabled={isReadOnly}
                           onChange={(e) => handlePermissionChange(moduleKey as keyof RolePermissions, subModuleKey, permissionKey, e.target.checked)}
                         />

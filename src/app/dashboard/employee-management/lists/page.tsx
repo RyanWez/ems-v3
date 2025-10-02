@@ -13,8 +13,20 @@ import { EditEmployeeModal } from './components/modals/EditEmployeeModal';
 import { AddEmployeeModal } from './components/modals/AddEmployeeModal';
 import { DeleteEmployeeModal } from './components/modals/DeleteEmployeeModal';
 import { LoadingSpinner, InlineSpinner } from '../../../../components/LoadingSpinner';
+import { useAuth } from '@/Auth';
+import { canViewEmployeeList, canCreateEmployee, canPerformAction } from './utils/permissionHelpers';
 
 const EmployeeLists: React.FC = () => {
+  // Auth and permissions
+  const { permissions, userRole } = useAuth();
+  
+  // Permission checks
+  const canViewList = canViewEmployeeList(permissions, userRole);
+  const canCreate = canCreateEmployee(permissions, userRole);
+  const canEdit = canPerformAction(permissions, 'edit', userRole);
+  const canDelete = canPerformAction(permissions, 'delete', userRole);
+  const canView = canPerformAction(permissions, 'view', userRole);
+
   // Custom hooks
   const { employees, addEmployee, editEmployee, deleteEmployee, isLoading, error, isCreating, isUpdating, isDeleting } = useEmployees();
   const {
@@ -53,21 +65,33 @@ const EmployeeLists: React.FC = () => {
 
   // Handler Functions
   const handleView = (employee: Employee) => {
+    if (!canView) {
+      return;
+    }
     setViewingEmployee(employee);
     setIsViewModalOpen(true);
   };
 
   const handleEdit = (employee: Employee) => {
+    if (!canEdit) {
+      return;
+    }
     setEditingEmployee(employee);
     setIsEditModalOpen(true);
   };
 
   const handleDelete = (employee: Employee) => {
+    if (!canDelete) {
+      return;
+    }
     setDeletingEmployee(employee);
     setIsDeleteModalOpen(true);
   };
 
   const handleAddNew = () => {
+    if (!canCreate) {
+      return;
+    }
     setIsAddModalOpen(true);
   };
 
@@ -134,6 +158,18 @@ const EmployeeLists: React.FC = () => {
     resetPagination();
   };
 
+  // Check permissions first
+  if (!canViewList) {
+    return (
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border w-full max-w-full relative z-0">
+        <div className="text-center py-8">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
+          <p className="text-gray-600">You do not have permission to view employee list.</p>
+        </div>
+      </div>
+    );
+  }
+
   // Show loading spinner while data is loading
   if (isLoading) {
     return (
@@ -189,18 +225,20 @@ const EmployeeLists: React.FC = () => {
           <h2 className="text-xl font-bold text-gray-900">Employee List</h2>
           <p className="text-gray-600 text-sm mt-1">Manage all employees in your organization.</p>
         </div>
-        <button
-          className="mt-4 sm:mt-0 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          onClick={handleAddNew}
-          disabled={isLoading || isCreating}
-        >
-          {isCreating ? (
-            <InlineSpinner className="mr-2" />
-          ) : (
-            <PlusCircle size={18} className="mr-2" />
-          )}
-          {isCreating ? 'Adding Employee...' : 'Add New Employee'}
-        </button>
+        {canCreate && (
+          <button
+            className="mt-4 sm:mt-0 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleAddNew}
+            disabled={isLoading || isCreating}
+          >
+            {isCreating ? (
+              <InlineSpinner className="mr-2" />
+            ) : (
+              <PlusCircle size={18} className="mr-2" />
+            )}
+            {isCreating ? 'Adding Employee...' : 'Add New Employee'}
+          </button>
+        )}
       </div>
 
       {/* Search and Filters */}
@@ -223,6 +261,11 @@ const EmployeeLists: React.FC = () => {
         onDelete={handleDelete}
         isUpdating={isUpdating}
         isDeleting={isDeleting}
+        permissions={permissions}
+        userRole={userRole}
+        canView={canView}
+        canEdit={canEdit}
+        canDelete={canDelete}
       />
 
       {/* Pagination */}
@@ -243,6 +286,9 @@ const EmployeeLists: React.FC = () => {
         onClose={handleCloseView}
         employee={viewingEmployee}
         onEdit={handleEdit}
+        permissions={permissions}
+        userRole={userRole}
+        canEdit={canEdit}
       />
 
       <EditEmployeeModal
@@ -250,12 +296,16 @@ const EmployeeLists: React.FC = () => {
         onClose={handleCloseEdit}
         employee={editingEmployee}
         onSave={handleSaveEdit}
+        permissions={permissions}
+        userRole={userRole}
       />
 
       <AddEmployeeModal
         isOpen={isAddModalOpen}
         onClose={handleCloseAdd}
         onSave={handleSaveAdd}
+        permissions={permissions}
+        userRole={userRole}
       />
 
       <DeleteEmployeeModal

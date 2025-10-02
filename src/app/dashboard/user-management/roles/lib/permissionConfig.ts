@@ -41,24 +41,55 @@ export const permissionConfig: Record<keyof RolePermissions, ModuleMetadata> = {
     title: 'Employee Management',
     subModules: {
       list: {
-        title: 'Employee List',
+        title: 'Employee List - Basic Access',
         permissions: {
           view: { title: 'View List', description: 'Can see the list of all employees' },
           create: { title: 'Create Employees', description: 'Can add new employees to the system' },
-          edit: { title: 'Edit Employees', description: 'Can modify existing employee information' },
-          delete: { title: 'Delete Employees', description: 'Can remove employees from the system' },
+        },
+      },
+      fields: {
+        title: 'Employee List - Field Visibility',
+        permissions: {
+          name: { title: 'Employee Name', description: 'Can see employee names in the list' },
+          joinDate: { title: 'Join Date', description: 'Can see when employees joined the company' },
+          serviceYears: { title: 'Service Years', description: 'Can see how long employees have worked' },
+          gender: { title: 'Gender', description: 'Can see employee gender information' },
+          dob: { title: 'Date of Birth', description: 'Can see employee birth dates' },
+          phoneNo: { title: 'Phone Number', description: 'Can see employee contact numbers' },
+          position: { title: 'Position', description: 'Can see employee job positions' },
+          nrc: { title: 'NRC Number', description: 'Can see employee NRC/ID numbers' },
+          address: { title: 'Address', description: 'Can see employee addresses' },
+        },
+      },
+      actions: {
+        title: 'Employee List - Actions',
+        permissions: {
+          view: { title: 'View Action', description: 'Can click view button to see employee details' },
+          edit: { title: 'Edit Action', description: 'Can click edit button to modify employee info' },
+          delete: { title: 'Delete Action', description: 'Can click delete button to remove employees' },
+          viewDetails: { title: 'View Details Page', description: 'Can access detailed employee profile page' },
         },
       },
       details: {
-        title: 'Employee Details',
+        title: 'Employee Details Page',
         permissions: {
           view: { title: 'View Details', description: 'Can see the detailed profile page of an employee' },
+        },
+      },
+      detailsFields: {
+        title: 'Employee Details - Field Groups',
+        permissions: {
+          personalInfo: { title: 'Personal Information', description: 'Can see personal details like name, DOB, gender' },
+          contactInfo: { title: 'Contact Information', description: 'Can see phone, address, emergency contacts' },
+          workInfo: { title: 'Work Information', description: 'Can see position, department, salary details' },
         },
       },
       leave: {
         title: 'Leave Management',
         permissions: {
           manage: { title: 'Manage Leave', description: 'Can approve or reject employee leave requests' },
+          view: { title: 'View Leave', description: 'Can see leave requests and history' },
+          approve: { title: 'Approve Leave', description: 'Can approve leave requests' },
         },
       },
       birthday: {

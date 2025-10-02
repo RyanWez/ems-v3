@@ -10,26 +10,51 @@ import { Button } from "@/components/ui/button";
 import { Employee } from '../../types/employee';
 import { getPositionColor, getGenderColor, calculateServiceYears } from '../../utils/employeeUtils';
 import { generateAvatarUrl, getAvatarFallback } from '../../utils/avatarUtils';
+import { RolePermissions } from '@/app/dashboard/user-management/roles/types/permissions';
+import { canViewField, canViewDetailsField, canPerformAction } from '../../utils/permissionHelpers';
 
 interface ViewEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
   employee: Employee | null;
   onEdit: (employee: Employee) => void;
+  permissions?: RolePermissions | null;
+  userRole?: string | null;
+  canEdit?: boolean;
 }
 
 export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
   isOpen,
   onClose,
   employee,
-  onEdit
+  onEdit,
+  permissions = null,
+  userRole = null,
+  canEdit = true
 }) => {
   if (!employee) return null;
 
   const handleEdit = () => {
+    if (!canEdit) return;
     onClose();
     onEdit(employee);
   };
+
+  // Check field permissions
+  const showName = canViewField(permissions, 'name', userRole);
+  const showGender = canViewField(permissions, 'gender', userRole);
+  const showDob = canViewField(permissions, 'dob', userRole);
+  const showPhoneNo = canViewField(permissions, 'phoneNo', userRole);
+  const showPosition = canViewField(permissions, 'position', userRole);
+  const showJoinDate = canViewField(permissions, 'joinDate', userRole);
+  const showServiceYears = canViewField(permissions, 'serviceYears', userRole);
+  const showNrc = canViewField(permissions, 'nrc', userRole);
+  const showAddress = canViewField(permissions, 'address', userRole);
+
+  // Check details field group permissions
+  const showPersonalInfo = canViewDetailsField(permissions, 'personalInfo', userRole);
+  const showContactInfo = canViewDetailsField(permissions, 'contactInfo', userRole);
+  const showWorkInfo = canViewDetailsField(permissions, 'workInfo', userRole);
 
   const avatarFallback = getAvatarFallback(employee.name, employee.gender, employee.position);
 
@@ -68,14 +93,20 @@ export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
               </div>
             </div>
             <div className="text-center sm:text-left flex-1">
-              <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{employee.name}</h3>
+              {showName && (
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{employee.name}</h3>
+              )}
               <div className="flex flex-wrap justify-center sm:justify-start gap-2">
-                <span className={`inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${getPositionColor(employee.position)}`}>
-                  {employee.position}
-                </span>
-                <span className={`inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${getGenderColor(employee.gender)}`}>
-                  {employee.gender}
-                </span>
+                {showPosition && (
+                  <span className={`inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${getPositionColor(employee.position)}`}>
+                    {employee.position}
+                  </span>
+                )}
+                {showGender && (
+                  <span className={`inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${getGenderColor(employee.gender)}`}>
+                    {employee.gender}
+                  </span>
+                )}
               </div>
               <div className="mt-2 text-sm text-gray-600">
                 <span className="font-medium">Employee ID:</span> EMP-{employee.id.toString().padStart(4, '0')}
@@ -84,94 +115,150 @@ export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
           </div>
 
           {/* Information Cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+          <div className="space-y-6">
             {/* Personal Information Card */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-              <h4 className="text-base sm:text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4 flex items-center">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                Personal Information
-              </h4>
-              
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Full Name</label>
-                  <p className="text-gray-900 font-medium text-sm sm:text-base">{employee.name}</p>
-                </div>
+            {showPersonalInfo && (
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 shadow-sm">
+                <h4 className="text-lg font-bold text-gray-900 border-b border-blue-200 pb-3 mb-5 flex items-center">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                  Personal Information
+                </h4>
                 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Gender</label>
-                  <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getGenderColor(employee.gender)} self-start sm:self-center`}>
-                    {employee.gender}
-                  </span>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Date of Birth</label>
-                  <p className="text-gray-900 text-sm sm:text-base">{employee.dob}</p>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Phone Number</label>
-                  <p className="text-gray-900 text-sm sm:text-base font-mono">{employee.phone}</p>
+                <div className="space-y-4">
+                  {showName && (
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-blue-100">
+                      <label className="text-sm font-semibold text-blue-600 mb-1 sm:mb-0">Full Name</label>
+                      <p className="text-gray-900 font-bold text-lg">{employee.name}</p>
+                    </div>
+                  )}
+                  
+                  {showGender && (
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-blue-100">
+                      <label className="text-sm font-semibold text-blue-600 mb-1 sm:mb-0">Gender</label>
+                      <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${getGenderColor(employee.gender)} self-start sm:self-center`}>
+                        {employee.gender === 'Male' ? '👨' : '👩'} {employee.gender}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {showDob && (
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-blue-100">
+                      <label className="text-sm font-semibold text-blue-600 mb-1 sm:mb-0">Date of Birth</label>
+                      <p className="text-gray-900 font-semibold text-base flex items-center">
+                        🎂 {employee.dob}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Calculate and show age */}
+                  {showDob && (
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3">
+                      <label className="text-sm font-semibold text-blue-600 mb-1 sm:mb-0">Age</label>
+                      <p className="text-gray-900 font-semibold text-base flex items-center">
+                        🕐 {(() => {
+                          const today = new Date();
+                          const birthDate = new Date(employee.dob);
+                          let age = today.getFullYear() - birthDate.getFullYear();
+                          const monthDiff = today.getMonth() - birthDate.getMonth();
+                          if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                            age--;
+                          }
+                          return age;
+                        })()} years old
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Work Information Card */}
-            <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-              <h4 className="text-base sm:text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2 mb-4 flex items-center">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                Work Information
+            {showWorkInfo && (
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-lg p-6 shadow-sm">
+                <h4 className="text-lg font-bold text-gray-900 border-b border-green-200 pb-3 mb-5 flex items-center">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                  Work Information
+                </h4>
+                
+                <div className="space-y-4">
+                  {showPosition && (
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-green-100">
+                      <label className="text-sm font-semibold text-green-600 mb-1 sm:mb-0">Position</label>
+                      <span className={`inline-flex items-center px-3 py-1 text-sm font-medium rounded-full ${getPositionColor(employee.position)} self-start sm:self-center`}>
+                        💼 {employee.position}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {showJoinDate && (
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-green-100">
+                      <label className="text-sm font-semibold text-green-600 mb-1 sm:mb-0">Join Date</label>
+                      <p className="text-gray-900 font-semibold text-base flex items-center">
+                        📅 {employee.joinDate}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {showServiceYears && (
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-green-100">
+                      <label className="text-sm font-semibold text-green-600 mb-1 sm:mb-0">Service Years</label>
+                      <p className="text-green-600 font-bold text-lg flex items-center">
+                        ⏰ {calculateServiceYears(employee.joinDate)}
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3">
+                    <label className="text-sm font-semibold text-green-600 mb-1 sm:mb-0">Employee ID</label>
+                    <p className="text-gray-900 font-mono font-bold text-base flex items-center">
+                      🆔 EMP-{employee.id.toString().padStart(4, '0')}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Contact Information Card */}
+          {showContactInfo && (showPhoneNo || showNrc || showAddress) && (
+            <div className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6 shadow-sm">
+              <h4 className="text-lg font-bold text-gray-900 border-b border-purple-200 pb-3 mb-5 flex items-center">
+                <div className="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
+                Contact Information
               </h4>
               
               <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Position</label>
-                  <span className={`inline-block px-3 py-1 text-xs sm:text-sm font-medium rounded-full ${getPositionColor(employee.position)} self-start sm:self-center`}>
-                    {employee.position}
-                  </span>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Join Date</label>
-                  <p className="text-gray-900 text-sm sm:text-base">{employee.joinDate}</p>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Service Years</label>
-                  <p className="text-gray-900 font-medium text-green-600 text-sm sm:text-base">{calculateServiceYears(employee.joinDate)}</p>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                  <label className="text-sm font-medium text-gray-600 mb-1 sm:mb-0">Employee ID</label>
-                  <p className="text-gray-900 font-mono text-sm sm:text-base">EMP-{employee.id.toString().padStart(4, '0')}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Information */}
-          {(employee.nrc || employee.address) && (
-            <div className="space-y-4">
-              <h4 className="text-lg font-semibold text-gray-900 border-b border-gray-200 pb-2">Additional Information</h4>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {employee.nrc && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">NRC Number</label>
-                    <p className="text-gray-900">{employee.nrc}</p>
+                {showPhoneNo && (
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-purple-100">
+                    <label className="text-sm font-semibold text-purple-600 mb-1 sm:mb-0">Phone Number</label>
+                    <p className="text-gray-900 font-semibold text-base font-mono flex items-center">
+                      📱 {employee.phone}
+                    </p>
                   </div>
                 )}
                 
-                {employee.address && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-600 mb-1">Address</label>
-                    <p className="text-gray-900">{employee.address}</p>
+                {showNrc && employee.nrc && (
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-purple-100">
+                    <label className="text-sm font-semibold text-purple-600 mb-1 sm:mb-0">NRC Number</label>
+                    <p className="text-gray-900 font-semibold text-base flex items-center">
+                      🆔 {employee.nrc}
+                    </p>
+                  </div>
+                )}
+                
+                {showAddress && employee.address && (
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between py-3">
+                    <label className="text-sm font-semibold text-purple-600 mb-1 sm:mb-0">Address</label>
+                    <p className="text-gray-900 font-semibold text-base flex items-start">
+                      🏠 {employee.address}
+                    </p>
                   </div>
                 )}
               </div>
             </div>
           )}
+
+
         </div>
 
         {/* Footer */}
@@ -183,12 +270,14 @@ export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
           >
             Close
           </Button>
-          <Button
-            onClick={handleEdit}
-            className="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
-          >
-            Edit Employee
-          </Button>
+          {canEdit && (
+            <Button
+              onClick={handleEdit}
+              className="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
+            >
+              Edit Employee
+            </Button>
+          )}
         </div>
       </DialogContent>
     </Dialog>

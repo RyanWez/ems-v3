@@ -7,16 +7,59 @@ import { RolePermissions } from '../types/permissions';
 
 // Defines a default set of permissions for a new role
 const getDefaultPermissions = (): RolePermissions => ({
-  dashboard: { general: { view: true }, analytics: { view: false } },
+  dashboard: { 
+    general: { view: true }, 
+    analytics: { view: false } 
+  },
   employeeManagement: {
-    list: { view: true, create: false, edit: false, delete: false },
-    details: { view: true },
-    leave: { manage: false },
-    birthday: { view: true },
+    list: { 
+      view: true, 
+      create: false 
+    },
+    fields: {
+      name: true,
+      joinDate: false,
+      serviceYears: false,
+      gender: false,
+      dob: false,
+      phoneNo: false,
+      position: true,
+      nrc: false,
+      address: false,
+    },
+    actions: {
+      view: true,
+      edit: false,
+      delete: false,
+      viewDetails: false,
+    },
+    details: { 
+      view: false 
+    },
+    detailsFields: {
+      personalInfo: false,
+      contactInfo: false,
+      workInfo: false,
+    },
+    leave: { 
+      manage: false,
+      view: false,
+      approve: false,
+    },
+    birthday: { 
+      view: true 
+    },
   },
   userManagement: {
-    list: { view: false, create: false, edit: false, delete: false },
-    roles: { manage: false },
+    list: { 
+      view: false, 
+      create: false, 
+      edit: false, 
+      delete: false 
+    },
+    roles: { 
+      manage: false 
+    },
   },
 });
 

@@ -17,19 +17,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Employee } from '../../types/employee';
+import { RolePermissions } from '@/app/dashboard/user-management/roles/types/permissions';
+import { canViewField } from '../../utils/permissionHelpers';
 
 interface EditEmployeeModalProps {
   isOpen: boolean;
   onClose: () => void;
   employee: Employee | null;
   onSave: (employee: Employee) => boolean;
+  permissions?: RolePermissions | null;
+  userRole?: string | null;
 }
 
 export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
   isOpen,
   onClose,
   employee,
-  onSave
+  onSave,
+  permissions = null,
+  userRole = null
 }) => {
   const [editForm, setEditForm] = useState<Employee>({
     id: 0,
@@ -72,6 +78,14 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
 
   if (!employee) return null;
 
+  // Check field permissions
+  const showName = canViewField(permissions, 'name', userRole);
+  const showJoinDate = canViewField(permissions, 'joinDate', userRole);
+  const showPosition = canViewField(permissions, 'position', userRole);
+  const showGender = canViewField(permissions, 'gender', userRole);
+  const showDob = canViewField(permissions, 'dob', userRole);
+  const showPhoneNo = canViewField(permissions, 'phoneNo', userRole);
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="w-[95vw] max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-lg rounded-xl">
@@ -86,21 +100,24 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
 
         <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Full Name */}
-          <div>
-            <Label htmlFor="edit-name" className="block text-sm font-medium text-gray-700 mb-2">
-              Full Name
-            </Label>
-            <Input
-              id="edit-name"
-              value={editForm.name}
-              onChange={(e) => handleFormChange('name', e.target.value)}
-              className="w-full"
-              placeholder="AUNG SWE PHYO"
-            />
-          </div>
+          {showName && (
+            <div>
+              <Label htmlFor="edit-name" className="block text-sm font-medium text-gray-700 mb-2">
+                Full Name
+              </Label>
+              <Input
+                id="edit-name"
+                value={editForm.name}
+                onChange={(e) => handleFormChange('name', e.target.value)}
+                className="w-full"
+                placeholder="AUNG SWE PHYO"
+              />
+            </div>
+          )}
 
           {/* Join Date */}
-          <div>
+          {showJoinDate && (
+            <div>
               <Label className="block text-sm font-medium text-gray-700 mb-2">
                 Join Date
               </Label>
@@ -177,49 +194,56 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
                 </Select>
               </div>
             </div>
+          )}
 
           {/* Position */}
-          <div>
-            <Label className="block text-sm font-medium text-gray-700 mb-2">
-              Position
-            </Label>
-            <Select
-              value={editForm.position}
-              onValueChange={(value) => handleFormChange('position', value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select position" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Super">Super</SelectItem>
-                <SelectItem value="Leader">Leader</SelectItem>
-                <SelectItem value="Account Department">Account Department</SelectItem>
-                <SelectItem value="Operation">Operation</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Gender and Date of Birth Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {showPosition && (
             <div>
               <Label className="block text-sm font-medium text-gray-700 mb-2">
-                Gender
+                Position
               </Label>
               <Select
-                value={editForm.gender}
-                onValueChange={(value) => handleFormChange('gender', value as 'Male' | 'Female')}
+                value={editForm.position}
+                onValueChange={(value) => handleFormChange('position', value)}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select gender" />
+                  <SelectValue placeholder="Select position" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Male">Male</SelectItem>
-                  <SelectItem value="Female">Female</SelectItem>
+                  <SelectItem value="Super">Super</SelectItem>
+                  <SelectItem value="Leader">Leader</SelectItem>
+                  <SelectItem value="Account Department">Account Department</SelectItem>
+                  <SelectItem value="Operation">Operation</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+          )}
 
-            <div>
+          {/* Gender and Date of Birth Row */}
+          {(showGender || showDob) && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {showGender && (
+                <div>
+                  <Label className="block text-sm font-medium text-gray-700 mb-2">
+                    Gender
+                  </Label>
+                  <Select
+                    value={editForm.gender}
+                    onValueChange={(value) => handleFormChange('gender', value as 'Male' | 'Female')}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              {showDob && (
+                <div>
               <Label className="block text-sm font-medium text-gray-700 mb-2">
                 Date of Birth
               </Label>
@@ -295,22 +319,26 @@ export const EditEmployeeModal: React.FC<EditEmployeeModalProps> = ({
                   </SelectContent>
                 </Select>
               </div>
+                </div>
+              )}
             </div>
-          </div>
+          )}
 
           {/* Phone Number */}
-          <div>
-            <Label htmlFor="edit-phone" className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number <span className="text-gray-400">(Optional)</span>
-            </Label>
-            <Input
-              id="edit-phone"
-              value={editForm.phone}
-              onChange={(e) => handleFormChange('phone', e.target.value)}
-              placeholder="09960476738"
-              className="w-full"
-            />
-          </div>
+          {showPhoneNo && (
+            <div>
+              <Label htmlFor="edit-phone" className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number <span className="text-gray-400">(Optional)</span>
+              </Label>
+              <Input
+                id="edit-phone"
+                value={editForm.phone}
+                onChange={(e) => handleFormChange('phone', e.target.value)}
+                placeholder="09960476738"
+                className="w-full"
+              />
+            </div>
+          )}
         </div>
 
         {/* Footer */}
