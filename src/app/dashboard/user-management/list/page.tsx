@@ -46,10 +46,10 @@ const UserList: React.FC = () => {
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
 
   // Permission checking functions
-  const canViewUsers = permissions?.userManagement?.view || userRole === 'Administrator';
-  const canCreateUsers = permissions?.userManagement?.create || userRole === 'Administrator';
-  const canEditUsers = permissions?.userManagement?.edit || userRole === 'Administrator';
-  const canDeleteUsers = permissions?.userManagement?.delete || userRole === 'Administrator';
+  const canViewUsers = permissions?.userManagement?.list?.view || userRole === 'Administrator';
+  const canCreateUsers = permissions?.userManagement?.list?.create || userRole === 'Administrator';
+  const canEditUsers = permissions?.userManagement?.list?.edit || userRole === 'Administrator';
+  const canDeleteUsers = permissions?.userManagement?.list?.delete || userRole === 'Administrator';
 
   // Redirect if no view permission
   useEffect(() => {

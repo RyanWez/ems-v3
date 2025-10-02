@@ -44,22 +44,22 @@ const Sidebar: React.FC<SidebarProps> = ({
 
       // Check permissions for user management
       if (item.path === '/dashboard/user-management') {
-        return permissions?.userManagement?.view || userRole === 'Administrator';
+        return permissions?.userManagement?.list?.view || userRole === 'Administrator';
       }
 
       // Check permissions for employee management
       if (item.path === '/dashboard/employee-management') {
-        return permissions?.employeeManagement?.view || userRole === 'Administrator';
+        return permissions?.employeeManagement?.list?.view || userRole === 'Administrator';
       }
 
       // Filter children of parent items
       if (item.children) {
         const filteredChildren = item.children.filter(child => {
           if (child.path.includes('user-management')) {
-            return permissions?.userManagement?.view || userRole === 'Administrator';
+            return permissions?.userManagement?.list?.view || userRole === 'Administrator';
           }
           if (child.path.includes('employee-management')) {
-            return permissions?.employeeManagement?.view || userRole === 'Administrator';
+            return permissions?.employeeManagement?.list?.view || userRole === 'Administrator';
           }
           return true;
         });
