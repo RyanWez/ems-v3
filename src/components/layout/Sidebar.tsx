@@ -101,7 +101,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     // Open if manually expanded OR if current path is within this dropdown
     return isManuallyExpanded || isAutoExpanded;
   };
-  
+
   const handleNavigation = (path: string) => {
     const newParent = filteredMenuItems.find(item =>
       item.children?.some(child => path.startsWith(child.path))
@@ -136,43 +136,40 @@ const Sidebar: React.FC<SidebarProps> = ({
           width: isCollapsed && !isMobileOpen ? '64px' : '256px'
         }}
       >
-      <div className={`flex items-center justify-between h-16 border-b border-gray-700 px-4 ${isMobileOpen ? 'mobile-sidebar-header' : ''}`}>
-        <div className="flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="w-8 h-8 text-white"
+        <div className={`flex items-center justify-between h-16 border-b border-gray-700 px-4 ${isMobileOpen ? 'mobile-sidebar-header' : ''}`}>
+          <div className="flex items-center">
+            <img
+              src="/images/ems.svg"
+              alt="EMS Logo"
+              className="w-8 h-8"
+            />
+            {!isCollapsed && <span className="ml-3 text-white text-xl font-semibold">EMS</span>}
+          </div>
+          <button
+            onClick={onMobileClose}
+            className="md:hidden p-2 text-white hover:bg-gray-600 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white"
+            aria-label="Close menu"
           >
-            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5-10-5-10 5z" />
-          </svg>
-          {!isCollapsed && <span className="ml-3 text-white text-xl font-semibold">EMS</span>}
+            <CloseIcon />
+          </button>
         </div>
-        <button
-          onClick={onMobileClose}
-          className="md:hidden p-2 text-white hover:bg-gray-600 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white"
-          aria-label="Close menu"
-        >
-          <CloseIcon />
-        </button>
+        <nav className={`flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar ${isMobileOpen ? 'mobile-sidebar-content' : ''}`}>
+          <ul>
+            {filteredMenuItems.map((item: NavItem) => (
+              <SidebarItem
+                key={item.path}
+                item={item}
+                isCollapsed={isCollapsed}
+                shouldBeOpen={getShouldBeOpen(item.path)}
+                onToggle={() => handleDropdownToggle(item.path)}
+                onNavigate={handleNavigation}
+              />
+            ))}
+          </ul>
+        </nav>
       </div>
-       <nav className={`flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar ${isMobileOpen ? 'mobile-sidebar-content' : ''}`}>
-         <ul>
-           {filteredMenuItems.map((item: NavItem) => (
-             <SidebarItem
-               key={item.path}
-               item={item}
-               isCollapsed={isCollapsed}
-               shouldBeOpen={getShouldBeOpen(item.path)}
-               onToggle={() => handleDropdownToggle(item.path)}
-               onNavigate={handleNavigation}
-             />
-           ))}
-         </ul>
-       </nav>
-     </div>
-   </>
- );
+    </>
+  );
 };
 
 export default Sidebar;
