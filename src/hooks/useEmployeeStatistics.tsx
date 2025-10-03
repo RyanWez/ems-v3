@@ -84,14 +84,13 @@ export const useEmployeeStatistics = (employees: Employee[]): EmployeeStatistics
       percentage: Math.round((count / totalEmployees) * 100)
     }));
 
-    // Recent joiners (last 6 months)
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    // Recent joiners (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
     const recentJoiners = employees
-      .filter(emp => new Date(emp.joinDate) >= sixMonthsAgo)
-      .sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime())
-      .slice(0, 5);
+      .filter(emp => new Date(emp.joinDate) >= thirtyDaysAgo)
+      .sort((a, b) => new Date(b.joinDate).getTime() - new Date(a.joinDate).getTime());
 
     return {
       totalEmployees,

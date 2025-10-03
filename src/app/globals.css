@@ -712,3 +712,40 @@ revent tooltip conflicts during scroll */
     pointer-events: none;
   }
 }
+/* 
+Custom Scrollbar for Recent Joiners */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #D1D5DB #F3F4F6;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #F3F4F6;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+.scrollbar-track-gray-100 {
+  scrollbar-color: #D1D5DB #F3F4F6;
+}
+
+.scrollbar-thumb-gray-300 {
+  scrollbar-color: #D1D5DB #F3F4F6;
+}
+
+.hover\:scrollbar-thumb-gray-400:hover {
+  scrollbar-color: #9CA3AF #F3F4F6;
+}

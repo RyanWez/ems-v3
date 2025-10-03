@@ -21,7 +21,7 @@ export const RecentJoinersCard: React.FC<RecentJoinersCardProps> = ({ recentJoin
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - join.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays < 30) {
       return `${diffDays} days ago`;
     } else if (diffDays < 365) {
@@ -39,17 +39,17 @@ export const RecentJoinersCard: React.FC<RecentJoinersCardProps> = ({ recentJoin
         <User className="w-5 h-5 text-green-500 mr-2 transition-transform duration-200 hover:scale-110" />
         <h3 className="text-lg font-semibold text-gray-800">Recent Joiners</h3>
       </div>
-      
+
       {recentJoiners.length === 0 ? (
         <div className="text-center py-8">
           <User className="w-12 h-12 text-gray-300 mx-auto mb-3 animate-pulse" />
           <p className="text-gray-500">No recent joiners in the last 6 months</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className={`space-y-3 ${recentJoiners.length > 5 ? 'max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400' : ''}`}>
           {recentJoiners.map((employee, index) => (
-            <div 
-              key={employee.id} 
+            <div
+              key={employee.id}
               className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 
                          transition-all duration-300 transform hover:scale-102 hover:shadow-sm
                          group cursor-pointer"

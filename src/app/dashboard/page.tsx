@@ -168,7 +168,7 @@ const Dashboard: React.FC = () => {
           value={statistics.recentJoiners.length}
           icon={TrendingUp}
           color="indigo"
-          subtitle="Last 6 months"
+          subtitle="Last 30 days"
         />
       </div>
 
