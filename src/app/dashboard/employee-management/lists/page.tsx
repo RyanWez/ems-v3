@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Download } from 'lucide-react';
 import { Employee } from './types/employee';
 import { useEmployees } from './hooks/useEmployees';
 import { useFilters } from './hooks/useFilters';
@@ -15,6 +15,7 @@ import { DeleteEmployeeModal } from './components/modals/DeleteEmployeeModal';
 import { LoadingSpinner, InlineSpinner } from '../../../../components/LoadingSpinner';
 import { useAuth } from '@/Auth';
 import { canViewEmployeeList, canCreateEmployee, canPerformAction } from './utils/permissionHelpers';
+import { exportEmployeesToCSV } from './utils/exportHelpers';
 
 const EmployeeLists: React.FC = () => {
   // Auth and permissions
@@ -158,6 +159,11 @@ const EmployeeLists: React.FC = () => {
     resetPagination();
   };
 
+  // Export Handler
+  const handleExport = () => {
+    exportEmployeesToCSV(filteredEmployees);
+  };
+
   // Check permissions first
   if (!canViewList) {
     return (
@@ -225,20 +231,31 @@ const EmployeeLists: React.FC = () => {
           <h2 className="text-xl font-bold text-gray-900">Employee List</h2>
           <p className="text-gray-600 text-sm mt-1">Manage all employees in your organization.</p>
         </div>
-        {canCreate && (
+        <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0">
           <button
-            className="mt-4 sm:mt-0 flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleAddNew}
-            disabled={isLoading || isCreating}
+            className="flex items-center bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleExport}
+            disabled={isLoading || filteredEmployees.length === 0}
+            title="Export to CSV"
           >
-            {isCreating ? (
-              <InlineSpinner className="mr-2" />
-            ) : (
-              <PlusCircle size={18} className="mr-2" />
-            )}
-            {isCreating ? 'Adding Employee...' : 'Add New Employee'}
+            <Download size={18} className="mr-2" />
+            Export
           </button>
-        )}
+          {canCreate && (
+            <button
+              className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleAddNew}
+              disabled={isLoading || isCreating}
+            >
+              {isCreating ? (
+                <InlineSpinner className="mr-2" />
+              ) : (
+                <PlusCircle size={18} className="mr-2" />
+              )}
+              {isCreating ? 'Adding Employee...' : 'Add New Employee'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Search and Filters */}

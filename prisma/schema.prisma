@@ -22,8 +22,6 @@ model Employee {
   gender    Gender
   dob       String
   phone     String
-  nrc       String?
-  address   String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

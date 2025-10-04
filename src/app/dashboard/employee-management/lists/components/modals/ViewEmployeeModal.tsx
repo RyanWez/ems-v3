@@ -48,8 +48,6 @@ export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
   const showPosition = canViewField(permissions, 'position', userRole);
   const showJoinDate = canViewField(permissions, 'joinDate', userRole);
   const showServiceYears = canViewField(permissions, 'serviceYears', userRole);
-  const showNrc = canViewField(permissions, 'nrc', userRole);
-  const showAddress = canViewField(permissions, 'address', userRole);
 
   // Check details field group permissions
   const showPersonalInfo = canViewDetailsField(permissions, 'personalInfo', userRole);
@@ -220,7 +218,7 @@ export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
           </div>
 
           {/* Contact Information Card */}
-          {showContactInfo && (showPhoneNo || showNrc || showAddress) && (
+          {showContactInfo && showPhoneNo && (
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-6 shadow-sm">
               <h4 className="text-lg font-bold text-gray-900 border-b border-purple-200 pb-3 mb-5 flex items-center">
                 <div className="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
@@ -229,28 +227,10 @@ export const ViewEmployeeModal: React.FC<ViewEmployeeModalProps> = ({
               
               <div className="space-y-4">
                 {showPhoneNo && (
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-purple-100">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3">
                     <label className="text-sm font-semibold text-purple-600 mb-1 sm:mb-0">Phone Number</label>
                     <p className="text-gray-900 font-semibold text-base font-mono flex items-center">
                       📱 {employee.phone}
-                    </p>
-                  </div>
-                )}
-                
-                {showNrc && employee.nrc && (
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3 border-b border-purple-100">
-                    <label className="text-sm font-semibold text-purple-600 mb-1 sm:mb-0">NRC Number</label>
-                    <p className="text-gray-900 font-semibold text-base flex items-center">
-                      🆔 {employee.nrc}
-                    </p>
-                  </div>
-                )}
-                
-                {showAddress && employee.address && (
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between py-3">
-                    <label className="text-sm font-semibold text-purple-600 mb-1 sm:mb-0">Address</label>
-                    <p className="text-gray-900 font-semibold text-base flex items-start">
-                      🏠 {employee.address}
                     </p>
                   </div>
                 )}

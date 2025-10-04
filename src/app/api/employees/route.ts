@@ -23,7 +23,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, joinDate, position, gender, dob, phone, nrc, address } = body;
+    const { name, joinDate, position, gender, dob, phone } = body;
 
     // Validate required fields
     if (!name || !joinDate || !position || !gender || !dob || !phone) {
@@ -40,9 +40,7 @@ export async function POST(request: NextRequest) {
         position,
         gender,
         dob,
-        phone,
-        nrc,
-        address
+        phone
       }
     });
 

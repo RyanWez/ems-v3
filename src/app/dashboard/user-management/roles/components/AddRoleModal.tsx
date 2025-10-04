@@ -24,8 +24,6 @@ const getDefaultPermissions = (): RolePermissions => ({
       dob: false,
       phoneNo: false,
       position: true,
-      nrc: false,
-      address: false,
     },
     actions: {
       view: true,

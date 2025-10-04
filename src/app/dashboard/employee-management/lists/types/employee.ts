@@ -6,8 +6,6 @@ export type Employee = {
   gender: 'Male' | 'Female';
   dob: string;
   phone: string;
-  nrc?: string;
-  address?: string;
   createdAt: string;
   updatedAt: string;
 };

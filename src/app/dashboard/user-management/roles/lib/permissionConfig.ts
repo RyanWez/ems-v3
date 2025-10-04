@@ -57,8 +57,6 @@ export const permissionConfig: Record<keyof RolePermissions, ModuleMetadata> = {
           dob: { title: 'Date of Birth', description: 'Can see employee birth dates' },
           phoneNo: { title: 'Phone Number', description: 'Can see employee contact numbers' },
           position: { title: 'Position', description: 'Can see employee job positions' },
-          nrc: { title: 'NRC Number', description: 'Can see employee NRC/ID numbers' },
-          address: { title: 'Address', description: 'Can see employee addresses' },
         },
       },
       actions: {

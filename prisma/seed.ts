@@ -39,8 +39,6 @@ async function main() {
               dob: true,
               phoneNo: true,
               position: true,
-              nrc: true,
-              address: true,
             },
             actions: {
               view: true,

@@ -18,8 +18,6 @@ export interface EmployeeListFieldPermissions {
   dob: boolean;
   phoneNo: boolean;
   position: boolean;
-  nrc: boolean;
-  address: boolean;
 }
 
 // Employee List Action Permissions

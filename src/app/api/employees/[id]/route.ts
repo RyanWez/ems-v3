@@ -37,7 +37,7 @@ export async function PUT(
 ) {
   try {
     const body = await request.json();
-    const { name, joinDate, position, gender, dob, phone, nrc, address } = body;
+    const { name, joinDate, position, gender, dob, phone } = body;
 
     // Validate required fields
     if (!name || !joinDate || !position || !gender || !dob || !phone) {
@@ -55,9 +55,7 @@ export async function PUT(
         position,
         gender,
         dob,
-        phone,
-        nrc,
-        address
+        phone
       }
     });
 
