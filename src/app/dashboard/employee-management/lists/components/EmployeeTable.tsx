@@ -108,7 +108,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
 
             {/* POSITION - Show if permitted */}
             {showPosition && (
-              <th className="px-3 py-2 font-semibold text-xs border-b border-gray-200" style={{ width: showFullTable ? '14%' : '30%', backgroundColor: 'rgb(248 250 252)' }}>POSITION</th>
+              <th className="px-3 py-2 font-semibold text-xs border-b border-gray-200" style={{ width: showFullTable ? '18%' : '30%', backgroundColor: 'rgb(248 250 252)' }}>POSITION</th>
             )}
 
             {/* ACTION - Show if any action is available */}
@@ -171,10 +171,12 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
 
               {/* POSITION - Show if permitted */}
               {showPosition && (
-                <td className="px-3 py-2" style={{ width: showFullTable ? '14%' : '30%' }}>
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPositionColor(employee.position)} block text-center`}>
-                    {employee.position}
-                  </span>
+                <td className="px-3 py-2" style={{ width: showFullTable ? '18%' : '30%' }}>
+                  <div className="flex flex-col gap-1">
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPositionColor(employee.position)} block text-center`}>
+                      {employee.position}
+                    </span>
+                  </div>
                 </td>
               )}
 
