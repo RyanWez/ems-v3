@@ -6,6 +6,7 @@ import { menuItems } from '../../constants';
 import SidebarItem from './SidebarItem';
 import type { NavItem } from '../../types';
 import { useAuth } from '../../Auth';
+import Image from 'next/image';
 
 const CloseIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
@@ -138,10 +139,13 @@ const Sidebar: React.FC<SidebarProps> = ({
       >
         <div className={`flex items-center justify-between h-16 border-b border-gray-700 px-4 ${isMobileOpen ? 'mobile-sidebar-header' : ''}`}>
           <div className="flex items-center">
-            <img
+            <Image
               src="/images/ems.svg"
               alt="EMS Logo"
+              width={32}
+              height={32}
               className="w-8 h-8"
+              unoptimized
             />
             {!isCollapsed && <span className="ml-3 text-white text-xl font-semibold">EMS</span>}
           </div>
