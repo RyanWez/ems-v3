@@ -27,7 +27,7 @@ export function AccessibilityExample() {
 
   // Check color contrast (example)
   const buttonColors = {
-    primary: '#3B82F6',
+    primary: '#409eff',
     background: '#FFFFFF'
   };
   

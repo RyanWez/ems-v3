@@ -36,11 +36,11 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   canDelete = true
 }) => {
   const [showFullTable, setShowFullTable] = useState(true);
-  
+
   // Get visible columns based on permissions
   const visibleColumns = getVisibleColumns(permissions, userRole);
   const availableActions = getAvailableActions(permissions, userRole);
-  
+
   // Check if specific fields are visible
   const showJoinDate = canViewField(permissions, 'joinDate', userRole);
   const showServiceYears = canViewField(permissions, 'serviceYears', userRole);
@@ -172,11 +172,9 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
               {/* POSITION - Show if permitted */}
               {showPosition && (
                 <td className="px-3 py-2" style={{ width: showFullTable ? '18%' : '30%' }}>
-                  <div className="flex flex-col gap-1">
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPositionColor(employee.position)} block text-center`}>
-                      {employee.position}
-                    </span>
-                  </div>
+                  <span className={`inline-block px-2.5 py-0.5 text-xs font-medium rounded-full ${getPositionColor(employee.position)}`}>
+                    {employee.position}
+                  </span>
                 </td>
               )}
 
