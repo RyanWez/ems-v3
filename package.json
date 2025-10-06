@@ -1,7 +1,7 @@
 {
   "name": "employee-management-system",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.0.0",
   "type": "module",
   "scripts": {
     "dev": "next dev --port 9002",
@@ -44,12 +44,19 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.5",
+    "eslint": "^9",
+    "eslint-config-next": "15.0.0",
     "postcss": "^8.4.39",
     "prisma": "^6.16.3",
     "tailwindcss": "^3.4.4",
     "tsx": "^4.7.0",
     "typescript": "5.5.3"
+  },
+  "overrides": {
+    "glob": "^10.4.5",
+    "sourcemap-codec": "npm:@jridgewell/sourcemap-codec@^1.5.0",
+    "workbox-build": {
+      "source-map": "^0.7.6"
+    }
   }
 }
