@@ -171,8 +171,8 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
 
               {/* POSITION - Show if permitted */}
               {showPosition && (
-                <td className="px-3 py-2" style={{ width: showFullTable ? '18%' : '30%' }}>
-                  <span className={`inline-block px-2.5 py-0.5 text-xs font-medium rounded-full ${getPositionColor(employee.position)}`}>
+                <td className="px-3 py-2" style={{ width: showFullTable ? '18%' : 'auto' }}>
+                  <span className={`inline-block px-2.5 py-0.5 text-xs font-medium rounded-full whitespace-nowrap ${getPositionColor(employee.position)}`}>
                     {employee.position}
                   </span>
                 </td>
