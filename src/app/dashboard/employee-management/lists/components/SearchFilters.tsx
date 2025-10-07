@@ -111,7 +111,7 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-48">
-              {['Any Service Years', 'Less than 1 year', '1-3 years', '3-5 years', 'More than 5 years'].map((years) => (
+              {['Any Service Years', 'Less than 6 months', '1-2 years', '3-4 years', '4-10 years'].map((years) => (
                 <DropdownMenuItem
                   key={years}
                   onSelect={() => onServiceYearsChange(years)}

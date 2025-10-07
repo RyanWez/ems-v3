@@ -55,11 +55,15 @@ export const useEmployeeStatistics = (employees: Employee[]): EmployeeStatistics
       return acc;
     }, {} as Record<string, number>);
 
-    const ageGroupsArray = Object.entries(ageGroups).map(([ageGroup, count]) => ({
-      ageGroup,
-      count,
-      percentage: Math.round((count / totalEmployees) * 100)
-    }));
+    // Define age group order
+    const ageGroupOrder = ['Enter 18', '18-24', '24-30', 'Over 30'];
+    const ageGroupsArray = ageGroupOrder
+      .filter(group => ageGroups[group] > 0)
+      .map(ageGroup => ({
+        ageGroup,
+        count: ageGroups[ageGroup],
+        percentage: Math.round((ageGroups[ageGroup] / totalEmployees) * 100)
+      }));
 
     // Service years statistics
     const serviceYears = employees.reduce((acc, emp) => {
@@ -78,11 +82,15 @@ export const useEmployeeStatistics = (employees: Employee[]): EmployeeStatistics
       return acc;
     }, {} as Record<string, number>);
 
-    const serviceYearsArray = Object.entries(serviceYears).map(([serviceGroup, count]) => ({
-      serviceGroup,
-      count,
-      percentage: Math.round((count / totalEmployees) * 100)
-    }));
+    // Define service years order
+    const serviceYearsOrder = ['Less than 6 months', '1-2 years', '3-4 years', '4-10 years'];
+    const serviceYearsArray = serviceYearsOrder
+      .filter(group => serviceYears[group] > 0)
+      .map(serviceGroup => ({
+        serviceGroup,
+        count: serviceYears[serviceGroup],
+        percentage: Math.round((serviceYears[serviceGroup] / totalEmployees) * 100)
+      }));
 
     // Recent joiners (last 30 days)
     const thirtyDaysAgo = new Date();

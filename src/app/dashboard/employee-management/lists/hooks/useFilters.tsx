@@ -29,18 +29,26 @@ export const useFilters = (employees: Employee[]) => {
 
       let matchesServiceYears = true;
       if (selectedServiceYears !== 'Any Service Years') {
-        const serviceYears = calculateServiceYears(employee.joinDate);
-        if (selectedServiceYears === 'Less than 1 year') {
-          matchesServiceYears = serviceYears.includes('M') && !serviceYears.includes('Y');
-        } else if (selectedServiceYears === '1-3 years') {
-          matchesServiceYears = serviceYears.includes('1 Y') || serviceYears.includes('2 Y');
-        } else if (selectedServiceYears === '3-5 years') {
-          matchesServiceYears = serviceYears.includes('3 Y') || serviceYears.includes('4 Y');
-        } else if (selectedServiceYears === 'More than 5 years') {
-          const yearsPart = serviceYears.split(' Y')[0];
-          if (yearsPart) {
-            matchesServiceYears = parseInt(yearsPart) >= 5;
-          }
+        const joinDate = new Date(employee.joinDate);
+        const currentDate = new Date();
+        const yearsDiff = currentDate.getFullYear() - joinDate.getFullYear();
+        const monthsDiff = currentDate.getMonth() - joinDate.getMonth();
+        const daysDiff = currentDate.getDate() - joinDate.getDate();
+        
+        // Calculate total months more accurately
+        let totalMonths = yearsDiff * 12 + monthsDiff;
+        if (daysDiff < 0) {
+          totalMonths -= 1;
+        }
+        
+        if (selectedServiceYears === 'Less than 6 months') {
+          matchesServiceYears = totalMonths < 6;
+        } else if (selectedServiceYears === '1-2 years') {
+          matchesServiceYears = yearsDiff >= 1 && yearsDiff < 3;
+        } else if (selectedServiceYears === '3-4 years') {
+          matchesServiceYears = yearsDiff >= 3 && yearsDiff < 5;
+        } else if (selectedServiceYears === '4-10 years') {
+          matchesServiceYears = yearsDiff >= 4 && yearsDiff <= 10;
         }
       }
 
