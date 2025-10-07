@@ -1,7 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Pie, PieChart, Cell } from 'recharts';
+import { PieChart, Pie, Cell, Sector, Tooltip, ResponsiveContainer } from 'recharts';
 
+// Data structure interfaces
 interface ChartData {
   label: string;
   value: number;
@@ -15,21 +16,76 @@ interface ChartCardProps {
   type: 'bar' | 'pie';
 }
 
+// Custom Active Shape for Pie Chart Hover Effect
+const renderActiveShape = (props: any) => {
+  const RADIAN = Math.PI / 180;
+  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
+  const sin = Math.sin(-RADIAN * midAngle);
+  const cos = Math.cos(-RADIAN * midAngle);
+  const sx = cx + (outerRadius + 10) * cos;
+  const sy = cy + (outerRadius + 10) * sin;
+  const mx = cx + (outerRadius + 30) * cos;
+  const my = cy + (outerRadius + 30) * sin;
+  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+  const ey = my;
+  const textAnchor = cos >= 0 ? 'start' : 'end';
+
+  return (
+    <g>
+      {/* The main sector */}
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius + 6} // Makes the hovered slice pop out
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+        style={{
+          filter: `drop-shadow(0 4px 10px ${fill}90)`, // Softer shadow
+          cursor: 'pointer',
+        }}
+      />
+      {/* You can add connector lines and text here if needed, but we use a tooltip instead */}
+    </g>
+  );
+};
+
+// Custom Tooltip Component
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    const data = payload[0].payload;
+    return (
+      <div
+        className="bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-xl border"
+        style={{ borderColor: data.fill }}
+      >
+        <p className="font-semibold text-gray-800">{data.name}</p>
+        <p style={{ color: data.fill }}>
+          <span className="font-bold">{data.value}</span>
+          <span className="text-xs ml-1">({(data.percent * 100).toFixed(1)}%)</span>
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
+
 export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
-  const maxValue = Math.max(...data.map(item => item.value));
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [animationKey, setAnimationKey] = useState(0);
 
   useEffect(() => {
     // Trigger animation on mount
     setIsVisible(false);
-    setAnimationKey(prev => prev + 1);
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, [data]);
 
+  // Bar Chart Implementation
   if (type === 'bar') {
+    const maxValue = Math.max(...data.map(item => item.value));
     return (
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
@@ -47,7 +103,7 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
               <div className="flex-1 mx-3">
                 <div className="bg-gray-200 rounded-full h-3 overflow-hidden">
                   <div
-                    className={`h-3 rounded-full transition-all duration-1000 ease-out transform ${hoveredIndex === index ? 'scale-y-110' : ''
+                    className={`h-3 rounded-full transition-all duration-1000 ease-out ${hoveredIndex === index ? 'scale-y-110' : ''
                       }`}
                     style={{
                       width: isVisible ? `${(item.value / maxValue) * 100}%` : '0%',
@@ -74,80 +130,79 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
     );
   }
 
-  // Pie chart with Recharts and smooth animations
+  // --- Refined Pie Chart Implementation ---
   const chartData = data.map(item => ({
     name: item.label,
     value: item.value,
-    fill: item.color
+    fill: item.color,
   }));
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
       <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <div className="space-y-2">
-            {data.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center group cursor-pointer"
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-              >
-                <div
-                  className={`w-3 h-3 rounded-full mr-2 transition-all duration-200 ${hoveredIndex === index ? 'scale-125 shadow-lg' : ''
-                    }`}
-                  style={{
-                    backgroundColor: item.color,
-                    boxShadow: hoveredIndex === index ? `0 0 8px ${item.color}60` : 'none'
-                  }}
-                />
-                <span className={`text-sm text-gray-600 flex-1 transition-colors duration-200 ${hoveredIndex === index ? 'text-gray-800 font-medium' : ''
-                  }`}>
-                  {item.label}
-                </span>
-                <span className={`text-sm font-medium text-gray-800 transition-all duration-200 ${hoveredIndex === index ? 'scale-105' : ''
-                  }`}>
-                  {item.value} ({item.percentage}%)
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="ml-6">
-          <div className="relative w-32 h-32">
-            <PieChart width={128} height={128} key={animationKey}>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        {/* Pie Chart */}
+        <div className="w-full h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
               <Pie
                 data={chartData}
-                cx={64}
-                cy={64}
-                innerRadius={0}
-                outerRadius={50}
-                paddingAngle={2}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={100}
+                paddingAngle={3}
                 dataKey="value"
-                animationBegin={0}
-                animationDuration={1000}
-                animationEasing="ease-out"
+                activeShape={renderActiveShape}
+                onMouseEnter={(_, index) => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
                 isAnimationActive={true}
+                animationDuration={1000}
               >
                 {chartData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={entry.fill}
-                    stroke="white"
-                    strokeWidth={2}
-                    className={`transition-all duration-300 cursor-pointer ${hoveredIndex === index ? 'opacity-80' : 'opacity-100'
-                      }`}
-                    style={{
-                      filter: hoveredIndex === index ? `drop-shadow(0 0 8px ${entry.fill}80)` : 'none',
-                    }}
-                    onMouseEnter={() => setHoveredIndex(index)}
-                    onMouseLeave={() => setHoveredIndex(null)}
+                    stroke={entry.fill}
+                    strokeWidth={hoveredIndex === index ? 1 : 0}
                   />
                 ))}
               </Pie>
             </PieChart>
-          </div>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Legend */}
+        <div className="flex flex-col justify-center space-y-3">
+          {data.map((item, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-3 cursor-pointer p-2 rounded-md transition-colors duration-200 hover:bg-gray-50"
+              onMouseEnter={() => setHoveredIndex(index)}
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              <div
+                className="w-4 h-4 rounded-full transition-all duration-300 flex-shrink-0"
+                style={{
+                  backgroundColor: item.color,
+                  transform: hoveredIndex === index ? 'scale(1.2)' : 'scale(1)',
+                  boxShadow: hoveredIndex === index ? `0 0 12px ${item.color}80` : 'none'
+                }}
+              />
+              <div className="flex justify-between items-baseline w-full">
+                <span className={`text-sm font-medium transition-colors duration-200 ${hoveredIndex === index ? 'text-gray-900' : 'text-gray-600'
+                  }`}>
+                  {item.label}
+                </span>
+                <span className={`text-xs font-semibold tabular-nums ${hoveredIndex === index ? 'text-gray-800' : 'text-gray-500'
+                  }`}>
+                  {item.percentage}%
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
