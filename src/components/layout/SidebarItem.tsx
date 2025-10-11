@@ -58,8 +58,8 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
         onToggle?.();
       }
     } else {
+      // Navigation is now handled by the Link component
       onNavigate?.(item.path);
-      router.push(item.path);
     }
   };
 
@@ -306,7 +306,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       {hasChildren ? (
         renderItem()
       ) : (
-        <Link href={item.path} legacyBehavior>
+        <Link href={item.path}>
           {renderItem()}
         </Link>
       )}

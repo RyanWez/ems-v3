@@ -52,13 +52,32 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, description, permissions, color } = body;
 
-    // Validate required fields
-    if (!name || !description || !permissions) {
+    console.log('Received role creation request:', { name, description, permissions, color });
+
+    // Validate required fields with detailed logging
+    if (!name) {
+      console.error('Name field is missing or empty');
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
+    if (!description) {
+      console.error('Description field is missing or empty');
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+    if (!permissions) {
+      console.error('Permissions field is missing or empty');
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    console.log('Validation passed, creating role...');
 
     // Check if role name already exists
     const existingRole = await prisma.role.findFirst({

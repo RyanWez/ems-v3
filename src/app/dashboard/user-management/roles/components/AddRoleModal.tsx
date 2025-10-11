@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import { toast } from 'sonner';
 import { AccessibleModal } from '@/components/AccessibleModal';
 import { RoleForm } from './RoleForm';
 import { PermissionEditor } from './PermissionEditor';
@@ -84,7 +85,19 @@ const AddRoleModal: React.FC<AddRoleModalProps> = ({
   };
 
   const handleFinalSave = () => {
-    if (!roleData) return;
+    if (!roleData) {
+      console.error('No role data available');
+      return;
+    }
+
+    // Validate that we have all required fields
+    if (!roleData.name || !roleData.description || !permissions) {
+      console.error('Missing required fields:', { roleData, permissions });
+      toast.error('Missing required fields. Please complete all steps.');
+      return;
+    }
+
+    console.log('Saving role with data:', { ...roleData, permissions });
     onSave({ ...roleData, permissions });
     handleClose();
   };

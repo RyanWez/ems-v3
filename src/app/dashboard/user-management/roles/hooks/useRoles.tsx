@@ -41,6 +41,18 @@ export const useRoles = () => {
       setIsLoading(true);
       setError(null);
 
+      // Validate required fields
+      if (!roleData.name || !roleData.description || !roleData.permissions) {
+        throw new Error('Missing required fields: name, description, and permissions are required');
+      }
+
+      console.log('Creating role with data:', {
+        name: roleData.name,
+        description: roleData.description,
+        permissions: roleData.permissions,
+        color: roleData.color || 'blue'
+      });
+
       const response = await fetch('/api/roles', {
         method: 'POST',
         headers: {
@@ -51,15 +63,18 @@ export const useRoles = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.error('API Error Response:', errorData);
         throw new Error(errorData.error || 'Failed to create role');
       }
 
       const newRole = await response.json();
+      console.log('Role created successfully:', newRole);
       setRoles(prev => [...prev, newRole]);
       toast.success(`Role "${roleData.name}" created successfully!`);
       return newRole;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create role';
+      console.error('Create role error:', err);
       setError(errorMessage);
       toast.error(errorMessage);
       throw err;
