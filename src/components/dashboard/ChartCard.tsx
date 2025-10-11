@@ -1,6 +1,18 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, Sector, Tooltip, ResponsiveContainer, BarChart, Bar, CartesianGrid, XAxis, YAxis } from 'recharts';
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Sector,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 // Data structure interfaces
 interface ChartData {
@@ -13,12 +25,13 @@ interface ChartData {
 interface ChartCardProps {
   title: string;
   data: ChartData[];
-  type: 'bar' | 'pie';
+  type: "bar" | "pie";
 }
 
 // Custom Active Shape for Pie Chart Hover Effect with Enhanced Glow
 const renderActiveShape = (props: any) => {
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } =
+    props;
 
   return (
     <g>
@@ -47,7 +60,7 @@ const renderActiveShape = (props: any) => {
         fill={fill}
         style={{
           filter: `drop-shadow(0 6px 20px ${fill}90)`,
-          cursor: 'pointer',
+          cursor: "pointer",
         }}
       />
       {/* Shine gradient overlay */}
@@ -60,30 +73,18 @@ const renderActiveShape = (props: any) => {
         endAngle={endAngle}
         fill="url(#pieShine)"
         style={{
-          cursor: 'pointer',
-          pointerEvents: 'none',
+          cursor: "pointer",
+          pointerEvents: "none",
         }}
       />
     </g>
   );
 };
 
-// Custom Animated Bar Shape
-const AnimatedBar = (props: any) => {
-  const { fill, x, y, width, height, index } = props;
+// Simple Bar Shape with Hover Effect
+const SimpleBar = (props: any) => {
+  const { fill, x, y, width, height } = props;
   const [isHovered, setIsHovered] = useState(false);
-  const [animatedHeight, setAnimatedHeight] = useState(0);
-  const [animatedY, setAnimatedY] = useState(y + height);
-
-  useEffect(() => {
-    const delay = index * 100; // Stagger animation
-    const timer = setTimeout(() => {
-      setAnimatedHeight(height);
-      setAnimatedY(y);
-    }, delay);
-
-    return () => clearTimeout(timer);
-  }, [height, y, index]);
 
   return (
     <g>
@@ -91,9 +92,9 @@ const AnimatedBar = (props: any) => {
       {isHovered && (
         <rect
           x={x - 2}
-          y={animatedY - 2}
+          y={y - 2}
           width={width + 4}
-          height={animatedHeight + 4}
+          height={height + 4}
           fill={fill}
           rx={10}
           style={{
@@ -105,24 +106,26 @@ const AnimatedBar = (props: any) => {
       {/* Main bar */}
       <rect
         x={x}
-        y={animatedY}
+        y={y}
         width={width}
-        height={animatedHeight}
+        height={height}
         fill={fill}
         rx={8}
         style={{
-          filter: isHovered ? `drop-shadow(0 8px 20px ${fill}70)` : `drop-shadow(0 2px 4px ${fill}30)`,
-          transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), y 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
-          cursor: 'pointer',
-          transformOrigin: 'bottom',
+          filter: isHovered
+            ? `drop-shadow(0 8px 20px ${fill}70)`
+            : `drop-shadow(0 2px 4px ${fill}30)`,
+          transform: isHovered ? "translateY(-4px)" : "translateY(0)",
+          transition: "all 0.3s ease",
+          cursor: "pointer",
+          transformOrigin: "bottom",
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       />
       {/* Shine effect */}
       <defs>
-        <linearGradient id={`shine-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
+        <linearGradient id={`shine-bar`} x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="white" stopOpacity="0.3" />
           <stop offset="50%" stopColor="white" stopOpacity="0" />
           <stop offset="100%" stopColor="black" stopOpacity="0.1" />
@@ -130,13 +133,13 @@ const AnimatedBar = (props: any) => {
       </defs>
       <rect
         x={x}
-        y={animatedY}
+        y={y}
         width={width}
-        height={animatedHeight}
-        fill={`url(#shine-${index})`}
+        height={height}
+        fill={`url(#shine-bar)`}
         rx={8}
         style={{
-          pointerEvents: 'none',
+          pointerEvents: "none",
         }}
       />
     </g>
@@ -155,7 +158,9 @@ const CustomTooltip = ({ active, payload }: any) => {
         <p className="font-semibold text-gray-800">{data.name}</p>
         <p style={{ color: data.fill }}>
           <span className="font-bold">{data.value}</span>
-          <span className="text-xs ml-1">({(data.percent * 100).toFixed(1)}%)</span>
+          <span className="text-xs ml-1">
+            ({(data.percent * 100).toFixed(1)}%)
+          </span>
         </p>
       </div>
     );
@@ -180,14 +185,38 @@ const styles = `
 export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [animationKey, setAnimationKey] = useState(0);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
 
   // Trigger re-animation on data change
   useEffect(() => {
-    setAnimationKey(prev => prev + 1);
+    setAnimationKey((prev) => prev + 1);
   }, [data]);
 
+  // Detect container width changes (sidebar toggle) and trigger re-animation
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const newWidth = entry.contentRect.width;
+        if (containerWidth !== 0 && Math.abs(newWidth - containerWidth) > 50) {
+          // Significant width change detected (sidebar toggle)
+          setAnimationKey((prev) => prev + 1);
+        }
+        setContainerWidth(newWidth);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [containerWidth]);
+
   // Enhanced Bar Chart Implementation with Advanced Animations
-  if (type === 'bar') {
+  if (type === "bar") {
     const chartData = data.map((item, index) => ({
       name: item.label,
       value: item.value,
@@ -196,11 +225,15 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
     }));
 
     return (
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+      <div
+        ref={containerRef}
+        className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 ease-out"
+      >
         <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
         <div className="w-full h-80">
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="100%" debounce={50}>
             <BarChart
+              key={animationKey}
               data={chartData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
@@ -214,22 +247,30 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
                 dataKey="name"
                 tickLine={false}
                 tickMargin={10}
-                axisLine={{ stroke: '#e5e7eb' }}
-                tick={{ fill: '#6b7280', fontSize: 12 }}
+                axisLine={{ stroke: "#e5e7eb" }}
+                tick={{ fill: "#6b7280", fontSize: 12 }}
               />
               <YAxis
                 tickLine={false}
-                axisLine={{ stroke: '#e5e7eb' }}
-                tick={{ fill: '#6b7280', fontSize: 12 }}
+                axisLine={{ stroke: "#e5e7eb" }}
+                tick={{ fill: "#6b7280", fontSize: 12 }}
               />
               <Tooltip
-                cursor={{ fill: 'rgba(0, 0, 0, 0.05)', radius: 8 }}
+                cursor={{ fill: "rgba(0, 0, 0, 0.05)", radius: 8 }}
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
-                      <div className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-xl border-2" style={{ borderColor: payload[0].payload.fill }}>
-                        <p className="font-semibold text-gray-800 text-sm">{payload[0].payload.name}</p>
-                        <p style={{ color: payload[0].payload.fill }} className="text-lg font-bold mt-1">
+                      <div
+                        className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-xl border-2"
+                        style={{ borderColor: payload[0].payload.fill }}
+                      >
+                        <p className="font-semibold text-gray-800 text-sm">
+                          {payload[0].payload.name}
+                        </p>
+                        <p
+                          style={{ color: payload[0].payload.fill }}
+                          className="text-lg font-bold mt-1"
+                        >
                           {payload[0].value}
                         </p>
                       </div>
@@ -240,8 +281,10 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
               />
               <Bar
                 dataKey="value"
-                isAnimationActive={false}
-                shape={(props: any) => <AnimatedBar {...props} />}
+                isAnimationActive={true}
+                animationDuration={800}
+                animationEasing="ease-out"
+                shape={(props: any) => <SimpleBar {...props} />}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -251,7 +294,7 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
   }
 
   // --- Enhanced Pie Chart Implementation ---
-  const chartData = data.map(item => ({
+  const chartData = data.map((item) => ({
     name: item.label,
     value: item.value,
     fill: item.color,
@@ -260,22 +303,38 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
   return (
     <>
       <style>{styles}</style>
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
+      <div
+        ref={containerRef}
+        className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 ease-out"
+      >
         <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           {/* Pie Chart */}
           <div className="w-full h-64">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" debounce={50}>
               <PieChart key={animationKey}>
                 <defs>
-                  <linearGradient id="pieShine" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <linearGradient
+                    id="pieShine"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="100%"
+                  >
                     <stop offset="0%" stopColor="white" stopOpacity="0.4" />
                     <stop offset="50%" stopColor="white" stopOpacity="0.1" />
-                    <stop offset="100%" stopColor="transparent" stopOpacity="0" />
+                    <stop
+                      offset="100%"
+                      stopColor="transparent"
+                      stopOpacity="0"
+                    />
                   </linearGradient>
                 </defs>
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+                <Tooltip
+                  content={<CustomTooltip />}
+                  cursor={{ fill: "transparent" }}
+                />
                 <Pie
                   data={chartData}
                   cx="50%"
@@ -285,12 +344,14 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
                   paddingAngle={3}
                   dataKey="value"
                   activeShape={renderActiveShape}
-                  onMouseEnter={(_: any, index: number) => setHoveredIndex(index)}
+                  onMouseEnter={(_: any, index: number) =>
+                    setHoveredIndex(index)
+                  }
                   onMouseLeave={() => setHoveredIndex(null)}
                   isAnimationActive={true}
-                  animationDuration={1200}
+                  animationDuration={800}
                   animationBegin={0}
-                  animationEasing="ease-in-out"
+                  animationEasing="ease-out"
                 >
                   {chartData.map((entry, index) => (
                     <Cell
@@ -299,10 +360,11 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
                       stroke="white"
                       strokeWidth={2}
                       style={{
-                        filter: hoveredIndex === index
-                          ? `drop-shadow(0 4px 12px ${entry.fill}80)`
-                          : `drop-shadow(0 2px 4px ${entry.fill}40)`,
-                        transition: 'filter 0.3s ease',
+                        filter:
+                          hoveredIndex === index
+                            ? `drop-shadow(0 4px 12px ${entry.fill}80)`
+                            : `drop-shadow(0 2px 4px ${entry.fill}40)`,
+                        transition: "filter 0.3s ease",
                       }}
                     />
                   ))}
@@ -327,19 +389,31 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
                   className="w-4 h-4 rounded-full transition-all duration-300 flex-shrink-0"
                   style={{
                     backgroundColor: item.color,
-                    transform: hoveredIndex === index ? 'scale(1.3)' : 'scale(1)',
-                    boxShadow: hoveredIndex === index
-                      ? `0 0 16px ${item.color}90, 0 0 8px ${item.color}60`
-                      : `0 0 4px ${item.color}30`,
+                    transform:
+                      hoveredIndex === index ? "scale(1.3)" : "scale(1)",
+                    boxShadow:
+                      hoveredIndex === index
+                        ? `0 0 16px ${item.color}90, 0 0 8px ${item.color}60`
+                        : `0 0 4px ${item.color}30`,
                   }}
                 />
                 <div className="flex justify-between items-baseline w-full">
-                  <span className={`text-sm font-medium transition-all duration-200 ${hoveredIndex === index ? 'text-gray-900 font-semibold' : 'text-gray-600'
-                    }`}>
+                  <span
+                    className={`text-sm font-medium transition-all duration-200 ${
+                      hoveredIndex === index
+                        ? "text-gray-900 font-semibold"
+                        : "text-gray-600"
+                    }`}
+                  >
                     {item.label}
                   </span>
-                  <span className={`text-xs font-semibold tabular-nums transition-all duration-200 ${hoveredIndex === index ? 'text-gray-800 scale-110' : 'text-gray-500'
-                    }`}>
+                  <span
+                    className={`text-xs font-semibold tabular-nums transition-all duration-200 ${
+                      hoveredIndex === index
+                        ? "text-gray-800 scale-110"
+                        : "text-gray-500"
+                    }`}
+                  >
                     {item.percentage}%
                   </span>
                 </div>
