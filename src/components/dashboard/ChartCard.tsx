@@ -238,7 +238,7 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
         className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 ease-out"
       >
         <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
-        <div className="w-full h-80">
+        <div className="w-full h-80 outline-none focus:outline-none">
           <ResponsiveContainer width="100%" height="100%" debounce={50}>
             <BarChart
               key={animationKey}
@@ -319,7 +319,7 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           {/* Pie Chart */}
-          <div className="w-full h-64">
+          <div className="w-full h-64 outline-none focus:outline-none">
             <ResponsiveContainer width="100%" height="100%" debounce={50}>
               <PieChart key={animationKey}>
                 <defs>
