@@ -2,7 +2,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown, Eye, EyeOff } from 'lucide-react';
 import EmployeeListIcon from '@/components/icons/EmployeeListIcon';
 import { Button } from "@/components/ui/button";
 import {
@@ -44,6 +44,8 @@ const UserList: React.FC = () => {
     roleId: ''
   });
   const [formErrors, setFormErrors] = useState<{[key: string]: string}>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showEditPassword, setShowEditPassword] = useState(false);
 
   // Permission checking functions
   const canViewUsers = permissions?.userManagement?.list?.view || userRole === 'Administrator';
@@ -105,6 +107,7 @@ const UserList: React.FC = () => {
       roleId: roles.length > 0 ? roles[0].id.toString() : ''
     });
     setFormErrors({});
+    setShowPassword(false);
     setIsAddDialogOpen(true);
   };
 
@@ -157,6 +160,7 @@ const UserList: React.FC = () => {
         const newUser = await response.json();
         fetchUsers();
         setIsAddDialogOpen(false);
+        setShowPassword(false);
         toast.success('New user added successfully!');
       } else {
         const error = await response.json();
@@ -190,6 +194,7 @@ const UserList: React.FC = () => {
         roleId: user.roleId.toString()
       });
       setFormErrors({});
+      setShowEditPassword(false);
       setIsEditDialogOpen(true);
     }
   };
@@ -234,6 +239,11 @@ const UserList: React.FC = () => {
       errors.roleId = 'Role is required';
     }
 
+    // Password validation only if password is provided
+    if (formData.password.trim() && formData.password.length < 6) {
+      errors.password = 'Password must be at least 6 characters';
+    }
+
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
       return;
@@ -247,6 +257,11 @@ const UserList: React.FC = () => {
         email: `${formData.name.trim().toLowerCase()}@example.com`,
         roleId: parseInt(formData.roleId),
       };
+
+      // Only include password if it's provided
+      if (formData.password.trim()) {
+        updateData.password = formData.password.trim();
+      }
 
       console.log('Updating user with data:', updateData);
 
@@ -264,6 +279,7 @@ const UserList: React.FC = () => {
         fetchUsers();
         setIsEditDialogOpen(false);
         setEditingUser(null);
+        setShowEditPassword(false);
         toast.success('User updated successfully!');
       } else {
         const error = await response.json();
@@ -472,15 +488,28 @@ const UserList: React.FC = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Password *
                 </label>
-                <input
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    formErrors.password ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter password"
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      formErrors.password ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </button>
+                </div>
                 {formErrors.password && (
                   <p className="text-red-500 text-xs mt-1">{formErrors.password}</p>
                 )}
@@ -527,7 +556,10 @@ const UserList: React.FC = () => {
             {/* Dialog Actions */}
             <div className="flex justify-end space-x-3 mt-6">
               <button
-                onClick={() => setIsAddDialogOpen(false)}
+                onClick={() => {
+                  setIsAddDialogOpen(false);
+                  setShowPassword(false);
+                }}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
                 disabled={isLoading}
               >
@@ -571,6 +603,38 @@ const UserList: React.FC = () => {
                 )}
               </div>
 
+              {/* Password Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  New Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showEditPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    className={`w-full px-3 py-2 pr-10 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                      formErrors.password ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Leave empty to keep current password"
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setShowEditPassword(!showEditPassword)}
+                  >
+                    {showEditPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-400 hover:text-gray-600" />
+                    )}
+                  </button>
+                </div>
+                {formErrors.password && (
+                  <p className="text-red-500 text-xs mt-1">{formErrors.password}</p>
+                )}
+                <p className="text-gray-500 text-xs mt-1">Leave empty if you don't want to change the password</p>
+              </div>
 
               {/* Role Field */}
               <div>
@@ -613,7 +677,10 @@ const UserList: React.FC = () => {
             {/* Dialog Actions */}
             <div className="flex justify-end space-x-3 mt-6">
               <button
-                onClick={() => setIsEditDialogOpen(false)}
+                onClick={() => {
+                  setIsEditDialogOpen(false);
+                  setShowEditPassword(false);
+                }}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200"
                 disabled={isLoading}
               >

@@ -2,6 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '../../../../generated/prisma';
+import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -73,12 +74,20 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { name, email, roleId } = body;
+    const { name, email, roleId, password } = body;
 
     // Validate required fields
     if (!name || !email || !roleId) {
       return NextResponse.json(
         { error: 'Missing required fields: name, email, roleId' },
+        { status: 400 }
+      );
+    }
+
+    // Validate password if provided
+    if (password && password.length < 6) {
+      return NextResponse.json(
+        { error: 'Password must be at least 6 characters' },
         { status: 400 }
       );
     }
@@ -122,14 +131,23 @@ export async function PUT(
       );
     }
 
+    // Prepare update data
+    const updateData: any = {
+      name,
+      email,
+      ...(roleId && { roleId: parseInt(roleId) }),
+    };
+
+    // Only include password if provided (hash it first)
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+
     // Update the user
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: {
-        name,
-        email,
-        ...(roleId && { roleId: parseInt(roleId) }),
-      },
+      data: updateData,
       include: {
         role: true,
       },
