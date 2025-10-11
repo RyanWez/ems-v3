@@ -150,6 +150,16 @@ const SimpleBar = (props: any) => {
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
+    // Calculate percentage from value and total
+    const total = payload[0].payload.value;
+    const percentage = payload[0].percent
+      ? (payload[0].percent * 100).toFixed(1)
+      : (
+          (total /
+            payload.reduce((sum: number, item: any) => sum + item.value, 0)) *
+          100
+        ).toFixed(1);
+
     return (
       <div
         className="bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-xl border"
@@ -158,9 +168,7 @@ const CustomTooltip = ({ active, payload }: any) => {
         <p className="font-semibold text-gray-800">{data.name}</p>
         <p style={{ color: data.fill }}>
           <span className="font-bold">{data.value}</span>
-          <span className="text-xs ml-1">
-            ({(data.percent * 100).toFixed(1)}%)
-          </span>
+          <span className="text-xs ml-1">({percentage}%)</span>
         </p>
       </div>
     );
