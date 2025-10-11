@@ -369,38 +369,42 @@ const UserList: React.FC = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full">
+          <table className="min-w-full table-fixed">
             <thead>
               <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
-                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">UserName</th>
-                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">Password</th>
-                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider hidden sm:table-cell">Role</th>
-                <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider hidden md:table-cell">Status</th>
-                <th className="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Actions</th>
+                <th className="w-1/5 px-3 sm:px-6 py-3 sm:py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">UserName</th>
+                <th className="w-1/5 px-3 sm:px-6 py-3 sm:py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Password</th>
+                <th className="w-1/5 px-3 sm:px-6 py-3 sm:py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Role</th>
+                <th className="w-1/5 px-3 sm:px-6 py-3 sm:py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Status</th>
+                <th className="w-1/5 px-3 sm:px-6 py-3 sm:py-4 text-center text-xs font-bold text-gray-600 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {users.map((user, index) => (
                 <tr key={user.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50 transition-colors duration-150`}>
-                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                    <div className="text-sm font-semibold text-gray-900">{user.displayName}</div>
+                  <td className="w-1/5 px-3 sm:px-6 py-3 sm:py-4 text-center">
+                    <div className="text-sm font-semibold text-gray-900 truncate">{user.displayName}</div>
                   </td>
-                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
-                    <div className="text-xs sm:text-sm text-gray-600 font-mono bg-gray-100 px-2 sm:px-3 py-1 sm:py-2 rounded text-center">
+                  <td className="w-1/5 px-3 sm:px-6 py-3 sm:py-4 text-center">
+                    <div className="text-xs sm:text-sm text-gray-600 font-mono bg-gray-100 px-2 sm:px-3 py-1 sm:py-2 rounded mx-auto inline-block">
                       ******
                     </div>
                   </td>
-                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell">
-                    <span className={`px-2 sm:px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getRoleColor(user.role)}`}>
-                      {user.role}
-                    </span>
+                  <td className="w-1/5 px-3 sm:px-6 py-3 sm:py-4 text-center">
+                    <div className="flex justify-center">
+                      <span className={`px-2 sm:px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getRoleColor(user.role)}`}>
+                        {user.role}
+                      </span>
+                    </div>
                   </td>
-                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden md:table-cell">
-                    <span className={`px-2 sm:px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(user.status)}`}>
-                      {user.status}
-                    </span>
+                  <td className="w-1/5 px-3 sm:px-6 py-3 sm:py-4 text-center">
+                    <div className="flex justify-center">
+                      <span className={`px-2 sm:px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ${getStatusColor(user.status)}`}>
+                        {user.status}
+                      </span>
+                    </div>
                   </td>
-                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-center text-sm font-medium">
+                  <td className="w-1/5 px-3 sm:px-6 py-3 sm:py-4 text-center">
                     <div className="flex justify-center space-x-1 sm:space-x-2">
                       {canEditUsers && (
                         <button
