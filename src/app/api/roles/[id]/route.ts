@@ -6,11 +6,12 @@ const prisma = new PrismaClient();
 // GET /api/roles/[id] - Get a single role
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const role = await prisma.role.findUnique({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       include: {
         _count: {
           select: { users: true }
@@ -50,15 +51,16 @@ export async function GET(
 // PUT /api/roles/[id] - Update a role
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { name, description, permissions, color, status } = body;
 
     // Check if role exists
     const existingRole = await prisma.role.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     });
 
     if (!existingRole) {
@@ -73,7 +75,7 @@ export async function PUT(
       const nameExists = await prisma.role.findFirst({
         where: {
           name,
-          id: { not: parseInt(params.id) }
+          id: { not: parseInt(id) }
         }
       });
 
@@ -86,7 +88,7 @@ export async function PUT(
     }
 
     const role = await prisma.role.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: {
         ...(name && { name }),
         ...(description && { description }),
@@ -127,12 +129,13 @@ export async function PUT(
 // DELETE /api/roles/[id] - Delete a role
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check if role exists
     const existingRole = await prisma.role.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     });
 
     if (!existingRole) {
@@ -144,7 +147,7 @@ export async function DELETE(
 
     // Check if role has users assigned
     const userCount = await prisma.user.count({
-      where: { roleId: parseInt(params.id) }
+      where: { roleId: parseInt(id) }
     });
 
     if (userCount > 0) {
@@ -155,7 +158,7 @@ export async function DELETE(
     }
 
     await prisma.role.delete({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     });
 
     return NextResponse.json({ message: 'Role deleted successfully' });

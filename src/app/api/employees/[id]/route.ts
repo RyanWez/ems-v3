@@ -6,11 +6,12 @@ const prisma = new PrismaClient();
 // GET /api/employees/[id] - Get a single employee
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const employee = await prisma.employee.findUnique({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     });
 
     if (!employee) {
@@ -33,9 +34,10 @@ export async function GET(
 // PUT /api/employees/[id] - Update an employee
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { name, joinDate, position, gender, dob, phone } = body;
 
@@ -48,7 +50,7 @@ export async function PUT(
     }
 
     const employee = await prisma.employee.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: {
         name,
         joinDate,
@@ -78,11 +80,12 @@ export async function PUT(
 // DELETE /api/employees/[id] - Delete an employee
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.employee.delete({
-      where: { id: parseInt(params.id) }
+      where: { id: parseInt(id) }
     });
 
     return NextResponse.json({ message: 'Employee deleted successfully' });

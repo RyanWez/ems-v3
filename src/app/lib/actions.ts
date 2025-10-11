@@ -51,6 +51,7 @@ export async function authenticate(username: string, password: string): Promise<
 }
 
 export async function deleteSession() {
-  cookies().delete('session');
+  const cookieStore = await cookies();
+  cookieStore.delete('session');
   redirect('/login');
 }

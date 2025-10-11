@@ -60,7 +60,6 @@ const nextConfig = withPWA({
   },
   experimental: {
     // Handle missing chunks gracefully
-    missingSuspenseWithCSRBailout: false,
   },
   // Add proper error handling
   onDemandEntries: {
@@ -108,8 +107,6 @@ const nextConfig = withPWA({
   async rewrites() {
     return [];
   },
-  // Improve development experience
-  swcMinify: true,
   
   // Image optimization
   images: {
