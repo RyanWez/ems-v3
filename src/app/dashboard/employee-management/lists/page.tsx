@@ -15,7 +15,7 @@ import { DeleteEmployeeModal } from './components/modals/DeleteEmployeeModal';
 import { LoadingSpinner, InlineSpinner } from '../../../../components/LoadingSpinner';
 import { useAuth } from '@/Auth';
 import { canViewEmployeeList, canCreateEmployee, canPerformAction } from './utils/permissionHelpers';
-import { exportEmployeesToCSV } from './utils/exportHelpers';
+import { exportEmployeesToCSV, exportEmployeesToExcel } from './utils/exportHelpers';
 
 const EmployeeLists: React.FC = () => {
   // Auth and permissions
@@ -159,9 +159,13 @@ const EmployeeLists: React.FC = () => {
     resetPagination();
   };
 
-  // Export Handler
-  const handleExport = () => {
+  // Export Handlers
+  const handleExportCSV = () => {
     exportEmployeesToCSV(filteredEmployees);
+  };
+
+  const handleExportExcel = () => {
+    exportEmployeesToExcel(filteredEmployees);
   };
 
   // Check permissions first
@@ -234,12 +238,21 @@ const EmployeeLists: React.FC = () => {
         <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0">
           <button
             className="flex items-center bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleExport}
+            onClick={handleExportExcel}
+            disabled={isLoading || filteredEmployees.length === 0}
+            title="Export to Excel"
+          >
+            <Download size={18} className="mr-2" />
+            Export Excel
+          </button>
+          <button
+            className="flex items-center bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleExportCSV}
             disabled={isLoading || filteredEmployees.length === 0}
             title="Export to CSV"
           >
             <Download size={18} className="mr-2" />
-            Export
+            Export CSV
           </button>
           {canCreate && (
             <button
