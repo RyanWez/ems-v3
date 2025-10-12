@@ -145,14 +145,20 @@ const Dashboard: React.FC = () => {
     return monthlyData;
   };
 
-  // Generate yearly growth data (last 5 years)
+  // Generate yearly growth data (from first employee join year to current year)
   const generateYearlyGrowthData = () => {
     const yearlyData = [];
     const currentYear = new Date().getFullYear();
 
-    for (let i = 4; i >= 0; i--) {
-      const year = currentYear - i;
+    // Find the earliest join date from all employees
+    let earliestYear = currentYear;
+    if (employees.length > 0) {
+      const joinDates = employees.map((emp) => new Date(emp.joinDate).getFullYear());
+      earliestYear = Math.min(...joinDates);
+    }
 
+    // Generate data from earliest year to current year
+    for (let year = earliestYear; year <= currentYear; year++) {
       // Get the end of the year for accurate counting
       const endOfYear = new Date(year, 11, 31, 23, 59, 59);
 
