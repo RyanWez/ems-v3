@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import {
   AreaChart,
   Area,
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -22,8 +21,9 @@ interface GrowthData {
 }
 
 interface EmployeeGrowthChartProps {
-  monthlyData: GrowthData[];
+  monthlyDataByYear: { [year: string]: GrowthData[] };
   yearlyData: GrowthData[];
+  availableYears: number[];
 }
 
 // Custom Tooltip Component
@@ -45,17 +45,31 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
-  monthlyData,
+  monthlyDataByYear,
   yearlyData,
+  availableYears,
 }) => {
-  const [viewMode, setViewMode] = useState<"monthly" | "yearly">("monthly");
+  const [viewMode, setViewMode] = useState<"monthly" | "yearly">("yearly");
+  const [selectedYear, setSelectedYear] = useState<number>(
+    availableYears[availableYears.length - 1] || new Date().getFullYear()
+  );
   const [animationKey, setAnimationKey] = useState(0);
-  const chartData = viewMode === "monthly" ? monthlyData : yearlyData;
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const chartData =
+    viewMode === "monthly" ? monthlyDataByYear[selectedYear] || [] : yearlyData;
 
   // Trigger animation when view mode changes
   const handleViewModeChange = (mode: "monthly" | "yearly") => {
     setViewMode(mode);
     setAnimationKey((prev) => prev + 1);
+  };
+
+  // Handle year selection
+  const handleYearChange = (year: number) => {
+    setSelectedYear(year);
+    setAnimationKey((prev) => prev + 1);
+    setIsDropdownOpen(false);
   };
 
   // Calculate growth percentage
@@ -74,39 +88,91 @@ export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
   return (
     <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30 p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-500 ease-out">
       {/* Header with Toggle */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-800 mb-1">
             Employee Growth Trends
           </h3>
           <p className="text-sm text-gray-600">
-            Showing total employees for the last{" "}
-            {viewMode === "monthly" ? "12 months" : "5 years"}
+            {viewMode === "monthly"
+              ? `Showing monthly data for ${selectedYear}`
+              : `Showing yearly data from ${availableYears[0]} to ${
+                  availableYears[availableYears.length - 1]
+                }`}
           </p>
         </div>
 
-        {/* Toggle Button */}
-        <div className="flex bg-gray-100 rounded-lg p-1 shadow-inner">
-          <button
-            onClick={() => handleViewModeChange("monthly")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
-              viewMode === "monthly"
-                ? "bg-white text-blue-600 shadow-md scale-105"
-                : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            onClick={() => handleViewModeChange("yearly")}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
-              viewMode === "yearly"
-                ? "bg-white text-blue-600 shadow-md scale-105"
-                : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
-            }`}
-          >
-            Yearly
-          </button>
+        {/* Controls: Toggle + Year Selector */}
+        <div className="flex items-center gap-3">
+          {/* Year Selector (only show in monthly mode) */}
+          {viewMode === "monthly" && (
+            <div className="relative">
+              <button
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all duration-200 shadow-sm"
+              >
+                <span>{selectedYear}</span>
+                <svg
+                  className={`w-4 h-4 transition-transform duration-200 ${
+                    isDropdownOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+                  {availableYears.map((year) => (
+                    <button
+                      key={year}
+                      onClick={() => handleYearChange(year)}
+                      className={`w-full text-left px-4 py-2 text-sm transition-colors duration-150 ${
+                        year === selectedYear
+                          ? "bg-blue-50 text-blue-600 font-semibold"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      {year}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Toggle Button */}
+          <div className="flex bg-gray-100 rounded-lg p-1 shadow-inner">
+            <button
+              onClick={() => handleViewModeChange("monthly")}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
+                viewMode === "monthly"
+                  ? "bg-white text-blue-600 shadow-md scale-105"
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => handleViewModeChange("yearly")}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
+                viewMode === "yearly"
+                  ? "bg-white text-blue-600 shadow-md scale-105"
+                  : "text-gray-600 hover:text-gray-800 hover:bg-gray-50"
+              }`}
+            >
+              Yearly
+            </button>
+          </div>
         </div>
       </div>
 

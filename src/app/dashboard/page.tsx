@@ -90,59 +90,68 @@ const Dashboard: React.FC = () => {
     color: serviceColors[index % serviceColors.length] || "#6366F1",
   }));
 
-  // Generate monthly growth data (last 12 months)
-  const generateMonthlyGrowthData = () => {
-    const monthlyData = [];
-    const currentDate = new Date();
+  // Generate monthly growth data by year
+  const generateMonthlyGrowthDataByYear = () => {
+    const monthlyDataByYear: { [year: string]: any[] } = {};
+    
+    // Find all years that have employees
+    const yearsWithEmployees = new Set<number>();
+    employees.forEach((emp) => {
+      const joinYear = new Date(emp.joinDate).getFullYear();
+      yearsWithEmployees.add(joinYear);
+    });
 
-    for (let i = 11; i >= 0; i--) {
-      const date = new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth() - i,
-        1
-      );
-      const monthName = date.toLocaleDateString("en-US", {
-        month: "short",
-        year: "numeric",
-      });
-
-      // Get the end of the month for accurate counting
-      const endOfMonth = new Date(
-        date.getFullYear(),
-        date.getMonth() + 1,
-        0,
-        23,
-        59,
-        59
-      );
-
-      // Count employees joined up to end of this month
-      const employeesUpToMonth = employees.filter((emp) => {
-        const joinDate = new Date(emp.joinDate);
-        return joinDate <= endOfMonth;
-      }).length;
-
-      // Count new hires in this specific month
-      const newHires = employees.filter((emp) => {
-        const joinDate = new Date(emp.joinDate);
-        return (
-          joinDate.getMonth() === date.getMonth() &&
-          joinDate.getFullYear() === date.getFullYear()
-        );
-      }).length;
-
-      // Terminations set to 0 (will be implemented later with actual data)
-      const terminations = 0;
-
-      monthlyData.push({
-        period: monthName,
-        totalEmployees: employeesUpToMonth,
-        newHires: newHires,
-        terminations: terminations,
-      });
+    // Get earliest and latest years
+    const currentYear = new Date().getFullYear();
+    let earliestYear = currentYear;
+    if (employees.length > 0) {
+      const joinYears = employees.map((emp) => new Date(emp.joinDate).getFullYear());
+      earliestYear = Math.min(...joinYears);
     }
 
-    return monthlyData;
+    // Generate monthly data for each year from earliest to current
+    for (let year = earliestYear; year <= currentYear; year++) {
+      const monthlyData = [];
+
+      for (let month = 0; month < 12; month++) {
+        const monthDate = new Date(year, month, 1);
+        const monthName = monthDate.toLocaleDateString("en-US", {
+          month: "short",
+        });
+
+        // Get the end of the month for accurate counting
+        const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59);
+
+        // Count employees joined up to end of this month
+        const employeesUpToMonth = employees.filter((emp) => {
+          const joinDate = new Date(emp.joinDate);
+          return joinDate <= endOfMonth;
+        }).length;
+
+        // Count new hires in this specific month
+        const newHires = employees.filter((emp) => {
+          const joinDate = new Date(emp.joinDate);
+          return (
+            joinDate.getMonth() === month &&
+            joinDate.getFullYear() === year
+          );
+        }).length;
+
+        // Terminations set to 0 (will be implemented later with actual data)
+        const terminations = 0;
+
+        monthlyData.push({
+          period: monthName,
+          totalEmployees: employeesUpToMonth,
+          newHires: newHires,
+          terminations: terminations,
+        });
+      }
+
+      monthlyDataByYear[year] = monthlyData;
+    }
+
+    return monthlyDataByYear;
   };
 
   // Generate yearly growth data (from first employee join year to current year)
@@ -188,8 +197,13 @@ const Dashboard: React.FC = () => {
     return yearlyData;
   };
 
-  const monthlyGrowthData = generateMonthlyGrowthData();
+  const monthlyGrowthDataByYear = generateMonthlyGrowthDataByYear();
   const yearlyGrowthData = generateYearlyGrowthData();
+  
+  // Get available years for the dropdown
+  const availableYears = Object.keys(monthlyGrowthDataByYear)
+    .map(Number)
+    .sort((a, b) => a - b);
 
   // Show loading spinner while data is loading
   if (isLoading) {
@@ -289,8 +303,9 @@ const Dashboard: React.FC = () => {
 
       {/* Employee Growth Chart - Full Width */}
       <EmployeeGrowthChart
-        monthlyData={monthlyGrowthData}
+        monthlyDataByYear={monthlyGrowthDataByYear}
         yearlyData={yearlyGrowthData}
+        availableYears={availableYears}
       />
 
       {/* Charts Section */}
