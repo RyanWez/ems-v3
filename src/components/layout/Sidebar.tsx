@@ -128,14 +128,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div
         className={`
           sidebar-container flex flex-col bg-[#304156] text-[#BFCBD9] shadow-lg
-          transition-all duration-300 ease-in-out z-50
+          z-50
           ${isMobileOpen ? 'open' : ''}
           md:relative md:translate-x-0
           ${isMobileOpen ? 'mobile-sidebar-container' : ''}
+          ${isCollapsed && !isMobileOpen ? 'sidebar-collapsed' : 'sidebar-expanded'}
         `}
-        style={{
-          width: isCollapsed && !isMobileOpen ? '64px' : '256px'
-        }}
       >
         <div className={`flex items-center justify-between h-16 border-b border-gray-700 px-4 ${isMobileOpen ? 'mobile-sidebar-header' : ''}`}>
           <div className="flex items-center">

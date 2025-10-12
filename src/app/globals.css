@@ -102,6 +102,18 @@
 }
 
 /* Enhanced Sidebar Styles */
+.sidebar-container {
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-collapsed {
+  width: 64px;
+}
+
+.sidebar-expanded {
+  width: 256px;
+}
+
 .sidebar-enter {
   max-height: 0;
   opacity: 0;
