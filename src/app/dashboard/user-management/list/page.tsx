@@ -633,7 +633,7 @@ const UserList: React.FC = () => {
                 {formErrors.password && (
                   <p className="text-red-500 text-xs mt-1">{formErrors.password}</p>
                 )}
-                <p className="text-gray-500 text-xs mt-1">Leave empty if you don't want to change the password</p>
+                <p className="text-gray-500 text-xs mt-1">Leave empty if you don&apos;t want to change the password</p>
               </div>
 
               {/* Role Field */}
