@@ -5,6 +5,8 @@ import { Employee } from './types/employee';
 import { useEmployees } from './hooks/useEmployees';
 import { useFilters } from './hooks/useFilters';
 import { usePagination } from './hooks/usePagination';
+import { useEmployeePermissions } from './hooks/useEmployeePermissions';
+import { useEmployeeTableConfig } from './hooks/useEmployeeTableConfig';
 import { SearchFilters } from './components/SearchFilters';
 import { EmployeeTable } from './components/EmployeeTable';
 import { Pagination } from './components/Pagination';
@@ -13,20 +15,15 @@ import { EditEmployeeModal } from './components/modals/EditEmployeeModal';
 import { AddEmployeeModal } from './components/modals/AddEmployeeModal';
 import { DeleteEmployeeModal } from './components/modals/DeleteEmployeeModal';
 import { LoadingSpinner, InlineSpinner } from '../../../../components/LoadingSpinner';
-import { useAuth } from '@/Auth';
-import { canViewEmployeeList, canCreateEmployee, canPerformAction } from './utils/permissionHelpers';
+import { useAuth } from '@/Auth/AuthContext';
 import { exportEmployeesToCSV, exportEmployeesToExcel } from './utils/exportHelpers';
 
 const EmployeeLists: React.FC = () => {
-  // Auth and permissions
+  // Auth context
   const { permissions, userRole } = useAuth();
   
-  // Permission checks
-  const canViewList = canViewEmployeeList(permissions, userRole);
-  const canCreate = canCreateEmployee(permissions, userRole);
-  const canEdit = canPerformAction(permissions, 'edit', userRole);
-  const canDelete = canPerformAction(permissions, 'delete', userRole);
-  const canView = canPerformAction(permissions, 'view', userRole);
+  // Permission hooks - ဒါက code duplication ကို လျှော့ပေးတယ်
+  const perms = useEmployeePermissions();
 
   // Custom hooks
   const { employees, addEmployee, editEmployee, deleteEmployee, isLoading, error, isCreating, isUpdating, isDeleting } = useEmployees();
@@ -66,7 +63,7 @@ const EmployeeLists: React.FC = () => {
 
   // Handler Functions
   const handleView = (employee: Employee) => {
-    if (!canView) {
+    if (!perms.canView) {
       return;
     }
     setViewingEmployee(employee);
@@ -74,7 +71,7 @@ const EmployeeLists: React.FC = () => {
   };
 
   const handleEdit = (employee: Employee) => {
-    if (!canEdit) {
+    if (!perms.canEdit) {
       return;
     }
     setEditingEmployee(employee);
@@ -82,7 +79,7 @@ const EmployeeLists: React.FC = () => {
   };
 
   const handleDelete = (employee: Employee) => {
-    if (!canDelete) {
+    if (!perms.canDelete) {
       return;
     }
     setDeletingEmployee(employee);
@@ -90,11 +87,14 @@ const EmployeeLists: React.FC = () => {
   };
 
   const handleAddNew = () => {
-    if (!canCreate) {
+    if (!perms.canCreate) {
       return;
     }
     setIsAddModalOpen(true);
   };
+  
+  // Table configuration with memoization - Performance optimization
+  const tableConfig = useEmployeeTableConfig(handleView, handleEdit, handleDelete);
 
   // Modal Close Handlers
   const handleCloseView = () => {
@@ -169,12 +169,13 @@ const EmployeeLists: React.FC = () => {
   };
 
   // Check permissions first
-  if (!canViewList) {
+  if (!perms.canViewList) {
     return (
       <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border w-full max-w-full relative z-0">
         <div className="text-center py-8">
           <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
           <p className="text-gray-600">You do not have permission to view employee list.</p>
+          <p className="text-gray-500 text-sm mt-2">Please contact your administrator to request access.</p>
         </div>
       </div>
     );
@@ -254,7 +255,7 @@ const EmployeeLists: React.FC = () => {
             <Download size={18} className="mr-2" />
             Export CSV
           </button>
-          {canCreate && (
+          {perms.canCreate && (
             <button
               className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleAddNew}
@@ -283,19 +284,12 @@ const EmployeeLists: React.FC = () => {
         onServiceYearsChange={handleServiceYearsChange}
       />
 
-      {/* Employee Table */}
+      {/* Employee Table - Using optimized table config */}
       <EmployeeTable
         employees={paginatedEmployees}
-        onView={handleView}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        tableConfig={tableConfig}
         isUpdating={isUpdating}
         isDeleting={isDeleting}
-        permissions={permissions}
-        userRole={userRole}
-        canView={canView}
-        canEdit={canEdit}
-        canDelete={canDelete}
       />
 
       {/* Pagination */}
@@ -318,7 +312,7 @@ const EmployeeLists: React.FC = () => {
         onEdit={handleEdit}
         permissions={permissions}
         userRole={userRole}
-        canEdit={canEdit}
+        canEdit={perms.canEdit}
       />
 
       <EditEmployeeModal
