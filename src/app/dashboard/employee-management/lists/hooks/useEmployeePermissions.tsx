@@ -48,8 +48,6 @@ interface EmployeePermissions {
   // Bulk Operations
   bulk: {
     canExport: boolean;
-    canImport: boolean;
-    canDelete: boolean;
   };
   
   // Details Page Fields
@@ -205,8 +203,6 @@ export const useEmployeePermissions = (): EmployeePermissions => {
     // Bulk operations
     const bulk = {
       canExport: checkPermission(['employeeManagement', 'bulk', 'export']),
-      canImport: checkPermission(['employeeManagement', 'bulk', 'import']),
-      canDelete: checkPermission(['employeeManagement', 'bulk', 'delete']),
     };
     
     return {

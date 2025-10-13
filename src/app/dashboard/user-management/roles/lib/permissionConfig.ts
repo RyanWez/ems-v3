@@ -90,8 +90,6 @@ export const permissionConfig: Record<keyof RolePermissions, ModuleMetadata> = {
         title: 'Bulk Operations',
         permissions: {
           export: { title: 'Export Data', description: 'Can export employee list to Excel/CSV' },
-          import: { title: 'Import Data', description: 'Can import employees from Excel/CSV' },
-          delete: { title: 'Bulk Delete', description: 'Can delete multiple employees at once' },
         },
       },
       details: {

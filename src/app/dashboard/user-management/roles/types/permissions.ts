@@ -46,8 +46,6 @@ export interface EmployeeListActionPermissions {
 // Bulk Operations Permissions
 export interface BulkOperationsPermissions {
   export: boolean;
-  import: boolean;
-  delete: boolean;
 }
 
 // Dashboard Overview Cards Permissions

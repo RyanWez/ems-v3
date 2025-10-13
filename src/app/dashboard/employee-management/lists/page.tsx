@@ -161,10 +161,18 @@ const EmployeeLists: React.FC = () => {
 
   // Export Handlers
   const handleExportCSV = () => {
+    if (!perms.bulk.canExport) {
+      alert('You do not have permission to export data.');
+      return;
+    }
     exportEmployeesToCSV(filteredEmployees);
   };
 
   const handleExportExcel = () => {
+    if (!perms.bulk.canExport) {
+      alert('You do not have permission to export data.');
+      return;
+    }
     exportEmployeesToExcel(filteredEmployees);
   };
 
@@ -237,24 +245,33 @@ const EmployeeLists: React.FC = () => {
           <p className="text-gray-600 text-sm mt-1">Manage all employees in your organization.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0">
-          <button
-            className="flex items-center bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleExportExcel}
-            disabled={isLoading || filteredEmployees.length === 0}
-            title="Export to Excel"
-          >
-            <Download size={18} className="mr-2" />
-            Export Excel
-          </button>
-          <button
-            className="flex items-center bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleExportCSV}
-            disabled={isLoading || filteredEmployees.length === 0}
-            title="Export to CSV"
-          >
-            <Download size={18} className="mr-2" />
-            Export CSV
-          </button>
+          {/* Export Excel - Only show if user has export permission */}
+          {perms.bulk.canExport && (
+            <button
+              className="flex items-center bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleExportExcel}
+              disabled={isLoading || filteredEmployees.length === 0}
+              title="Export to Excel"
+            >
+              <Download size={18} className="mr-2" />
+              Export Excel
+            </button>
+          )}
+          
+          {/* Export CSV - Only show if user has export permission */}
+          {perms.bulk.canExport && (
+            <button
+              className="flex items-center bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleExportCSV}
+              disabled={isLoading || filteredEmployees.length === 0}
+              title="Export to CSV"
+            >
+              <Download size={18} className="mr-2" />
+              Export CSV
+            </button>
+          )}
+          
+          {/* Add New Employee - Only show if user has create permission */}
           {perms.canCreate && (
             <button
               className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"

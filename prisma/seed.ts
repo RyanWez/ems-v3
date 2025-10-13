@@ -58,6 +58,9 @@ async function main() {
               delete: true,
               viewDetails: true,
             },
+            bulk: {
+              export: true,
+            },
             details: {
               view: true,
             },

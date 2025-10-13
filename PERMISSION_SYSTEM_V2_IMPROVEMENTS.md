@@ -107,8 +107,6 @@ console.log(perms.view.scope); // 'department'
 ```typescript
 bulk: {
   export: boolean;    // Excel/CSV export
-  import: boolean;    // Bulk upload
-  delete: boolean;    // Multiple delete
 }
 ```
 
@@ -122,25 +120,11 @@ const perms = useEmployeePermissions();
     Export to Excel
   </button>
 )}
-
-// Import button
-{perms.bulk.canImport && (
-  <button onClick={handleImport}>
-    Import from CSV
-  </button>
-)}
-
-// Bulk delete
-{perms.bulk.canDelete && selectedEmployees.length > 0 && (
-  <button onClick={handleBulkDelete}>
-    Delete Selected ({selectedEmployees.length})
-  </button>
-)}
 ```
 
 **အကျိုးကျေးဇူး:**
-- Bulk operations ကို control လုပ်လို့ရတယ်
-- Data export/import ကို restrict လုပ်လို့ရတယ်
+- Data export ကို control လုပ်လို့ရတယ်
+- Sensitive data export ကို restrict လုပ်လို့ရတယ်
 - Security ပိုကောင်းတယ်
 
 ---
@@ -302,20 +286,6 @@ const perms = useEmployeePermissions();
       Export
     </button>
   )}
-  
-  {perms.bulk.canImport && (
-    <button onClick={handleImport}>
-      <Upload className="w-4 h-4 mr-2" />
-      Import
-    </button>
-  )}
-  
-  {perms.bulk.canDelete && selectedCount > 0 && (
-    <button onClick={handleBulkDelete} className="text-red-600">
-      <Trash2 className="w-4 h-4 mr-2" />
-      Delete ({selectedCount})
-    </button>
-  )}
 </div>
 ```
 
@@ -323,12 +293,12 @@ const perms = useEmployeePermissions();
 
 ## 📊 Permission Matrix Example
 
-| Role | View Scope | Edit Scope | Delete Scope | Export | Import |
-|------|-----------|-----------|-------------|--------|--------|
-| Admin | All | All | All | ✓ | ✓ |
-| Manager | Department | Department | Team | ✓ | ✗ |
-| Team Lead | Team | Team | Own | ✓ | ✗ |
-| Employee | Own | Own | ✗ | ✗ | ✗ |
+| Role | View Scope | Edit Scope | Delete Scope | Export |
+|------|-----------|-----------|-------------|--------|
+| Admin | All | All | All | ✓ |
+| Manager | Department | Department | Team | ✓ |
+| Team Lead | Team | Team | Own | ✓ |
+| Employee | Own | Own | ✗ | ✗ |
 
 ---
 
@@ -432,8 +402,6 @@ interface EmployeePermissions {
   // Bulk
   bulk: {
     canExport: boolean;
-    canImport: boolean;
-    canDelete: boolean;
   };
 }
 ```

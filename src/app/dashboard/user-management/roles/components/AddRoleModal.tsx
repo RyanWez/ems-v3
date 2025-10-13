@@ -47,6 +47,9 @@ const getDefaultPermissions = (): RolePermissions => ({
       delete: false,
       viewDetails: false,
     },
+    bulk: {
+      export: false,
+    },
     details: { 
       view: false 
     },

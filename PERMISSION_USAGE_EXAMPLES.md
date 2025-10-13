@@ -193,7 +193,7 @@ function EmployeeTable({ employees }) {
 import { useEmployeePermissions } from './hooks/useEmployeePermissions';
 import { Download, Upload, Trash2 } from 'lucide-react';
 
-function EmployeeListToolbar({ selectedEmployees, onExport, onImport, onBulkDelete }) {
+function EmployeeListToolbar({ onExport }) {
   const perms = useEmployeePermissions();
   
   return (
@@ -209,32 +209,10 @@ function EmployeeListToolbar({ selectedEmployees, onExport, onImport, onBulkDele
         </button>
       )}
       
-      {/* Import button */}
-      {perms.bulk.canImport && (
-        <button
-          onClick={onImport}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded"
-        >
-          <Upload className="w-4 h-4" />
-          Import from CSV
-        </button>
-      )}
-      
-      {/* Bulk delete button - Only show when items are selected */}
-      {perms.bulk.canDelete && selectedEmployees.length > 0 && (
-        <button
-          onClick={onBulkDelete}
-          className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded"
-        >
-          <Trash2 className="w-4 h-4" />
-          Delete Selected ({selectedEmployees.length})
-        </button>
-      )}
-      
       {/* Show message if no bulk permissions */}
-      {!perms.bulk.canExport && !perms.bulk.canImport && !perms.bulk.canDelete && (
+      {!perms.bulk.canExport && (
         <p className="text-sm text-gray-500">
-          No bulk operations available for your role
+          You don't have permission to export data
         </p>
       )}
     </div>
@@ -546,8 +524,6 @@ function PermissionSummary() {
         <h4>Bulk Operations</h4>
         <ul>
           <li>Export: {perms.bulk.canExport ? '✓' : '✗'}</li>
-          <li>Import: {perms.bulk.canImport ? '✓' : '✗'}</li>
-          <li>Bulk Delete: {perms.bulk.canDelete ? '✓' : '✗'}</li>
         </ul>
       </div>
     </div>

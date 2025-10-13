@@ -191,7 +191,7 @@ export const getAvailableActions = (permissions: RolePermissions | null, userRol
 // Helper to check bulk operation permissions
 export const canPerformBulkOperation = (
   permissions: RolePermissions | null, 
-  operation: 'export' | 'import' | 'delete',
+  operation: 'export',
   userRole?: string | null
 ): boolean => {
   if (userRole === 'Administrator') return true;
