@@ -26,7 +26,7 @@ export const useFieldPermissions = (): EnhancedEmployeeFieldPermissions => {
   const { permissions, userRole } = useAuth();
   
   return useMemo(() => {
-    const isAdmin = userRole === 'Administrator' || userRole === 'Super Admin';
+    const isAdmin = userRole === 'Administrator';
     
     const getFieldPermission = (fieldName: string): FieldPermission => {
       if (isAdmin) {

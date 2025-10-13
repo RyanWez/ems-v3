@@ -49,7 +49,7 @@ interface EmployeePermissions {
 }
 
 const isAdministrator = (userRole: string | null): boolean => {
-  return userRole === 'Administrator' || userRole === 'Super Admin';
+  return userRole === 'Administrator';
 };
 
 export const useEmployeePermissions = (): EmployeePermissions => {
