@@ -104,7 +104,7 @@ export const useEmployeeTableConfig = (
       const fieldKey = col.key === 'phoneNo' ? 'phoneNo' : col.key;
       return perms.fields[fieldKey as keyof typeof perms.fields];
     });
-  }, [perms.fields]); // Only recalculate when permissions change
+  }, [perms]); // Only recalculate when permissions change
   
   // Memoize available actions
   const availableActions = useMemo<ActionConfig[]>(() => {
@@ -153,7 +153,7 @@ export const useEmployeeTableConfig = (
       totalColumns,
       hasActions: availableActions.length > 0,
     };
-  }, [visibleColumns, availableActions, perms]);
+  }, [visibleColumns, availableActions]);
   
   return tableConfig;
 };
