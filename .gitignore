@@ -42,3 +42,7 @@ public/workbox-*.js
 *.sln
 *.sw?
 /src/generated/prisma
+
+# Database files
+*.db
+*.db-journal
