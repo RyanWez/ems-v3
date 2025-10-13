@@ -2,10 +2,6 @@
 import type { NavItem } from './types';
 import {
   DashboardIcon,
-  NestedIcon,
-  LinkIcon,
-  MenuIcon,
-  TableIcon,
   EmployeeListIcon,
   BirthdayIcon,
   LeaveIcon,
@@ -59,15 +55,5 @@ export const menuItems: NavItem[] = [
         icon: UserRoleIcon,
       },
     ],
-  },
-  {
-      path: '/table',
-      name: 'Table',
-      icon: TableIcon
-  },
-  {
-    path: '/external-link',
-    name: 'External Link',
-    icon: LinkIcon,
   },
 ];

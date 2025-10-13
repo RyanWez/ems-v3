@@ -34,14 +34,8 @@ async function main() {
               viewAttendanceStats: true,
               viewPerformanceMetrics: true,
             },
-            quickActions: {
-              addEmployee: true,
-              approveLeave: true,
-              viewReports: true,
-            },
             recentActivities: {
               viewRecentActivities: true,
-              viewSystemLogs: true,
             },
           },
           employeeManagement: {

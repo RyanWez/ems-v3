@@ -24,7 +24,6 @@ const Dashboard: React.FC = () => {
   const canViewTotalEmployees = overviewPerms?.viewTotalEmployees ?? false;
   const canViewNewHires = overviewPerms?.viewNewHires ?? false;
   const canViewDepartments = overviewPerms?.viewDepartments ?? false;
-  const canViewActiveProjects = overviewPerms?.viewActiveProjects ?? false;
 
   // Charts permissions
   const chartsPerms = dashboardPerms?.charts || {};
@@ -34,13 +33,6 @@ const Dashboard: React.FC = () => {
   const canViewAttendanceStats = chartsPerms?.viewAttendanceStats ?? false;
   const canViewPerformanceMetrics =
     chartsPerms?.viewPerformanceMetrics ?? false;
-
-  // Check if user has any chart permission
-  const hasAnyChartPermission =
-    canViewEmployeeGrowth ||
-    canViewDepartmentDistribution ||
-    canViewAttendanceStats ||
-    canViewPerformanceMetrics;
 
   // Recent Activities permissions
   const recentActivitiesPerms = dashboardPerms?.recentActivities || {};
@@ -321,9 +313,8 @@ const Dashboard: React.FC = () => {
       {/* Statistics Cards - Show only cards with permission */}
       {(canViewTotalEmployees ||
         canViewNewHires ||
-        canViewDepartments ||
-        canViewActiveProjects) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        canViewDepartments) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {canViewTotalEmployees && (
             <StatCard
               title="Total Employees"
@@ -351,15 +342,6 @@ const Dashboard: React.FC = () => {
               value={statistics.departmentBreakdown.length}
               icon={Building}
               color="purple"
-            />
-          )}
-          {canViewActiveProjects && (
-            <StatCard
-              title="Recent Joiners"
-              value={statistics.recentJoiners.length}
-              icon={TrendingUp}
-              color="indigo"
-              subtitle="Last 30 days"
             />
           )}
         </div>

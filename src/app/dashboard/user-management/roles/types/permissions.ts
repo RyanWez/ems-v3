@@ -44,19 +44,6 @@ export interface DashboardChartsPermissions {
   viewPerformanceMetrics: boolean;
 }
 
-// Dashboard Quick Actions Permissions
-export interface DashboardQuickActionsPermissions {
-  addEmployee: boolean;
-  approveLeave: boolean;
-  viewReports: boolean;
-}
-
-// Dashboard Recent Activities Permissions
-export interface DashboardRecentActivitiesPermissions {
-  viewRecentActivities: boolean;
-  viewSystemLogs: boolean;
-}
-
 // This is the primary type for defining all permissions for a role
 export interface RolePermissions {
   dashboard: {
@@ -65,8 +52,9 @@ export interface RolePermissions {
     };
     overviewCards: DashboardOverviewCardsPermissions;
     charts: DashboardChartsPermissions;
-    quickActions: DashboardQuickActionsPermissions;
-    recentActivities: DashboardRecentActivitiesPermissions;
+    recentActivities: {
+      viewRecentActivities: boolean;
+    };
   };
   employeeManagement: {
     list: {

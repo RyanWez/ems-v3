@@ -47,19 +47,10 @@ export const permissionConfig: Record<keyof RolePermissions, ModuleMetadata> = {
           viewPerformanceMetrics: { title: 'Performance Metrics', description: 'Can view team performance analytics' },
         },
       },
-      quickActions: {
-        title: 'Quick Actions',
-        permissions: {
-          addEmployee: { title: 'Add Employee', description: 'Can add new employees directly from dashboard' },
-          approveLeave: { title: 'Approve Leave', description: 'Can approve leave requests from dashboard' },
-          viewReports: { title: 'View Reports', description: 'Can access report generation from dashboard' },
-        },
-      },
       recentActivities: {
         title: 'Recent Activities',
         permissions: {
-          viewRecentActivities: { title: 'View Recent Activities', description: 'Can see recent system activities and updates' },
-          viewSystemLogs: { title: 'View System Logs', description: 'Can access detailed system logs and audit trails' },
+          viewRecentActivities: { title: 'View Recent Activities', description: 'Can see recent joiners and system activities' },
         },
       },
     },
