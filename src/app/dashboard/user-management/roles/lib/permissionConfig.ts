@@ -26,13 +26,40 @@ export const permissionConfig: Record<keyof RolePermissions, ModuleMetadata> = {
       general: {
         title: 'General Access',
         permissions: {
-          view: { title: 'View Dashboard', description: 'Can see the main dashboard page' },
+          view: { title: 'View Dashboard', description: 'Can access the main dashboard page' },
         },
       },
-      analytics: {
-        title: 'Analytics',
+      overviewCards: {
+        title: 'Overview Cards',
         permissions: {
-          view: { title: 'View Analytics', description: 'Can access and view performance analytics' },
+          viewTotalEmployees: { title: 'Total Employees', description: 'Can see total employee count on dashboard' },
+          viewNewHires: { title: 'New Hires', description: 'Can see monthly new hire statistics' },
+          viewDepartments: { title: 'Departments', description: 'Can see total department count' },
+          viewActiveProjects: { title: 'Active Projects', description: 'Can see active project count' },
+        },
+      },
+      charts: {
+        title: 'Charts & Analytics',
+        permissions: {
+          viewEmployeeGrowth: { title: 'Employee Growth Chart', description: 'Can view employee growth trends over time' },
+          viewDepartmentDistribution: { title: 'Department Distribution', description: 'Can view employee distribution by department' },
+          viewAttendanceStats: { title: 'Attendance Statistics', description: 'Can view attendance and leave statistics' },
+          viewPerformanceMetrics: { title: 'Performance Metrics', description: 'Can view team performance analytics' },
+        },
+      },
+      quickActions: {
+        title: 'Quick Actions',
+        permissions: {
+          addEmployee: { title: 'Add Employee', description: 'Can add new employees directly from dashboard' },
+          approveLeave: { title: 'Approve Leave', description: 'Can approve leave requests from dashboard' },
+          viewReports: { title: 'View Reports', description: 'Can access report generation from dashboard' },
+        },
+      },
+      recentActivities: {
+        title: 'Recent Activities',
+        permissions: {
+          viewRecentActivities: { title: 'View Recent Activities', description: 'Can see recent system activities and updates' },
+          viewSystemLogs: { title: 'View System Logs', description: 'Can access detailed system logs and audit trails' },
         },
       },
     },
@@ -113,7 +140,11 @@ export const permissionConfig: Record<keyof RolePermissions, ModuleMetadata> = {
       roles: {
         title: 'Role & Permission Control',
         permissions: {
-          manage: { title: 'Manage Roles', description: 'Can create, edit, delete roles and manage their permissions' },
+          view: { title: 'View Roles', description: 'Can see the list of all roles' },
+          create: { title: 'Add Roles', description: 'Can create new roles' },
+          edit: { title: 'Edit Roles', description: 'Can modify existing roles' },
+          delete: { title: 'Delete Roles', description: 'Can remove roles from the system' },
+          managePermissions: { title: 'Manage Permissions', description: 'Can assign and modify role permissions' },
         },
       },
     },

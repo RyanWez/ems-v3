@@ -28,15 +28,45 @@ export interface EmployeeListActionPermissions {
   viewDetails: boolean;
 }
 
+// Dashboard Overview Cards Permissions
+export interface DashboardOverviewCardsPermissions {
+  viewTotalEmployees: boolean;
+  viewNewHires: boolean;
+  viewDepartments: boolean;
+  viewActiveProjects: boolean;
+}
+
+// Dashboard Charts & Analytics Permissions
+export interface DashboardChartsPermissions {
+  viewEmployeeGrowth: boolean;
+  viewDepartmentDistribution: boolean;
+  viewAttendanceStats: boolean;
+  viewPerformanceMetrics: boolean;
+}
+
+// Dashboard Quick Actions Permissions
+export interface DashboardQuickActionsPermissions {
+  addEmployee: boolean;
+  approveLeave: boolean;
+  viewReports: boolean;
+}
+
+// Dashboard Recent Activities Permissions
+export interface DashboardRecentActivitiesPermissions {
+  viewRecentActivities: boolean;
+  viewSystemLogs: boolean;
+}
+
 // This is the primary type for defining all permissions for a role
 export interface RolePermissions {
   dashboard: {
     general: {
       view: boolean;
     };
-    analytics: {
-      view: boolean;
-    };
+    overviewCards: DashboardOverviewCardsPermissions;
+    charts: DashboardChartsPermissions;
+    quickActions: DashboardQuickActionsPermissions;
+    recentActivities: DashboardRecentActivitiesPermissions;
   };
   employeeManagement: {
     list: {
@@ -73,7 +103,11 @@ export interface RolePermissions {
       delete: boolean;
     };
     roles: {
-      manage: boolean;
+      view: boolean;
+      create: boolean;
+      edit: boolean;
+      delete: boolean;
+      managePermissions: boolean;
     };
   };
 }

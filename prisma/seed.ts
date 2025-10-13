@@ -22,8 +22,26 @@ async function main() {
             general: {
               view: true,
             },
-            analytics: {
-              view: true,
+            overviewCards: {
+              viewTotalEmployees: true,
+              viewNewHires: true,
+              viewDepartments: true,
+              viewActiveProjects: true,
+            },
+            charts: {
+              viewEmployeeGrowth: true,
+              viewDepartmentDistribution: true,
+              viewAttendanceStats: true,
+              viewPerformanceMetrics: true,
+            },
+            quickActions: {
+              addEmployee: true,
+              approveLeave: true,
+              viewReports: true,
+            },
+            recentActivities: {
+              viewRecentActivities: true,
+              viewSystemLogs: true,
             },
           },
           employeeManagement: {
@@ -71,7 +89,11 @@ async function main() {
               delete: true,
             },
             roles: {
-              manage: true,
+              view: true,
+              create: true,
+              edit: true,
+              delete: true,
+              managePermissions: true,
             },
           },
         },
