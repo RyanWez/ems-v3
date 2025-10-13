@@ -8,10 +8,58 @@ import { ChartCard } from "../../components/dashboard/ChartCard";
 import { EmployeeGrowthChart } from "../../components/dashboard/EmployeeGrowthChart";
 import { RecentJoinersCard } from "../../components/dashboard/RecentJoinersCard";
 import { LoadingSpinner } from "../../components/LoadingSpinner";
+import { useAuth } from "@/Auth";
 
 const Dashboard: React.FC = () => {
+  const { permissions } = useAuth();
   const { employees, isLoading, error } = useEmployees();
   const statistics = useEmployeeStatistics(employees);
+
+  // Check dashboard permissions
+  const dashboardPerms = permissions?.dashboard || {};
+  const canViewDashboard = dashboardPerms?.general?.view ?? false;
+
+  // Overview Cards permissions
+  const overviewPerms = dashboardPerms?.overviewCards || {};
+  const canViewTotalEmployees = overviewPerms?.viewTotalEmployees ?? false;
+  const canViewNewHires = overviewPerms?.viewNewHires ?? false;
+  const canViewDepartments = overviewPerms?.viewDepartments ?? false;
+  const canViewActiveProjects = overviewPerms?.viewActiveProjects ?? false;
+
+  // Charts permissions
+  const chartsPerms = dashboardPerms?.charts || {};
+  const canViewEmployeeGrowth = chartsPerms?.viewEmployeeGrowth ?? false;
+  const canViewDepartmentDistribution =
+    chartsPerms?.viewDepartmentDistribution ?? false;
+  const canViewAttendanceStats = chartsPerms?.viewAttendanceStats ?? false;
+  const canViewPerformanceMetrics =
+    chartsPerms?.viewPerformanceMetrics ?? false;
+
+  // Check if user has any chart permission
+  const hasAnyChartPermission =
+    canViewEmployeeGrowth ||
+    canViewDepartmentDistribution ||
+    canViewAttendanceStats ||
+    canViewPerformanceMetrics;
+
+  // Recent Activities permissions
+  const recentActivitiesPerms = dashboardPerms?.recentActivities || {};
+  const canViewRecentActivities =
+    recentActivitiesPerms?.viewRecentActivities ?? false;
+
+  // If no dashboard view permission, show access denied
+  if (!canViewDashboard) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="text-red-500 text-lg mb-2">🔒 Access Denied</div>
+          <p className="text-gray-600">
+            You don't have permission to view the dashboard.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   // Get today's birthdays
   const today = new Date();
@@ -93,7 +141,7 @@ const Dashboard: React.FC = () => {
   // Generate monthly growth data by year
   const generateMonthlyGrowthDataByYear = () => {
     const monthlyDataByYear: { [year: string]: any[] } = {};
-    
+
     // Find all years that have employees
     const yearsWithEmployees = new Set<number>();
     employees.forEach((emp) => {
@@ -105,7 +153,9 @@ const Dashboard: React.FC = () => {
     const currentYear = new Date().getFullYear();
     let earliestYear = currentYear;
     if (employees.length > 0) {
-      const joinYears = employees.map((emp) => new Date(emp.joinDate).getFullYear());
+      const joinYears = employees.map((emp) =>
+        new Date(emp.joinDate).getFullYear()
+      );
       earliestYear = Math.min(...joinYears);
     }
 
@@ -132,8 +182,7 @@ const Dashboard: React.FC = () => {
         const newHires = employees.filter((emp) => {
           const joinDate = new Date(emp.joinDate);
           return (
-            joinDate.getMonth() === month &&
-            joinDate.getFullYear() === year
+            joinDate.getMonth() === month && joinDate.getFullYear() === year
           );
         }).length;
 
@@ -162,7 +211,9 @@ const Dashboard: React.FC = () => {
     // Find the earliest join date from all employees
     let earliestYear = currentYear;
     if (employees.length > 0) {
-      const joinDates = employees.map((emp) => new Date(emp.joinDate).getFullYear());
+      const joinDates = employees.map((emp) =>
+        new Date(emp.joinDate).getFullYear()
+      );
       earliestYear = Math.min(...joinDates);
     }
 
@@ -199,7 +250,7 @@ const Dashboard: React.FC = () => {
 
   const monthlyGrowthDataByYear = generateMonthlyGrowthDataByYear();
   const yearlyGrowthData = generateYearlyGrowthData();
-  
+
   // Get available years for the dropdown
   const availableYears = Object.keys(monthlyGrowthDataByYear)
     .map(Number)
@@ -267,68 +318,93 @@ const Dashboard: React.FC = () => {
         </p>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard
-          title="Total Employees"
-          value={statistics.totalEmployees}
-          icon={Users}
-          color="blue"
-        />
-        <StatCard
-          title="Today's Birthdays"
-          value={todaysBirthdays.length}
-          icon={Calendar}
-          color="green"
-          subtitle={
-            todaysBirthdays.length > 0
-              ? `${todaysBirthdays.map((emp) => emp.name).join(", ")}`
-              : "No birthdays today"
-          }
-        />
-        <StatCard
-          title="Departments"
-          value={statistics.departmentBreakdown.length}
-          icon={Building}
-          color="purple"
-        />
-        <StatCard
-          title="Recent Joiners"
-          value={statistics.recentJoiners.length}
-          icon={TrendingUp}
-          color="indigo"
-          subtitle="Last 30 days"
-        />
-      </div>
+      {/* Statistics Cards - Show only cards with permission */}
+      {(canViewTotalEmployees ||
+        canViewNewHires ||
+        canViewDepartments ||
+        canViewActiveProjects) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {canViewTotalEmployees && (
+            <StatCard
+              title="Total Employees"
+              value={statistics.totalEmployees}
+              icon={Users}
+              color="blue"
+            />
+          )}
+          {canViewNewHires && (
+            <StatCard
+              title="Today's Birthdays"
+              value={todaysBirthdays.length}
+              icon={Calendar}
+              color="green"
+              subtitle={
+                todaysBirthdays.length > 0
+                  ? `${todaysBirthdays.map((emp) => emp.name).join(", ")}`
+                  : "No birthdays today"
+              }
+            />
+          )}
+          {canViewDepartments && (
+            <StatCard
+              title="Departments"
+              value={statistics.departmentBreakdown.length}
+              icon={Building}
+              color="purple"
+            />
+          )}
+          {canViewActiveProjects && (
+            <StatCard
+              title="Recent Joiners"
+              value={statistics.recentJoiners.length}
+              icon={TrendingUp}
+              color="indigo"
+              subtitle="Last 30 days"
+            />
+          )}
+        </div>
+      )}
 
-      {/* Employee Growth Chart - Full Width */}
-      <EmployeeGrowthChart
-        monthlyDataByYear={monthlyGrowthDataByYear}
-        yearlyData={yearlyGrowthData}
-        availableYears={availableYears}
-      />
-
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard
-          title="Department Breakdown"
-          data={departmentChartData}
-          type="bar"
+      {/* Employee Growth Chart - Show only if permission exists */}
+      {canViewEmployeeGrowth && (
+        <EmployeeGrowthChart
+          monthlyDataByYear={monthlyGrowthDataByYear}
+          yearlyData={yearlyGrowthData}
+          availableYears={availableYears}
         />
-        <ChartCard
-          title="Gender Distribution"
-          data={genderChartData}
-          type="pie"
-        />
-      </div>
+      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <ChartCard title="Age Demographics" data={ageChartData} type="bar" />
-        <ChartCard title="Service Years" data={serviceChartData} type="bar" />
-      </div>
+      {/* Charts Section - Show only charts with permission */}
+      {(canViewDepartmentDistribution || canViewAttendanceStats) && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {canViewDepartmentDistribution && (
+            <ChartCard
+              title="Department Breakdown"
+              data={departmentChartData}
+              type="bar"
+            />
+          )}
+          {canViewAttendanceStats && (
+            <ChartCard
+              title="Gender Distribution"
+              data={genderChartData}
+              type="pie"
+            />
+          )}
+        </div>
+      )}
 
-      {/* Recent Joiners */}
-      <RecentJoinersCard recentJoiners={statistics.recentJoiners} />
+      {canViewPerformanceMetrics && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ChartCard title="Age Demographics" data={ageChartData} type="bar" />
+          <ChartCard title="Service Years" data={serviceChartData} type="bar" />
+        </div>
+      )}
+
+      {/* Recent Joiners - Show only if permission exists */}
+      {canViewRecentActivities && (
+        <RecentJoinersCard recentJoiners={statistics.recentJoiners} />
+      )}
     </div>
   );
 };
