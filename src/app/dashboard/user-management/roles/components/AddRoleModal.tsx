@@ -8,9 +8,24 @@ import { RolePermissions } from '../types/permissions';
 
 // Defines a default set of permissions for a new role
 const getDefaultPermissions = (): RolePermissions => ({
-  dashboard: { 
-    general: { view: true }, 
-    analytics: { view: false } 
+  dashboard: {
+    general: { view: true },
+    overviewCards: {
+      viewTotalEmployees: false,
+      viewNewHires: false,
+      viewDepartments: false,
+      viewActiveProjects: false,
+    },
+    charts: {
+      viewEmployeeGrowth: false,
+      viewDepartmentDistribution: false,
+      viewAttendanceStats: false,
+      viewPerformanceMetrics: false,
+    },
+    analytics: { view: false },
+    recentActivities: {
+      viewRecentActivities: false,
+    },
   },
   employeeManagement: {
     list: { 
@@ -56,8 +71,12 @@ const getDefaultPermissions = (): RolePermissions => ({
       edit: false, 
       delete: false 
     },
-    roles: { 
-      manage: false 
+    roles: {
+      view: false,
+      create: false,
+      edit: false,
+      delete: false,
+      managePermissions: false,
     },
   },
 });

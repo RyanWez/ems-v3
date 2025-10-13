@@ -1,5 +1,5 @@
 import { Employee } from "../types/employee";
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
 
 /**
  * Calculate service years from join date
@@ -123,96 +123,105 @@ export const exportEmployeesToCSV = (employees: Employee[]): void => {
 /**
  * Export employees to Excel file with formatting
  */
-export const exportEmployeesToExcel = (employees: Employee[]): void => {
+export const exportEmployeesToExcel = async (employees: Employee[]): Promise<void> => {
   if (employees.length === 0) {
     alert("No employees to export");
     return;
   }
 
+  // Create workbook and worksheet
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Employees");
+
+  // Define columns
+  worksheet.columns = [
+    { header: "No.", key: "no", width: 6 },
+    { header: "Name", key: "name", width: 25 },
+    { header: "Join Date", key: "joinDate", width: 12 },
+    { header: "Service Years", key: "serviceYears", width: 15 },
+    { header: "Gender", key: "gender", width: 10 },
+    { header: "Date of Birth", key: "dob", width: 12 },
+    { header: "Phone Number", key: "phone", width: 15 },
+    { header: "Position", key: "position", width: 20 },
+  ];
+
   // Prepare data for Excel
   const excelData = employees.map((employee, index) => ({
-    "No.": index + 1,
-    Name: employee.name,
-    "Join Date": employee.joinDate,
-    "Service Years": calculateServiceYears(employee.joinDate),
-    Gender: employee.gender,
-    "Date of Birth": employee.dob,
-    "Phone Number": employee.phone,
-    Position: employee.position,
+    no: index + 1,
+    name: employee.name,
+    joinDate: employee.joinDate,
+    serviceYears: calculateServiceYears(employee.joinDate),
+    gender: employee.gender,
+    dob: employee.dob,
+    phone: employee.phone,
+    position: employee.position,
   }));
 
-  // Create workbook and worksheet
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.json_to_sheet(excelData);
+  // Add data rows
+  excelData.forEach((data) => {
+    worksheet.addRow(data);
+  });
 
-  // Set column widths
-  const colWidths = [
-    { wch: 6 }, // No.
-    { wch: 25 }, // Name
-    { wch: 12 }, // Join Date
-    { wch: 15 }, // Service Years
-    { wch: 10 }, // Gender
-    { wch: 12 }, // Date of Birth
-    { wch: 15 }, // Phone Number
-    { wch: 20 }, // Position
-  ];
-  ws["!cols"] = colWidths;
-
-  // Apply header styling
-  const range = XLSX.utils.decode_range(ws["!ref"] || "A1");
-
-  // Style header row (row 0)
-  for (let col = range.s.c; col <= range.e.c; col++) {
-    const cellAddress = XLSX.utils.encode_cell({ r: 0, c: col });
-    if (!ws[cellAddress]) continue;
-
-    ws[cellAddress].s = {
-      font: { bold: true, color: { rgb: "FFFFFF" } },
-      fill: { fgColor: { rgb: "4472C4" } },
-      alignment: { horizontal: "center", vertical: "center" },
-      border: {
-        top: { style: "thin", color: { rgb: "000000" } },
-        bottom: { style: "thin", color: { rgb: "000000" } },
-        left: { style: "thin", color: { rgb: "000000" } },
-        right: { style: "thin", color: { rgb: "000000" } },
-      },
+  // Style header row
+  const headerRow = worksheet.getRow(1);
+  headerRow.eachCell((cell) => {
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "4472C4" },
     };
-  }
+    cell.font = {
+      bold: true,
+      color: { argb: "FFFFFF" },
+    };
+    cell.alignment = { vertical: "middle", horizontal: "center" };
+    cell.border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+  });
 
-  // Apply alternating row colors and borders to data rows
-  for (let row = range.s.r + 1; row <= range.e.r; row++) {
-    const isEvenRow = row % 2 === 0;
+  // Style data rows
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return; // Skip header row
 
-    for (let col = range.s.c; col <= range.e.c; col++) {
-      const cellAddress = XLSX.utils.encode_cell({ r: row, c: col });
-      if (!ws[cellAddress]) continue;
+    const isEvenRow = rowNumber % 2 === 0;
 
-      ws[cellAddress].s = {
-        fill: { fgColor: { rgb: isEvenRow ? "F2F2F2" : "FFFFFF" } },
-        alignment: {
-          horizontal: col === 0 ? "center" : "left",
-          vertical: "center",
-        },
-        border: {
-          top: { style: "thin", color: { rgb: "D3D3D3" } },
-          bottom: { style: "thin", color: { rgb: "D3D3D3" } },
-          left: { style: "thin", color: { rgb: "D3D3D3" } },
-          right: { style: "thin", color: { rgb: "D3D3D3" } },
-        },
+    row.eachCell((cell) => {
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: isEvenRow ? "F2F2F2" : "FFFFFF" },
       };
-    }
-  }
-
-  // Freeze header row
-  ws["!freeze"] = { xSplit: 0, ySplit: 1 };
-
-  // Add worksheet to workbook
-  XLSX.utils.book_append_sheet(wb, ws, "Employees");
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: cell.value === rowNumber ? "center" : "left",
+      };
+      cell.border = {
+        top: { style: "thin", color: { argb: "D3D3D3" } },
+        left: { style: "thin", color: { argb: "D3D3D3" } },
+        bottom: { style: "thin", color: { argb: "D3D3D3" } },
+        right: { style: "thin", color: { argb: "D3D3D3" } },
+      };
+    });
+  });
 
   // Generate filename with timestamp
   const timestamp = new Date().toISOString().split("T")[0];
   const filename = `employees_${timestamp}.xlsx`;
 
   // Write and download file
-  XLSX.writeFile(wb, filename);
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  window.URL.revokeObjectURL(url);
 };

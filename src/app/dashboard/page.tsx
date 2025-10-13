@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
         <div className="text-center">
           <div className="text-red-500 text-lg mb-2">🔒 Access Denied</div>
           <p className="text-gray-600">
-            You don't have permission to view the dashboard.
+            You do not have permission to view the dashboard.
           </p>
         </div>
       </div>

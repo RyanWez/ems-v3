@@ -28,6 +28,7 @@
     "bcrypt": "^6.0.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "exceljs": "^4.4.0",
     "jose": "^5.6.3",
     "lucide-react": "^0.408.0",
     "next": "^15.5.4",
@@ -37,8 +38,7 @@
     "recharts": "^3.2.1",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.4.0",
-    "tailwindcss-animate": "^1.0.7",
-    "xlsx": "^0.18.5"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
