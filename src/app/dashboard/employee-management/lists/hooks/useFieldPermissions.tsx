@@ -1,14 +1,9 @@
 'use client';
 import { useMemo } from 'react';
 import { useAuth } from '@/Auth/AuthContext';
+import { FieldPermission } from '@/app/dashboard/user-management/roles/types/permissions';
 
-// Field-level CRUD permissions
-export interface FieldPermission {
-  read: boolean;   // ကြည့်လို့ရ/မရ
-  write: boolean;  // ပြင်လို့ရ/မရ
-}
-
-// Enhanced Employee Field Permissions
+// Enhanced Employee Field Permissions (လက်ရှိ fields တွေပဲ)
 export interface EnhancedEmployeeFieldPermissions {
   name: FieldPermission;
   joinDate: FieldPermission;
@@ -17,9 +12,6 @@ export interface EnhancedEmployeeFieldPermissions {
   dob: FieldPermission;
   phoneNo: FieldPermission;
   position: FieldPermission;
-  salary: FieldPermission;
-  address: FieldPermission;
-  emergencyContact: FieldPermission;
 }
 
 export const useFieldPermissions = (): EnhancedEmployeeFieldPermissions => {
@@ -40,7 +32,7 @@ export const useFieldPermissions = (): EnhancedEmployeeFieldPermissions => {
         return defaultPerm;
       }
       
-      const fieldPerm = permissions.employeeManagement.fields[fieldName];
+      const fieldPerm = (permissions.employeeManagement.fields as any)[fieldName];
       
       // If it's boolean (old format), convert to new format
       if (typeof fieldPerm === 'boolean') {
@@ -66,9 +58,6 @@ export const useFieldPermissions = (): EnhancedEmployeeFieldPermissions => {
       dob: getFieldPermission('dob'),
       phoneNo: getFieldPermission('phoneNo'),
       position: getFieldPermission('position'),
-      salary: getFieldPermission('salary'),
-      address: getFieldPermission('address'),
-      emergencyContact: getFieldPermission('emergencyContact'),
     };
   }, [permissions, userRole]);
 };

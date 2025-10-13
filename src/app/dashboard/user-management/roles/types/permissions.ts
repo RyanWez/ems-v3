@@ -9,23 +9,45 @@ export interface ModulePermissions {
   [subModule: string]: SubModulePermissions;
 }
 
-// Employee List Field Visibility Permissions
-export interface EmployeeListFieldPermissions {
-  name: boolean;
-  joinDate: boolean;
-  serviceYears: boolean;
-  gender: boolean;
-  dob: boolean;
-  phoneNo: boolean;
-  position: boolean;
+// Field-Level Permission (Read/Write separated)
+export interface FieldPermission {
+  read: boolean;   // ကြည့်လို့ရ/မရ
+  write: boolean;  // ပြင်လို့ရ/မရ
 }
 
-// Employee List Action Permissions
+// Employee List Field Visibility Permissions (Enhanced with Read/Write)
+export interface EmployeeListFieldPermissions {
+  name: FieldPermission | boolean;  // Support both old and new format
+  joinDate: FieldPermission | boolean;
+  serviceYears: FieldPermission | boolean;
+  gender: FieldPermission | boolean;
+  dob: FieldPermission | boolean;
+  phoneNo: FieldPermission | boolean;
+  position: FieldPermission | boolean;
+}
+
+// Action Scope Type
+export type ActionScope = 'own' | 'team' | 'department' | 'all';
+
+// Action Permission with Scope
+export interface ActionPermission {
+  enabled: boolean;
+  scope: ActionScope;
+}
+
+// Employee List Action Permissions (Enhanced with Scope)
 export interface EmployeeListActionPermissions {
-  view: boolean;
-  edit: boolean;
-  delete: boolean;
+  view: ActionPermission | boolean;  // Support both old and new format
+  edit: ActionPermission | boolean;
+  delete: ActionPermission | boolean;
   viewDetails: boolean;
+}
+
+// Bulk Operations Permissions
+export interface BulkOperationsPermissions {
+  export: boolean;
+  import: boolean;
+  delete: boolean;
 }
 
 // Dashboard Overview Cards Permissions
@@ -67,10 +89,12 @@ export interface RolePermissions {
       view: boolean;
       create: boolean;
     };
-    // Field visibility permissions
+    // Field visibility permissions (with Read/Write support)
     fields: EmployeeListFieldPermissions;
-    // Action permissions for each employee
+    // Action permissions for each employee (with Scope support)
     actions: EmployeeListActionPermissions;
+    // Bulk operations
+    bulk: BulkOperationsPermissions;
     details: {
       view: boolean;
     };
