@@ -1,22 +1,22 @@
-import { PrismaClient } from '../src/generated/prisma';
-import bcrypt from 'bcrypt';
+import { PrismaClient } from "../src/generated/prisma";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database...');
+  console.log("🌱 Seeding database...");
 
   // Check if Administrator role already exists
   const existingAdminRole = await prisma.role.findFirst({
-    where: { name: 'Administrator' }
+    where: { name: "Administrator" },
   });
 
   if (!existingAdminRole) {
     // Create Administrator role with full permissions
     const adminRole = await prisma.role.create({
       data: {
-        name: 'Administrator',
-        description: 'Full system access with all permissions',
+        name: "Administrator",
+        description: "Full system access with all permissions",
         permissions: {
           dashboard: {
             general: {
@@ -92,28 +92,28 @@ async function main() {
           },
         },
         userCount: 0,
-        color: 'purple',
-        status: 'Active',
-      }
+        color: "purple",
+        status: "Active",
+      },
     });
 
-    console.log('✅ Created Administrator role:', adminRole.name);
+    console.log("✅ Created Administrator role:", adminRole.name);
   } else {
-    console.log('ℹ️ Administrator role already exists');
+    console.log("ℹ️ Administrator role already exists");
   }
 
   // Get the Administrator role
   const adminRole = await prisma.role.findFirst({
-    where: { name: 'Administrator' }
+    where: { name: "Administrator" },
   });
 
   if (adminRole) {
-    const adminUsername = process.env['ADMIN_USERNAME'] || 'Admin';
+    const adminUsername = process.env["ADMIN_USERNAME"] || "Admin";
     const adminEmail = `${adminUsername}@company.com`;
 
     // Check if admin user already exists
     const existingAdminUser = await prisma.user.findFirst({
-      where: { name: adminUsername }
+      where: { name: adminUsername },
     });
 
     if (!existingAdminUser) {
@@ -122,12 +122,15 @@ async function main() {
         data: {
           name: adminUsername,
           email: adminEmail,
-          password: await bcrypt.hash(process.env['ADMIN_PASSWORD'] || '137245', 10),
+          password: await bcrypt.hash(
+            process.env["ADMIN_PASSWORD"] || "137245",
+            10
+          ),
           roleId: adminRole.id,
-        }
+        },
       });
 
-      console.log('✅ Created admin user:', adminUser.email);
+      console.log("✅ Created admin user:", adminUser.email);
     } else {
       // Update existing admin user with correct password from environment
       const adminUser = await prisma.user.update({
@@ -135,26 +138,29 @@ async function main() {
         data: {
           name: adminUsername,
           email: adminEmail,
-          password: await bcrypt.hash(process.env['ADMIN_PASSWORD'] || '137245', 10),
+          password: await bcrypt.hash(
+            process.env["ADMIN_PASSWORD"] || "137245",
+            10
+          ),
           roleId: adminRole.id,
-        }
+        },
       });
 
-      console.log('✅ Updated admin user:', adminUser.email);
+      console.log("✅ Updated admin user:", adminUser.email);
     }
   } else {
-    console.log('❌ Administrator role not found, cannot create admin user');
+    console.log("❌ Administrator role not found, cannot create admin user");
   }
 
   // Note: Only Administrator role and admin user are auto-generated
-  // Manager, Employee, and Contractor roles will be created manually by users
+  // All other roles and employee data will be created manually by users through the UI
 
-  console.log('🎉 Database seeding completed!');
+  console.log("🎉 Database seeding completed!");
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e);
+    console.error("❌ Error seeding database:", e);
     process.exit(1);
   })
   .finally(async () => {

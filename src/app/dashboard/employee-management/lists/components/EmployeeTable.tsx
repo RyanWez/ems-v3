@@ -62,6 +62,23 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
+  // Show empty state when no employees
+  if (employees.length === 0) {
+    return (
+      <div className="rounded-lg border border-gray-200 shadow-sm bg-white p-12 text-center">
+        <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+          <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Employees Found</h3>
+        <p className="text-gray-600 mb-6 max-w-md mx-auto">
+          No employees match your current search and filter criteria. Try adjusting your filters or add some employees to get started.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm relative z-0">
       <table className="w-full bg-white text-sm table-fixed"

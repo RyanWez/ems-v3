@@ -347,8 +347,28 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
+      {/* Empty State for No Employees */}
+      {statistics.totalEmployees === 0 && (
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+          <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+            <Users className="w-12 h-12 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Employees Yet</h3>
+          <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            Start building your team by adding your first employee. Once you have employees in the system, you will see statistics, charts, and insights here.
+          </p>
+          <button
+            onClick={() => window.location.href = '/dashboard/employee-management/lists'}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <Users className="w-4 h-4 mr-2" />
+            Add Your First Employee
+          </button>
+        </div>
+      )}
+
       {/* Employee Growth Chart - Show only if permission exists */}
-      {canViewEmployeeGrowth && (
+      {canViewEmployeeGrowth && statistics.totalEmployees > 0 && (
         <EmployeeGrowthChart
           monthlyDataByYear={monthlyGrowthDataByYear}
           yearlyData={yearlyGrowthData}
@@ -357,7 +377,7 @@ const Dashboard: React.FC = () => {
       )}
 
       {/* Charts Section - Show only charts with permission */}
-      {(canViewDepartmentDistribution || canViewAttendanceStats) && (
+      {(canViewDepartmentDistribution || canViewAttendanceStats) && statistics.totalEmployees > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {canViewDepartmentDistribution && (
             <ChartCard
@@ -376,7 +396,7 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {canViewPerformanceMetrics && (
+      {canViewPerformanceMetrics && statistics.totalEmployees > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <ChartCard title="Age Demographics" data={ageChartData} type="bar" />
           <ChartCard title="Service Years" data={serviceChartData} type="bar" />

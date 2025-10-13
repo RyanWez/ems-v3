@@ -42,8 +42,11 @@ export const RecentJoinersCard: React.FC<RecentJoinersCardProps> = ({ recentJoin
 
       {recentJoiners.length === 0 ? (
         <div className="text-center py-8">
-          <User className="w-12 h-12 text-gray-300 mx-auto mb-3 animate-pulse" />
-          <p className="text-gray-500">No recent joiners in 30 Days.</p>
+          <div className="mx-auto w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4">
+            <User className="w-8 h-8 text-green-400" />
+          </div>
+          <h4 className="text-sm font-semibold text-gray-900 mb-1">No Recent Joiners</h4>
+          <p className="text-sm text-gray-600">No employees have joined in the last 30 days.</p>
         </div>
       ) : (
         <div className={`space-y-3 ${recentJoiners.length > 5 ? 'max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400' : ''}`}>
