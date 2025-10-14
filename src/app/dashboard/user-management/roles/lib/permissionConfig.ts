@@ -35,7 +35,6 @@ export const permissionConfig: Record<keyof RolePermissions, ModuleMetadata> = {
           viewTotalEmployees: { title: 'Total Employees', description: 'Can see total employee count on dashboard' },
           viewNewHires: { title: 'New Hires', description: 'Can see monthly new hire statistics' },
           viewDepartments: { title: 'Departments', description: 'Can see total department count' },
-          viewActiveProjects: { title: 'Active Projects', description: 'Can see active project count' },
         },
       },
       charts: {

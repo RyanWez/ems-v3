@@ -14,7 +14,6 @@ const getDefaultPermissions = (): RolePermissions => ({
       viewTotalEmployees: false,
       viewNewHires: false,
       viewDepartments: false,
-      viewActiveProjects: false,
     },
     charts: {
       viewEmployeeGrowth: false,
@@ -22,7 +21,6 @@ const getDefaultPermissions = (): RolePermissions => ({
       viewAttendanceStats: false,
       viewPerformanceMetrics: false,
     },
-    analytics: { view: false },
     recentActivities: {
       viewRecentActivities: false,
     },

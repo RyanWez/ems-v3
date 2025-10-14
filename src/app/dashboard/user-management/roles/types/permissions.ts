@@ -53,7 +53,6 @@ export interface DashboardOverviewCardsPermissions {
   viewTotalEmployees: boolean;
   viewNewHires: boolean;
   viewDepartments: boolean;
-  viewActiveProjects: boolean;
 }
 
 // Dashboard Charts & Analytics Permissions
@@ -64,11 +63,6 @@ export interface DashboardChartsPermissions {
   viewPerformanceMetrics: boolean;
 }
 
-// Dashboard Analytics Permissions
-export interface DashboardAnalyticsPermissions {
-  view: boolean;
-}
-
 // This is the primary type for defining all permissions for a role
 export interface RolePermissions {
   dashboard: {
@@ -77,7 +71,6 @@ export interface RolePermissions {
     };
     overviewCards: DashboardOverviewCardsPermissions;
     charts: DashboardChartsPermissions;
-    analytics: DashboardAnalyticsPermissions;
     recentActivities: {
       viewRecentActivities: boolean;
     };

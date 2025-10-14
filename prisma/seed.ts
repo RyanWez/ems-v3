@@ -26,7 +26,6 @@ async function main() {
               viewTotalEmployees: true,
               viewNewHires: true,
               viewDepartments: true,
-              viewActiveProjects: true,
             },
             charts: {
               viewEmployeeGrowth: true,

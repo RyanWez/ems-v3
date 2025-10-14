@@ -10,14 +10,13 @@ async function main() {
   for (const role of roles) {
     const oldPermissions = role.permissions as any;
 
-    // Remove quickActions and viewSystemLogs from dashboard
+    // Remove unused permissions from dashboard
     const cleanedDashboard = {
       general: oldPermissions?.dashboard?.general || { view: false },
-      overviewCards: oldPermissions?.dashboard?.overviewCards || {
-        viewTotalEmployees: false,
-        viewNewHires: false,
-        viewDepartments: false,
-        viewActiveProjects: false,
+      overviewCards: {
+        viewTotalEmployees: oldPermissions?.dashboard?.overviewCards?.viewTotalEmployees ?? false,
+        viewNewHires: oldPermissions?.dashboard?.overviewCards?.viewNewHires ?? false,
+        viewDepartments: oldPermissions?.dashboard?.overviewCards?.viewDepartments ?? false,
       },
       charts: oldPermissions?.dashboard?.charts || {
         viewEmployeeGrowth: false,
