@@ -3,13 +3,39 @@ import { RolePermissions } from '@/app/dashboard/user-management/roles/types/per
 // Helper function to check if a field should be visible
 export const canViewField = (permissions: RolePermissions | null, fieldName: keyof RolePermissions['employeeManagement']['fields']): boolean => {
   if (!permissions) return false;
-  return permissions.employeeManagement?.fields?.[fieldName] ?? false;
+
+  const fieldPermission = permissions.employeeManagement?.fields?.[fieldName];
+
+  // Handle both FieldPermission object and boolean formats
+  if (typeof fieldPermission === 'boolean') {
+    return fieldPermission;
+  }
+
+  // If it's a FieldPermission object, check the read property
+  if (fieldPermission && typeof fieldPermission === 'object') {
+    return fieldPermission.read ?? false;
+  }
+
+  return false;
 };
 
 // Helper function to check if an action should be available
 export const canPerformAction = (permissions: RolePermissions | null, actionName: keyof RolePermissions['employeeManagement']['actions']): boolean => {
   if (!permissions) return false;
-  return permissions.employeeManagement?.actions?.[actionName] ?? false;
+
+  const actionPermission = permissions.employeeManagement?.actions?.[actionName];
+
+  // Handle both ActionPermission object and boolean formats
+  if (typeof actionPermission === 'boolean') {
+    return actionPermission;
+  }
+
+  // If it's an ActionPermission object, check the enabled property
+  if (actionPermission && typeof actionPermission === 'object') {
+    return actionPermission.enabled ?? false;
+  }
+
+  return false;
 };
 
 // Helper function to check basic list permissions

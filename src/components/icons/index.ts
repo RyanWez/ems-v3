@@ -11,3 +11,6 @@ export { default as UserListIcon } from './UserListIcon';
 export { default as UserRoleIcon } from './UserRoleIcon';
 export { default as EmployeeManagementIcon } from './EmployeeManagementIcon';
 export { default as UserManagementIcon } from './UserManagementIcon';
+export { default as SystemManagementIcon } from './SystemManagementIcon';
+export { default as BroadcastIcon } from './BroadcastIcon';
+export { default as SystemLogsIcon } from './SystemLogsIcon';

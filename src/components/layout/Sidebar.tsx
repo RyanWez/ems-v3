@@ -1,9 +1,11 @@
 
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { menuItems } from '../../constants';
 import SidebarItem from './SidebarItem';
+import SidebarDropdown from '../sidebar/SidebarDropdown';
+import SidebarDropdownItem from '../sidebar/SidebarDropdownItem';
 import type { NavItem } from '../../types';
 import { useAuth } from '../../Auth';
 import Image from 'next/image';
@@ -35,7 +37,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const pathname = usePathname();
   const { permissions, userRole } = useAuth();
-  const [manuallyExpandedDropdowns, setManuallyExpandedDropdowns] = useState<Set<string>>(new Set());
 
   // Filter menu items based on permissions
   const filteredMenuItems = useMemo(() => {
@@ -80,41 +81,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     }
   };
 
-  const handleDropdownToggle = (itemPath: string) => {
-    setManuallyExpandedDropdowns(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(itemPath)) {
-        newSet.delete(itemPath);
-      } else {
-        newSet.add(itemPath);
-      }
-      return newSet;
-    });
-  };
-
-  const getShouldBeOpen = (itemPath: string) => {
-    if (isCollapsed) return false;
-
-    // Check if this dropdown should be open
-    const isManuallyExpanded = manuallyExpandedDropdowns.has(itemPath);
-    const isAutoExpanded = pathname.startsWith(itemPath);
-
-    // Open if manually expanded OR if current path is within this dropdown
-    return isManuallyExpanded || isAutoExpanded;
-  };
-
   const handleNavigation = (path: string) => {
-    const newParent = filteredMenuItems.find(item =>
-      item.children?.some(child => path.startsWith(child.path))
-    );
-
-    // Auto-expand for navigation if the dropdown isn't already manually expanded
-    if (newParent && !manuallyExpandedDropdowns.has(newParent.path)) {
-      setManuallyExpandedDropdowns(prev => {
-        const newSet = new Set(prev);
-        newSet.add(newParent.path);
-        return newSet;
-      });
+    // Navigation is handled by Next.js Link component
+    if (onMobileClose && isMobileOpen) {
+      onMobileClose();
     }
   };
 
@@ -157,16 +127,43 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
         <nav className={`flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar ${isMobileOpen ? 'mobile-sidebar-content' : ''}`}>
           <ul>
-            {filteredMenuItems.map((item: NavItem) => (
-              <SidebarItem
-                key={item.path}
-                item={item}
-                isCollapsed={isCollapsed}
-                shouldBeOpen={getShouldBeOpen(item.path)}
-                onToggle={() => handleDropdownToggle(item.path)}
-                onNavigate={handleNavigation}
-              />
-            ))}
+            {filteredMenuItems.map((item: NavItem) => {
+              // Use new SidebarDropdown for items with children
+              if (item.children && item.children.length > 0) {
+                return (
+                  <SidebarDropdown
+                    key={item.path}
+                    title={item.name}
+                    icon={item.icon}
+                    path={item.path}
+                    isCollapsed={isCollapsed}
+                    onNavigate={handleNavigation}
+                  >
+                    {item.children.map((child, index) => (
+                      <SidebarDropdownItem
+                        key={child.path}
+                        href={child.path}
+                        icon={child.icon}
+                        isCollapsed={isCollapsed}
+                        index={index}
+                      >
+                        {child.name}
+                      </SidebarDropdownItem>
+                    ))}
+                  </SidebarDropdown>
+                );
+              }
+              
+              // Use old SidebarItem for items without children
+              return (
+                <SidebarItem
+                  key={item.path}
+                  item={item}
+                  isCollapsed={isCollapsed}
+                  onNavigate={handleNavigation}
+                />
+              );
+            })}
           </ul>
         </nav>
       </div>

@@ -114,21 +114,24 @@
   width: 256px;
 }
 
+/* Smooth dropdown animations - consistent for all dropdowns */
 .sidebar-enter {
   max-height: 0;
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-8px);
 }
 
 .sidebar-enter-active {
-  max-height: 240px;
+  max-height: 400px;
   opacity: 1;
   transform: translateY(0);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-exit {
-  max-height: 240px;
+  max-height: 400px;
   opacity: 1;
   transform: translateY(0);
 }
@@ -136,8 +139,10 @@
 .sidebar-exit-active {
   max-height: 0;
   opacity: 0;
-  transform: translateY(-10px);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(-8px);
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Mobile responsive improvements */

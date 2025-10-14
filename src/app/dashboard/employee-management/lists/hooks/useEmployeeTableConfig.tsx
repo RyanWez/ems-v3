@@ -118,7 +118,7 @@ export const useEmployeeTableConfig = (
       // Check if field is visible (read permission)
       return fieldPerm?.visible ?? false;
     });
-  }, [perms.fields]); // Only recalculate when field permissions change
+  }, [perms]); // Only recalculate when permissions change
 
   // Memoize available actions (Enhanced with scope info)
   const availableActions = useMemo<ActionConfig[]>(() => {

@@ -8,7 +8,10 @@ import {
   UserListIcon,
   UserRoleIcon,
   EmployeeManagementIcon,
-  UserManagementIcon
+  UserManagementIcon,
+  SystemManagementIcon,
+  BroadcastIcon,
+  SystemLogsIcon
 } from './components/icons';
 
 export const menuItems: NavItem[] = [
@@ -53,6 +56,23 @@ export const menuItems: NavItem[] = [
         path: '/dashboard/user-management/roles',
         name: 'User Roles',
         icon: UserRoleIcon,
+      },
+    ],
+  },
+  {
+    path: '/dashboard/system-management',
+    name: 'System Management',
+    icon: SystemManagementIcon,
+    children: [
+      {
+        path: '/dashboard/system-management/broadcast',
+        name: 'Broadcast',
+        icon: BroadcastIcon,
+      },
+      {
+        path: '/dashboard/system-management/logs',
+        name: 'View System Logs',
+        icon: SystemLogsIcon,
       },
     ],
   },

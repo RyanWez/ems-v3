@@ -73,6 +73,8 @@ const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       "/dashboard/employee-management/leave": "Annual Leave",
       "/dashboard/user-management/list": "User List",
       "/dashboard/user-management/roles": "User Roles",
+      "/dashboard/system-management/broadcast": "Broadcast",
+      "/dashboard/system-management/logs": "View System Logs",
     };
     if (typeof pathname === "string") {
       return routeTitles[pathname] || "Dashboard";

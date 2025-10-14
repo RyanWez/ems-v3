@@ -237,53 +237,55 @@ const EmployeeLists: React.FC = () => {
   }
 
   return (
-    <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border w-full max-w-full relative z-0">
+    <div className="bg-white p-3 sm:p-4 md:p-6 rounded-lg shadow-sm border w-full max-w-full relative z-0">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+      <div className="flex flex-col gap-3 mb-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Employee List</h2>
-          <p className="text-gray-600 text-sm mt-1">Manage all employees in your organization.</p>
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900">Employee List</h2>
+          <p className="text-gray-600 text-xs sm:text-sm mt-1">Manage all employees in your organization.</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-0">
-          {/* Export Excel - Only show if user has export permission */}
-          {perms.bulk.canExport && (
-            <button
-              className="flex items-center bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleExportExcel}
-              disabled={isLoading || filteredEmployees.length === 0}
-              title="Export to Excel"
-            >
-              <Download size={18} className="mr-2" />
-              Export Excel
-            </button>
-          )}
-          
-          {/* Export CSV - Only show if user has export permission */}
-          {perms.bulk.canExport && (
-            <button
-              className="flex items-center bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handleExportCSV}
-              disabled={isLoading || filteredEmployees.length === 0}
-              title="Export to CSV"
-            >
-              <Download size={18} className="mr-2" />
-              Export CSV
-            </button>
-          )}
-          
+        
+        {/* Action Buttons - Responsive Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-2">
           {/* Add New Employee - Only show if user has create permission */}
           {perms.canCreate && (
             <button
-              className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center justify-center bg-blue-600 text-white px-4 py-2.5 rounded-md hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
               onClick={handleAddNew}
               disabled={isLoading || isCreating}
             >
               {isCreating ? (
                 <InlineSpinner className="mr-2" />
               ) : (
-                <PlusCircle size={18} className="mr-2" />
+                <PlusCircle size={16} className="mr-2" />
               )}
-              {isCreating ? 'Adding Employee...' : 'Add New Employee'}
+              {isCreating ? 'Adding...' : 'Add Employee'}
+            </button>
+          )}
+          
+          {/* Export Excel - Only show if user has export permission */}
+          {perms.bulk.canExport && (
+            <button
+              className="flex items-center justify-center bg-green-600 text-white px-4 py-2.5 rounded-md hover:bg-green-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+              onClick={handleExportExcel}
+              disabled={isLoading || filteredEmployees.length === 0}
+              title="Export to Excel"
+            >
+              <Download size={16} className="mr-2" />
+              Excel
+            </button>
+          )}
+          
+          {/* Export CSV - Only show if user has export permission */}
+          {perms.bulk.canExport && (
+            <button
+              className="flex items-center justify-center bg-teal-600 text-white px-4 py-2.5 rounded-md hover:bg-teal-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+              onClick={handleExportCSV}
+              disabled={isLoading || filteredEmployees.length === 0}
+              title="Export to CSV"
+            >
+              <Download size={16} className="mr-2" />
+              CSV
             </button>
           )}
         </div>

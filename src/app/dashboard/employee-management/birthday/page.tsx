@@ -97,72 +97,72 @@ const EmployeeBirthday: React.FC = () => {
   }
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">Employee Birthdays</h2>
-      <p className="text-gray-600 mb-6">
+    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-lg">
+      <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">Employee Birthdays</h2>
+      <p className="text-gray-600 text-sm sm:text-base mb-4 sm:mb-6">
         Track and celebrate employee birthdays. Today&apos;s birthdays and upcoming birthdays within 15 days are highlighted for easy planning.
       </p>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Today's Birthdays */}
-        <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-6 rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-pink-800">🎉 Today&apos;s Birthdays</h3>
+        <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-4 sm:p-6 rounded-lg">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-pink-800">🎉 Today&apos;s Birthdays</h3>
             {todayBirthdays.length > 5 && (
               <span className="text-xs bg-pink-200 text-pink-800 px-2 py-1 rounded-full">
-                {todayBirthdays.length} total
+                {todayBirthdays.length}
               </span>
             )}
           </div>
-          <div className={`space-y-3 ${todayBirthdays.length > 5 ? 'max-h-80 overflow-y-auto' : ''}`}>
+          <div className={`space-y-2 sm:space-y-3 ${todayBirthdays.length > 5 ? 'max-h-64 sm:max-h-80 overflow-y-auto' : ''}`}>
             {todayBirthdays.length > 0 ? (
               todayBirthdays.map((person) => (
-                <div key={person.id} className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm">
-                  <div>
-                    <p className="font-medium text-gray-800">{person.name}</p>
-                    <p className="text-sm text-gray-600">{person.position}</p>
+                <div key={person.id} className="flex items-center justify-between p-2.5 sm:p-3 bg-white rounded-md shadow-sm">
+                  <div className="min-w-0 flex-1 mr-2">
+                    <p className="font-medium text-gray-800 text-sm sm:text-base truncate">{person.name}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 truncate">{person.position}</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-lg font-bold text-pink-600">{person.age}</p>
-                    <p className="text-xs text-gray-500">years old</p>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-base sm:text-lg font-bold text-pink-600">{person.age}</p>
+                    <p className="text-xs text-gray-500 whitespace-nowrap">years old</p>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-4 text-gray-500">
-                <p>No birthdays today</p>
+              <div className="text-center py-6 sm:py-8 text-gray-500">
+                <p className="text-sm">No birthdays today</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Upcoming Birthdays */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-blue-800">📅 Upcoming Birthdays</h3>
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6 rounded-lg">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h3 className="text-base sm:text-lg font-semibold text-blue-800">📅 Upcoming Birthdays</h3>
             {upcomingBirthdays.length > 5 && (
               <span className="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full">
-                {upcomingBirthdays.length} total
+                {upcomingBirthdays.length}
               </span>
             )}
           </div>
-          <div className={`space-y-3 ${upcomingBirthdays.length > 5 ? 'max-h-80 overflow-y-auto' : ''}`}>
+          <div className={`space-y-2 sm:space-y-3 ${upcomingBirthdays.length > 5 ? 'max-h-64 sm:max-h-80 overflow-y-auto' : ''}`}>
             {upcomingBirthdays.length > 0 ? (
               upcomingBirthdays.map((person) => (
-                <div key={person.id} className="flex items-center justify-between p-3 bg-white rounded-md shadow-sm">
-                  <div>
-                    <p className="font-medium text-gray-800">{person.name}</p>
-                    <p className="text-sm text-gray-600">{person.position}</p>
+                <div key={person.id} className="flex items-center justify-between p-2.5 sm:p-3 bg-white rounded-md shadow-sm">
+                  <div className="min-w-0 flex-1 mr-2">
+                    <p className="font-medium text-gray-800 text-sm sm:text-base truncate">{person.name}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 truncate">{person.position}</p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-blue-600">{person.birthdayDate}</p>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-xs sm:text-sm font-bold text-blue-600 whitespace-nowrap">{person.birthdayDate}</p>
                     <p className="text-xs text-gray-500">{person.age} years</p>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="text-center py-4 text-gray-500">
-                <p>No upcoming birthdays</p>
+              <div className="text-center py-6 sm:py-8 text-gray-500">
+                <p className="text-sm">No upcoming birthdays</p>
               </div>
             )}
           </div>
@@ -170,18 +170,18 @@ const EmployeeBirthday: React.FC = () => {
       </div>
 
       {/* Monthly Birthday Calendar */}
-      <div className="mt-8 bg-gradient-to-r from-green-50 to-teal-50 p-6 rounded-lg">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
-          <h3 className="text-lg font-semibold text-green-800 mb-4 sm:mb-0">📅 Birthday Calendar by Month</h3>
+      <div className="mt-6 sm:mt-8 bg-gradient-to-r from-green-50 to-teal-50 p-4 sm:p-6 rounded-lg">
+        <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <h3 className="text-base sm:text-lg font-semibold text-green-800">📅 Birthday Calendar by Month</h3>
 
           {/* Search Bar */}
           <div className="relative">
             <input
               type="text"
-              placeholder="Search employee by name..."
+              placeholder="Search employee..."
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full sm:w-80 px-4 py-2 pl-10 pr-4 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-2.5 pl-10 pr-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,24 +231,24 @@ const EmployeeBirthday: React.FC = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
           {/* Month Selector */}
           <div className="lg:col-span-3">
-            <div className="bg-white rounded-lg p-4 shadow-sm max-h-96 overflow-y-auto">
-              <h4 className="font-medium text-gray-800 mb-3">Select Month</h4>
-              <div className="space-y-2">
+            <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm max-h-64 sm:max-h-96 overflow-y-auto">
+              <h4 className="font-medium text-gray-800 mb-2 sm:mb-3 text-sm sm:text-base">Select Month</h4>
+              <div className="space-y-1.5 sm:space-y-2">
                 {months.map((month, index) => (
                   <button
                     key={month}
                     onClick={() => setSelectedMonth(index)}
-                    className={`w-full text-left px-3 py-2 rounded-md transition-colors ${selectedMonth === index
+                    className={`w-full text-left px-2.5 sm:px-3 py-2 rounded-md transition-colors text-sm ${selectedMonth === index
                         ? 'bg-green-100 text-green-800 font-medium'
                         : 'hover:bg-gray-100 text-gray-700'
                       }`}
                   >
                     <div className="flex justify-between items-center">
-                      <span>{month}</span>
-                      <span className="text-xs bg-gray-200 px-2 py-1 rounded-full">
+                      <span className="truncate">{month}</span>
+                      <span className="text-xs bg-gray-200 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full ml-2 flex-shrink-0">
                         {birthdaysByMonth[index]?.employees.length || 0}
                       </span>
                     </div>
@@ -260,41 +260,41 @@ const EmployeeBirthday: React.FC = () => {
 
           {/* Birthday List for Selected Month */}
           <div className="lg:col-span-9">
-            <div className="bg-white rounded-lg p-4 shadow-sm">
-              <h4 className="font-medium text-gray-800 mb-4">
+            <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm">
+              <h4 className="font-medium text-gray-800 mb-3 sm:mb-4 text-sm sm:text-base">
                 {months[selectedMonth]} Birthdays ({birthdaysByMonth[selectedMonth]?.employees.length || 0})
               </h4>
 
               {(birthdaysByMonth[selectedMonth]?.employees || []).length > 0 ? (
-                <div className="space-y-3 max-h-80 overflow-y-auto">
+                <div className="space-y-2 sm:space-y-3 max-h-64 sm:max-h-80 overflow-y-auto">
                   {(birthdaysByMonth[selectedMonth]?.employees || []).map((employee) => (
                     <div
                       key={employee.id}
-                      className={`flex items-center justify-between p-3 rounded-md transition-colors ${searchResult && searchResult.employee.id === employee.id
+                      className={`flex items-center justify-between p-2.5 sm:p-3 rounded-md transition-colors ${searchResult && searchResult.employee.id === employee.id
                           ? 'bg-yellow-100 border-2 border-yellow-300 shadow-md'
                           : 'bg-gray-50 hover:bg-gray-100'
                         }`}
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${searchResult && searchResult.employee.id === employee.id
+                      <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1 mr-2">
+                        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base flex-shrink-0 ${searchResult && searchResult.employee.id === employee.id
                             ? 'bg-gradient-to-r from-yellow-400 to-orange-400'
                             : 'bg-gradient-to-r from-green-400 to-teal-400'
                           }`}>
                           {employee.name.charAt(0)}
                         </div>
-                        <div>
-                          <p className={`font-medium ${searchResult && searchResult.employee.id === employee.id
+                        <div className="min-w-0 flex-1">
+                          <p className={`font-medium text-sm sm:text-base truncate ${searchResult && searchResult.employee.id === employee.id
                               ? 'text-yellow-900'
                               : 'text-gray-800'
                             }`}>
                             {employee.name}
                             {searchResult && searchResult.employee.id === employee.id && (
-                              <span className="ml-2 text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full">
+                              <span className="ml-2 text-xs bg-yellow-200 text-yellow-800 px-1.5 py-0.5 rounded-full">
                                 Found
                               </span>
                             )}
                           </p>
-                          <p className={`text-sm ${searchResult && searchResult.employee.id === employee.id
+                          <p className={`text-xs sm:text-sm truncate ${searchResult && searchResult.employee.id === employee.id
                               ? 'text-yellow-700'
                               : 'text-gray-600'
                             }`}>
@@ -302,21 +302,21 @@ const EmployeeBirthday: React.FC = () => {
                           </p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <p className={`text-sm font-bold ${searchResult && searchResult.employee.id === employee.id
+                      <div className="text-right flex-shrink-0">
+                        <p className={`text-xs sm:text-sm font-bold whitespace-nowrap ${searchResult && searchResult.employee.id === employee.id
                             ? 'text-yellow-700'
                             : 'text-green-600'
                           }`}>
                           {employee.birthdayDate}
                         </p>
-                        <p className="text-xs text-gray-500">{employee.age} years old</p>
+                        <p className="text-xs text-gray-500 whitespace-nowrap">{employee.age} yrs</p>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <p>No birthdays in {months[selectedMonth]}</p>
+                <div className="text-center py-6 sm:py-8 text-gray-500">
+                  <p className="text-sm">No birthdays in {months[selectedMonth]}</p>
                 </div>
               )}
             </div>

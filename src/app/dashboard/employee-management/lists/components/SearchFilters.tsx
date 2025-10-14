@@ -32,37 +32,38 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
   onServiceYearsChange
 }) => {
   return (
-    <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-      <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-end">
-        {/* Search Bar */}
-        <div className="flex-1 min-w-0">
-          <Label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
-            Search
-          </Label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              type="text"
-              id="search"
-              placeholder="Search by Name, Position, Phone Number..."
-              value={searchTerm}
-              onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
+    <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+      {/* Search Bar - Full width on mobile */}
+      <div className="mb-4">
+        <Label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
+          Search
+        </Label>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <input
+            type="text"
+            id="search"
+            placeholder="Search by Name, Position, Phone..."
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
         </div>
+      </div>
 
+      {/* Filters Grid - Responsive */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {/* Position Filter */}
-        <div className="w-full lg:w-48">
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-between">
-                {selectedPosition}
+              <Button variant="outline" className="w-full justify-between h-10 text-sm">
+                <span className="truncate">{selectedPosition}</span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48">
+            <DropdownMenuContent className="w-56">
               {['All Positions', 'Super', 'Leader', 'Account Department', 'Operation'].map((position) => (
                 <DropdownMenuItem
                   key={position}
@@ -77,16 +78,16 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
         </div>
 
         {/* Gender Filter */}
-        <div className="w-full lg:w-48">
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-between">
-                {selectedGender}
+              <Button variant="outline" className="w-full justify-between h-10 text-sm">
+                <span className="truncate">{selectedGender}</span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48">
+            <DropdownMenuContent className="w-56">
               {['All Genders', 'Male', 'Female'].map((gender) => (
                 <DropdownMenuItem
                   key={gender}
@@ -101,16 +102,16 @@ export const SearchFilters: React.FC<SearchFiltersProps> = ({
         </div>
 
         {/* Service Years Filter */}
-        <div className="w-full lg:w-48">
+        <div className="sm:col-span-2 lg:col-span-1">
           <label className="block text-sm font-medium text-gray-700 mb-2">Service Years</label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full justify-between">
-                {selectedServiceYears}
+              <Button variant="outline" className="w-full justify-between h-10 text-sm">
+                <span className="truncate">{selectedServiceYears}</span>
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48">
+            <DropdownMenuContent className="w-56">
               {['Any Service Years', 'Less than 6 months', '1-2 years', '3-4 years', '4-10 years'].map((years) => (
                 <DropdownMenuItem
                   key={years}
