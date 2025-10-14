@@ -1,7 +1,7 @@
-'use client';
-import React, { useState, useEffect } from 'react';
-import { Employee } from '../types/employee';
-import { InlineSpinner } from '@/components/LoadingSpinner';
+"use client";
+import React, { useState, useEffect } from "react";
+import { Employee } from "../types/employee";
+import { InlineSpinner } from "@/components/LoadingSpinner";
 
 interface ColumnConfig {
   key: string;
@@ -43,63 +43,146 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
   isUpdating = false,
   isDeleting = false,
 }) => {
-  const [showFullTable, setShowFullTable] = useState(true);
-  
+  const [isMobile, setIsMobile] = useState(false);
+
   const { columns, actions, hasActions } = tableConfig;
 
-  // Detect screen size changes and update table visibility
+  // Detect screen size changes
   useEffect(() => {
     const checkScreenSize = () => {
-      setShowFullTable(window.innerWidth >= 1024);
+      setIsMobile(window.innerWidth < 768);
     };
 
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
 
-    return () => window.removeEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   // Show empty state when no employees
   if (employees.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 shadow-sm bg-white p-12 text-center">
-        <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-          <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+      <div className="rounded-lg border border-gray-200 shadow-sm bg-white p-8 sm:p-12 text-center">
+        <div className="mx-auto w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+          <svg
+            className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+            />
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Employees Found</h3>
-        <p className="text-gray-600 mb-6 max-w-md mx-auto">
-          No employees match your current search and filter criteria. Try adjusting your filters or add some employees to get started.
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+          No Employees Found
+        </h3>
+        <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 max-w-md mx-auto">
+          No employees match your current search and filter criteria. Try
+          adjusting your filters or add some employees to get started.
         </p>
       </div>
     );
   }
 
+  // Mobile Table View - Simplified (Name + Actions only)
+  if (isMobile) {
+    return (
+      <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+        <table className="w-full bg-white text-sm">
+          <thead>
+            <tr className="text-left text-gray-600 border-b border-gray-200 bg-gray-50">
+              <th className="px-3 py-2.5 font-semibold text-xs">NAME</th>
+              <th className="px-3 py-2.5 font-semibold text-xs text-center w-28">
+                ACTION
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {employees.map((employee) => (
+              <tr
+                key={employee.id}
+                className="hover:bg-gray-50 transition-colors"
+              >
+                {/* Name Column */}
+                <td className="px-3 py-3">
+                  <div className="flex flex-col">
+                    <span className="font-medium text-gray-900 text-sm">
+                      {employee.name}
+                    </span>
+                    <span className="text-xs text-gray-500 mt-0.5">
+                      {employee.position}
+                    </span>
+                  </div>
+                </td>
+
+                {/* Action Column */}
+                {hasActions && (
+                  <td className="px-3 py-3">
+                    <div className="flex items-center justify-center space-x-1">
+                      {actions.map((action) => {
+                        const Icon = action.icon;
+                        const isEditAction = action.key === "edit";
+                        const isDeleteAction = action.key === "delete";
+                        const showSpinner =
+                          (isEditAction && isUpdating) ||
+                          (isDeleteAction && isDeleting);
+
+                        return (
+                          <button
+                            key={action.key}
+                            className={`p-2 ${action.color} ${action.hoverColor} rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                            onClick={() => action.onClick(employee)}
+                            title={action.label}
+                            disabled={isUpdating || isDeleting}
+                          >
+                            {showSpinner ? (
+                              <InlineSpinner className="w-4 h-4" />
+                            ) : (
+                              <Icon size={16} />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
+  // Desktop Table View
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm relative z-0">
-      <table className="w-full bg-white text-sm table-fixed"
-        style={{
-          minWidth: showFullTable ? '900px' : '400px',
-          width: '100%'
-        }}>
+      <table className="w-full bg-white text-sm" style={{ minWidth: "900px" }}>
         <thead>
           <tr className="text-left text-gray-600 border-b border-gray-200">
             {/* Render columns dynamically based on permissions */}
             {columns.map((column, index) => {
               const isFirstColumn = index === 0;
-              const width = showFullTable ? column.width : (column.mobileWidth || column.width);
-              
+
               return (
                 <th
                   key={column.key}
                   className={`px-3 py-2 font-semibold text-xs ${
-                    isFirstColumn ? 'sticky left-0 z-10 border-r border-gray-200' : ''
+                    isFirstColumn
+                      ? "sticky left-0 z-10 border-r border-gray-200"
+                      : ""
                   }`}
                   style={{
-                    width,
-                    backgroundColor: 'rgb(248 250 252)',
-                    ...(isFirstColumn && { boxShadow: '2px 0 4px rgba(0,0,0,0.1)' })
+                    width: column.width,
+                    backgroundColor: "rgb(248 250 252)",
+                    ...(isFirstColumn && {
+                      boxShadow: "2px 0 4px rgba(0,0,0,0.1)",
+                    }),
                   }}
                 >
                   {column.label}
@@ -112,9 +195,9 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
               <th
                 className="px-3 py-2 font-semibold text-xs text-center sticky right-0 z-10 border-l border-gray-200"
                 style={{
-                  width: showFullTable ? '12%' : '20%',
-                  backgroundColor: 'rgb(248 250 252)',
-                  boxShadow: '-2px 0 4px rgba(0,0,0,0.1)'
+                  width: "12%",
+                  backgroundColor: "rgb(248 250 252)",
+                  boxShadow: "-2px 0 4px rgba(0,0,0,0.1)",
                 }}
               >
                 ACTION
@@ -124,26 +207,32 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
         </thead>
         <tbody className="divide-y divide-gray-200">
           {employees.map((employee) => (
-            <tr key={employee.id} className="hover:bg-gray-50 transition-colors">
+            <tr
+              key={employee.id}
+              className="hover:bg-gray-50 transition-colors"
+            >
               {/* Render cells dynamically based on columns */}
               {columns.map((column, index) => {
                 const isFirstColumn = index === 0;
-                const width = showFullTable ? column.width : (column.mobileWidth || column.width);
                 const value = employee[column.field];
-                const displayValue = column.render ? column.render(value, employee) : value;
-                
+                const displayValue = column.render
+                  ? column.render(value, employee)
+                  : value;
+
                 return (
                   <td
                     key={column.key}
                     className={`px-3 py-2 ${
-                      isFirstColumn ? 'font-medium text-gray-900 sticky left-0 z-10 border-r border-gray-200' : 'text-gray-600'
+                      isFirstColumn
+                        ? "font-medium text-gray-900 sticky left-0 z-10 border-r border-gray-200"
+                        : "text-gray-600"
                     } text-sm`}
                     style={{
-                      width,
+                      width: column.width,
                       ...(isFirstColumn && {
-                        backgroundColor: 'rgb(248 250 252)',
-                        boxShadow: '2px 0 4px rgba(0,0,0,0.1)'
-                      })
+                        backgroundColor: "rgb(248 250 252)",
+                        boxShadow: "2px 0 4px rgba(0,0,0,0.1)",
+                      }),
                     }}
                     title={isFirstColumn ? String(value) : undefined}
                   >
@@ -161,22 +250,24 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
                 <td
                   className="px-3 py-2 sticky right-0 z-10 border-l border-gray-200"
                   style={{
-                    width: showFullTable ? '12%' : '20%',
-                    backgroundColor: 'rgb(248 250 252)',
-                    boxShadow: '-2px 0 4px rgba(0,0,0,0.1)'
+                    width: "12%",
+                    backgroundColor: "rgb(248 250 252)",
+                    boxShadow: "-2px 0 4px rgba(0,0,0,0.1)",
                   }}
                 >
-                  <div className={`flex items-center justify-center ${showFullTable ? 'space-x-1' : 'space-x-0.5'}`}>
+                  <div className="flex items-center justify-center space-x-1">
                     {actions.map((action) => {
                       const Icon = action.icon;
-                      const isEditAction = action.key === 'edit';
-                      const isDeleteAction = action.key === 'delete';
-                      const showSpinner = (isEditAction && isUpdating) || (isDeleteAction && isDeleting);
-                      
+                      const isEditAction = action.key === "edit";
+                      const isDeleteAction = action.key === "delete";
+                      const showSpinner =
+                        (isEditAction && isUpdating) ||
+                        (isDeleteAction && isDeleting);
+
                       return (
                         <button
                           key={action.key}
-                          className={`${showFullTable ? 'p-2' : 'p-1.5'} ${action.color} ${action.hoverColor} rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                          className={`p-2 ${action.color} ${action.hoverColor} rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                           onClick={() => action.onClick(employee)}
                           title={action.label}
                           disabled={isUpdating || isDeleting}
@@ -184,7 +275,7 @@ export const EmployeeTable: React.FC<EmployeeTableProps> = ({
                           {showSpinner ? (
                             <InlineSpinner className="w-4 h-4" />
                           ) : (
-                            <Icon size={showFullTable ? 18 : 16} />
+                            <Icon size={18} />
                           )}
                         </button>
                       );
