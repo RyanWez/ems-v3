@@ -1,13 +1,13 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
 interface NavigationContextType {
   isNavigating: boolean;
   progress: number;
   error: Error | null;
-  startNavigation: () => void;
+  startNavigation: (targetPath?: string) => void;
   finishNavigation: () => void;
   setProgress: (progress: number) => void;
   setError: (error: Error | null) => void;
@@ -32,38 +32,85 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<Error | null>(null);
   const pathname = usePathname();
+  const targetPathRef = useRef<string | null>(null);
+  const progressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const finishTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const startNavigation = () => {
+  const startNavigation = (targetPath?: string) => {
+    // Clear any existing timers
+    if (progressTimerRef.current) {
+      clearTimeout(progressTimerRef.current);
+    }
+    if (finishTimerRef.current) {
+      clearTimeout(finishTimerRef.current);
+    }
+
     setError(null);
     setIsNavigating(true);
     setProgress(10);
+    targetPathRef.current = targetPath || null;
   };
 
   const finishNavigation = () => {
     setProgress(100);
-    setTimeout(() => {
+    finishTimerRef.current = setTimeout(() => {
       setIsNavigating(false);
       setProgress(0);
-    }, 200);
+      targetPathRef.current = null;
+    }, 300);
   };
 
-  // Listen to route changes
+  // Listen to route changes - only finish if we've reached the target path
   useEffect(() => {
     if (isNavigating) {
-      finishNavigation();
+      // If we have a target path, only finish when we reach it
+      if (targetPathRef.current) {
+        if (pathname === targetPathRef.current) {
+          // Add a small delay to ensure the page is fully loaded
+          setTimeout(() => {
+            finishNavigation();
+          }, 100);
+        }
+      } else {
+        // Fallback: finish after pathname change with delay
+        setTimeout(() => {
+          finishNavigation();
+        }, 500);
+      }
     }
   }, [pathname, isNavigating]);
 
-  // Simulate progress during navigation
+  // Simulate progress during navigation with more realistic timing
   useEffect(() => {
-    if (isNavigating && progress < 90) {
-      const timer = setTimeout(() => {
-        setProgress(prev => Math.min(prev + Math.random() * 30, 90));
-      }, 200 + Math.random() * 300);
+    if (isNavigating && progress < 85) {
+      const delay = progress < 30 ? 100 : progress < 60 ? 200 : 400;
+      const increment = progress < 30 ? 15 + Math.random() * 10 : 
+                      progress < 60 ? 8 + Math.random() * 7 : 
+                      2 + Math.random() * 3;
       
-      return () => clearTimeout(timer);
+      progressTimerRef.current = setTimeout(() => {
+        setProgress(prev => Math.min(prev + increment, 85));
+      }, delay);
+      
+      return () => {
+        if (progressTimerRef.current) {
+          clearTimeout(progressTimerRef.current);
+        }
+      };
     }
   }, [isNavigating, progress]);
+
+  // Cleanup timers on unmount
+  useEffect(() => {
+    return () => {
+      if (progressTimerRef.current) {
+        clearTimeout(progressTimerRef.current);
+      }
+      if (finishTimerRef.current) {
+        clearTimeout(finishTimerRef.current);
+      }
+    };
+  }, []);
 
   const value: NavigationContextType = {
     isNavigating,

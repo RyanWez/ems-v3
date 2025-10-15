@@ -60,7 +60,7 @@ const Login: React.FC = () => {
         } else {
            toast.success('Login successful!');
            await revalidate();
-           startNavigation();
+           startNavigation('/dashboard');
            router.push('/dashboard');
         }
     } catch (e) {

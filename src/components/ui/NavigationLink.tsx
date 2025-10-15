@@ -47,8 +47,8 @@ const NavigationLink: React.FC<NavigationLinkProps> = ({
     setIsClicked(true);
     setTimeout(() => setIsClicked(false), 150);
 
-    // Start navigation loading
-    startNavigation();
+    // Start navigation loading with target path
+    startNavigation(href);
 
     // Call custom onClick if provided
     onClick?.();
