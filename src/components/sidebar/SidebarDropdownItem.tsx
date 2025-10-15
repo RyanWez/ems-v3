@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import Link from 'next/link';
+import NavigationLink from '../ui/NavigationLink';
 import { usePathname } from 'next/navigation';
 
 interface SidebarDropdownItemProps {
@@ -38,9 +38,9 @@ const SidebarDropdownItem: React.FC<SidebarDropdownItemProps> = ({
 
   if (isCollapsed) {
     return (
-      <Link
+      <NavigationLink
         href={href}
-        className={flyoutItemStyle}
+        className={`${flyoutItemStyle} nav-link`}
         style={{
           animationDelay: `${index * 50}ms`,
         }}
@@ -60,19 +60,19 @@ const SidebarDropdownItem: React.FC<SidebarDropdownItemProps> = ({
         </div>
         <span className="font-medium flex-1">{children}</span>
         {isActive && <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>}
-      </Link>
+      </NavigationLink>
     );
   }
 
   return (
-    <Link href={href} className={itemStyle}>
+    <NavigationLink href={href} className={`${itemStyle} nav-link`}>
       {isActive && (
         <div className="absolute left-0 top-0 h-full w-1 bg-[#409EFF]"></div>
       )}
       {Icon && <Icon className={`w-5 h-5 flex-shrink-0 mr-3 ${isActive ? 'text-white' : ''}`} />}
       <span className="font-medium">{children}</span>
       {isActive && <div className="w-2 h-2 bg-white rounded-full ml-auto animate-pulse"></div>}
-    </Link>
+    </NavigationLink>
   );
 };
 

@@ -3,6 +3,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useNavigation } from '@/providers/NavigationProvider';
 import { authenticate } from '@/app/lib/actions';
 import { useAuth } from '@/Auth';
 import { toast } from 'sonner';
@@ -10,6 +11,7 @@ import { toast } from 'sonner';
 const Login: React.FC = () => {
   const router = useRouter();
   const { revalidate } = useAuth();
+  const { startNavigation } = useNavigation();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -58,6 +60,7 @@ const Login: React.FC = () => {
         } else {
            toast.success('Login successful!');
            await revalidate();
+           startNavigation();
            router.push('/dashboard');
         }
     } catch (e) {

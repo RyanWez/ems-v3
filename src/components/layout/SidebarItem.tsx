@@ -1,8 +1,8 @@
-'use client';
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import type { NavItem } from '../../types';
-import Link from 'next/link';
+"use client";
+import React, { useState, useRef, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import type { NavItem } from "../../types";
+import NavigationLink from "../ui/NavigationLink";
 
 interface SidebarItemProps {
   item: NavItem;
@@ -14,8 +14,19 @@ interface SidebarItemProps {
 }
 
 const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    {...props}
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="m19.5 8.25-7.5 7.5-7.5-7.5"
+    />
   </svg>
 );
 
@@ -91,29 +102,35 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
 
   // Only show active state for direct path matches, not for parent items
   const isActive = pathname === item.path;
-  const isParentActive = hasChildren && item.children?.some(child => pathname.startsWith(child.path));
+  const isParentActive =
+    hasChildren &&
+    item.children?.some((child) => pathname.startsWith(child.path));
 
   const itemBaseStyle = `
     flex items-center h-12 text-sm cursor-pointer relative
     transition-all duration-200 ease-in-out
     hover:bg-[#263445] hover:text-white
-    ${isClicked ? 'bg-[#1e3a5f] scale-95' : ''}
-    ${isParentActive && !isActive ? 'bg-[#263445]/50' : ''}
-    ${isOpen && hasChildren && !isCollapsed ? 'bg-[#263445]/30 shadow-sm' : ''}
+    ${isClicked ? "bg-[#1e3a5f] scale-95" : ""}
+    ${isParentActive && !isActive ? "bg-[#263445]/50" : ""}
+    ${isOpen && hasChildren && !isCollapsed ? "bg-[#263445]/30 shadow-sm" : ""}
   `;
 
   // Only apply active style to direct matches, not parent items
-  const activeStyle = isActive ? 'bg-[#409EFF] text-white' : '';
+  const activeStyle = isActive ? "bg-[#409EFF] text-white" : "";
 
-  const collapsedItemStyle = isCollapsed ? 'justify-center' : '';
+  const collapsedItemStyle = isCollapsed ? "justify-center" : "";
 
   const getPaddingClass = () => {
-    if (isCollapsed) return 'px-4';
+    if (isCollapsed) return "px-4";
     switch (depth) {
-      case 0: return 'pl-6 pr-4';
-      case 1: return 'pl-10 pr-4';
-      case 2: return 'pl-14 pr-4';
-      default: return 'pl-6 pr-4';
+      case 0:
+        return "pl-6 pr-4";
+      case 1:
+        return "pl-10 pr-4";
+      case 2:
+        return "pl-14 pr-4";
+      default:
+        return "pl-6 pr-4";
     }
   };
 
@@ -142,9 +159,17 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       {isParentActive && !isActive && !isCollapsed && (
         <div className="absolute left-0 top-0 h-full w-1 bg-[#409EFF]/40"></div>
       )}
-      <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-white' : isParentActive ? 'text-[#409EFF]' : ''}`} />
+      <Icon
+        className={`w-5 h-5 flex-shrink-0 ${
+          isActive ? "text-white" : isParentActive ? "text-[#409EFF]" : ""
+        }`}
+      />
       {!isCollapsed && (
-        <span className={`ml-3 flex-1 font-medium ${isParentActive && !isActive ? 'text-[#BFCBD9]' : ''}`}>
+        <span
+          className={`ml-3 flex-1 font-medium ${
+            isParentActive && !isActive ? "text-[#BFCBD9]" : ""
+          }`}
+        >
           {item.name}
         </span>
       )}
@@ -153,7 +178,9 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       )}
       {!isCollapsed && hasChildren && (
         <ChevronDownIcon
-          className={`w-4 h-4 transition-all duration-300 ease-in-out ${isOpen ? 'rotate-180 text-[#409EFF]' : 'rotate-0'}`}
+          className={`w-4 h-4 transition-all duration-300 ease-in-out ${
+            isOpen ? "rotate-180 text-[#409EFF]" : "rotate-0"
+          }`}
         />
       )}
       {isCollapsed && (
@@ -227,12 +254,13 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
     return (
       <div
         className={`fixed z-[60] bg-[#1f2d3d]/95 backdrop-blur-sm border border-gray-600/80 rounded-lg shadow-2xl py-1 min-w-[220px] max-w-[280px] flyout-container ${
-          showFlyout ? 'animate-flyout-enter' : 'animate-flyout-exit'
+          showFlyout ? "animate-flyout-enter" : "animate-flyout-exit"
         }`}
         style={{
           top: `${position.top}px`,
           left: `${position.left}px`,
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2)',
+          boxShadow:
+            "0 10px 25px rgba(0, 0, 0, 0.3), 0 4px 10px rgba(0, 0, 0, 0.2)",
         }}
         onMouseEnter={handleFlyoutMouseEnter}
         onMouseLeave={handleFlyoutMouseLeave}
@@ -256,7 +284,12 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </div>
         </div>
@@ -268,32 +301,46 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
             const isChildActive = pathname === child.path;
 
             return (
-              <Link
+              <NavigationLink
                 key={child.path}
                 href={child.path}
                 className={`
                   flyout-menu-item flex items-center px-4 py-2.5 text-sm transition-all duration-200
                   hover:bg-[#263445] hover:text-white cursor-pointer group
-                  hover:translate-x-1 hover:shadow-sm
-                  ${isChildActive ? 'bg-[#409EFF] text-white shadow-sm translate-x-1' : 'text-[#BFCBD9]'}
+                  hover:translate-x-1 hover:shadow-sm nav-link
+                  ${
+                    isChildActive
+                      ? "bg-[#409EFF] text-white shadow-sm translate-x-1"
+                      : "text-[#BFCBD9]"
+                  }
                 `}
                 style={{
                   animationDelay: `${index * 50}ms`,
                 }}
                 onClick={() => handleFlyoutItemClick(child.path)}
               >
-                <div className={`w-6 h-6 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${isChildActive ? 'bg-white/20' : 'bg-gray-600/30 group-hover:bg-gray-500/40'
-                  }`}>
+                <div
+                  className={`w-6 h-6 rounded-md flex items-center justify-center mr-3 transition-all duration-200 ${
+                    isChildActive
+                      ? "bg-white/20"
+                      : "bg-gray-600/30 group-hover:bg-gray-500/40"
+                  }`}
+                >
                   {ChildIcon && (
-                    <ChildIcon className={`w-3.5 h-3.5 transition-colors duration-200 ${isChildActive ? 'text-white' : 'text-gray-300 group-hover:text-white'
-                      }`} />
+                    <ChildIcon
+                      className={`w-3.5 h-3.5 transition-colors duration-200 ${
+                        isChildActive
+                          ? "text-white"
+                          : "text-gray-300 group-hover:text-white"
+                      }`}
+                    />
                   )}
                 </div>
                 <span className="font-medium flex-1">{child.name}</span>
                 {isChildActive && (
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
                 )}
-              </Link>
+              </NavigationLink>
             );
           })}
         </div>
@@ -306,18 +353,18 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
       {hasChildren ? (
         renderItem()
       ) : (
-        <Link href={item.path}>
+        <NavigationLink href={item.path} className="nav-link">
           {renderItem()}
-        </Link>
+        </NavigationLink>
       )}
       {!isCollapsed && hasChildren && (
         <ul
           className={`
             bg-[#1f2d3d] overflow-hidden relative
-            ${isOpen ? 'sidebar-enter-active' : 'sidebar-exit-active'}
+            ${isOpen ? "sidebar-enter-active" : "sidebar-exit-active"}
           `}
           style={{
-            transformOrigin: 'top'
+            transformOrigin: "top",
           }}
         >
           {/* Removed Collapse Button */}

@@ -6,6 +6,8 @@ import { AuthProvider } from "@/Auth";
 import { Toaster } from "@/components/ui/sonner";
 import GlobalErrorBoundary from "@/components/GlobalErrorBoundary";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { NavigationProvider } from "@/providers/NavigationProvider";
+import ProgressBar from "@/components/ui/ProgressBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,15 +36,18 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <QueryProvider>
-          <GlobalErrorBoundary>
-            <AuthProvider>{children}</AuthProvider>
-            <Toaster
-              position="top-center"
-              expand={true}
-              richColors={true}
-              duration={4000}
-            />
-          </GlobalErrorBoundary>
+          <NavigationProvider>
+            <GlobalErrorBoundary>
+              <ProgressBar />
+              <AuthProvider>{children}</AuthProvider>
+              <Toaster
+                position="top-center"
+                expand={true}
+                richColors={true}
+                duration={4000}
+              />
+            </GlobalErrorBoundary>
+          </NavigationProvider>
         </QueryProvider>
       </body>
     </html>
