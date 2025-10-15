@@ -8,7 +8,7 @@ import AuthLoading from "@/components/AuthLoading";
 import { useAuth } from "@/Auth";
 import { deleteSession } from "@/app/lib/actions";
 import DashboardSkeleton from "@/components/skeletons/DashboardSkeleton";
-import NavigationHistory from "@/components/ui/NavigationHistory";
+
 import PageTransition from "@/components/ui/PageTransition";
 
 const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -159,7 +159,6 @@ const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </h1>
           </div>
           <div className="flex items-center space-x-4">
-            <NavigationHistory />
             <div className="text-sm text-gray-600 hidden sm:block">
               Welcome back, {user}
             </div>
