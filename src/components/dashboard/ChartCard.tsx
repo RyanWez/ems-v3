@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   PieChart,
   Pie,
@@ -81,14 +81,31 @@ const renderActiveShape = (props: any) => {
   );
 };
 
-// Simple Bar Shape with Hover Effect
-const SimpleBar = (props: any) => {
+// Optimized Bar Shape with Hover Effect
+const SimpleBar = React.memo((props: any) => {
+  SimpleBar.displayName = 'SimpleBar';
   const { fill, x, y, width, height } = props;
   const [isHovered, setIsHovered] = useState(false);
 
+  // Memoize event handlers to prevent unnecessary re-renders
+  const handleMouseEnter = useCallback(() => setIsHovered(true), []);
+  const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+
+  // Memoize styles for performance
+  const barStyle = useMemo(() => ({
+    filter: isHovered
+      ? `drop-shadow(0 8px 20px ${fill}70)`
+      : `drop-shadow(0 2px 4px ${fill}30)`,
+    transform: isHovered ? "translateY(-4px)" : "translateY(0)",
+    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+    cursor: "pointer",
+    transformOrigin: "bottom",
+    willChange: isHovered ? "transform, filter" : "auto",
+  }), [isHovered, fill]);
+
   return (
     <g>
-      {/* Glow effect on hover */}
+      {/* Glow effect on hover - only render when needed */}
       {isHovered && (
         <rect
           x={x - 2}
@@ -100,6 +117,7 @@ const SimpleBar = (props: any) => {
           style={{
             opacity: 0.2,
             filter: `blur(10px)`,
+            willChange: "opacity",
           }}
         />
       )}
@@ -111,21 +129,13 @@ const SimpleBar = (props: any) => {
         height={height}
         fill={fill}
         rx={8}
-        style={{
-          filter: isHovered
-            ? `drop-shadow(0 8px 20px ${fill}70)`
-            : `drop-shadow(0 2px 4px ${fill}30)`,
-          transform: isHovered ? "translateY(-4px)" : "translateY(0)",
-          transition: "all 0.3s ease",
-          cursor: "pointer",
-          transformOrigin: "bottom",
-        }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        style={barStyle}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       />
-      {/* Shine effect */}
+      {/* Shine effect - optimized gradient definition */}
       <defs>
-        <linearGradient id={`shine-bar`} x1="0%" y1="0%" x2="0%" y2="100%">
+        <linearGradient id={`shine-bar-${fill.replace('#', '')}`} x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="white" stopOpacity="0.3" />
           <stop offset="50%" stopColor="white" stopOpacity="0" />
           <stop offset="100%" stopColor="black" stopOpacity="0.1" />
@@ -136,21 +146,26 @@ const SimpleBar = (props: any) => {
         y={y}
         width={width}
         height={height}
-        fill={`url(#shine-bar)`}
+        fill={`url(#shine-bar-${fill.replace('#', '')})`}
         rx={8}
         style={{
           pointerEvents: "none",
+          opacity: isHovered ? 0.8 : 0.5,
+          transition: "opacity 0.3s ease",
         }}
       />
     </g>
   );
-};
+});
 
-// Custom Tooltip Component with Enhanced Positioning
-const CustomTooltip = ({ active, payload, coordinate }: any) => {
-  if (active && payload && payload.length) {
+// Optimized Tooltip Component with Intelligent Positioning
+const CustomTooltip = React.memo(({ active, payload, coordinate }: any) => {
+  CustomTooltip.displayName = 'CustomTooltip';
+  // Memoize percentage calculation for performance - must be at top level
+  const tooltipContent = useMemo(() => {
+    if (!active || !payload || !payload.length) return null;
+
     const data = payload[0].payload;
-    // Calculate percentage from value and total
     const total = payload[0].payload.value;
     const percentage = payload[0].percent
       ? (payload[0].percent * 100).toFixed(1)
@@ -160,33 +175,68 @@ const CustomTooltip = ({ active, payload, coordinate }: any) => {
           100
         ).toFixed(1);
 
-    // Calculate position to avoid clipping
-    const x = coordinate?.x || 0;
-    const y = coordinate?.y || 0;
+    return { data, percentage };
+  }, [active, payload]);
 
-    return (
-      <div
-        className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-2xl border z-[9999] absolute"
-        style={{
-          borderColor: data.fill,
-          left: x,
-          top: y - 10,
-          transform: 'translateX(-50%)',
-          pointerEvents: 'none'
-        }}
-      >
-        <p className="font-semibold text-gray-800">{data.name}</p>
-        <p style={{ color: data.fill }}>
-          <span className="font-bold">{data.value}</span>
-          <span className="text-xs ml-1">({percentage}%)</span>
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
+  // Intelligent positioning function - must be at top level
+  const getOptimalPosition = useCallback((x: number, y: number) => {
+    const tooltipWidth = 120; // Approximate tooltip width
+    const tooltipHeight = 60; // Approximate tooltip height
+    const margin = 10;
 
-// Add keyframes for legend animation
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+
+    let left = x;
+    let top = y - tooltipHeight - margin;
+
+    // Adjust horizontal position if tooltip goes off-screen
+    if (left - tooltipWidth / 2 < margin) {
+      left = tooltipWidth / 2 + margin;
+    } else if (left + tooltipWidth / 2 > viewportWidth - margin) {
+      left = viewportWidth - tooltipWidth / 2 - margin;
+    }
+
+    // Adjust vertical position if tooltip goes off-screen
+    if (top < margin) {
+      top = y + margin;
+    }
+
+    return { left, top };
+  }, []);
+
+  if (!tooltipContent) return null;
+
+  const { data, percentage } = tooltipContent;
+  const x = coordinate?.x || 0;
+  const y = coordinate?.y || 0;
+  const position = getOptimalPosition(x, y);
+
+  return (
+    <div
+      className="bg-white/95 backdrop-blur-sm p-2 sm:p-3 rounded-lg shadow-2xl border z-[9999] absolute animate-in fade-in duration-200"
+      style={{
+        borderColor: data.fill,
+        left: position.left,
+        top: position.top,
+        transform: 'translateX(-50%)',
+        pointerEvents: 'none',
+        willChange: 'transform',
+      }}
+      role="tooltip"
+      aria-live="polite"
+    >
+      <p className="font-semibold text-gray-800 text-sm">{data.name}</p>
+      <p style={{ color: data.fill }} className="text-sm">
+        <span className="font-bold">{data.value}</span>
+        <span className="text-xs ml-1 opacity-80">({percentage}%)</span>
+      </p>
+    </div>
+  );
+});
+
+// Optimized keyframes for animations
 const styles = `
   @keyframes slideIn {
     from {
@@ -198,13 +248,47 @@ const styles = `
       transform: translateX(0);
     }
   }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-2px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-in {
+    animation-fill-mode: both;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.15s ease-out;
+  }
+
+  .duration-200 {
+    animation-duration: 200ms;
+  }
 `;
 
-export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
+export const ChartCard: React.FC<ChartCardProps> = React.memo(({ title, data, type }) => {
+  ChartCard.displayName = 'ChartCard';
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [animationKey, setAnimationKey] = useState(0);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+
+  // Memoize chart data to prevent unnecessary recalculations
+  const chartData = useMemo(() => {
+    return data.map((item, index) => ({
+      name: item.label,
+      value: item.value,
+      fill: item.color,
+      ...(type === 'bar' ? { index } : {}),
+    }));
+  }, [data, type]);
 
   // Trigger re-animation on data change
   useEffect(() => {
@@ -235,12 +319,6 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
 
   // Enhanced Bar Chart Implementation with Advanced Animations
   if (type === "bar") {
-    const chartData = data.map((item, index) => ({
-      name: item.label,
-      value: item.value,
-      fill: item.color,
-      index,
-    }));
 
     return (
       <div
@@ -248,7 +326,7 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
         className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-lg hover:z-50 relative transition-all duration-300 ease-out"
       >
         <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
-        <div className="w-full h-80 outline-none focus:outline-none overflow-visible relative">
+        <div className="w-full h-64 sm:h-72 lg:h-80 outline-none focus:outline-none overflow-visible relative">
           <ResponsiveContainer width="100%" height="100%" debounce={50}>
             <BarChart
               key={animationKey}
@@ -277,25 +355,58 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
                 cursor={{ fill: "rgba(0, 0, 0, 0.05)", radius: 8 }}
                 content={({ active, payload, coordinate }) => {
                   if (active && payload && payload.length) {
+                    const data = payload[0].payload;
                     const x = coordinate?.x || 0;
                     const y = coordinate?.y || 0;
 
+                    // Intelligent positioning for bar chart tooltip
+                    const getOptimalPosition = (x: number, y: number) => {
+                      const tooltipWidth = 100;
+                      const tooltipHeight = 50;
+                      const margin = 10;
+
+                      const viewportWidth = window.innerWidth;
+                      const viewportHeight = window.innerHeight;
+
+                      let left = x;
+                      let top = y - tooltipHeight - margin;
+
+                      // Adjust if tooltip goes off-screen horizontally
+                      if (left - tooltipWidth / 2 < margin) {
+                        left = tooltipWidth / 2 + margin;
+                      } else if (left + tooltipWidth / 2 > viewportWidth - margin) {
+                        left = viewportWidth - tooltipWidth / 2 - margin;
+                      }
+
+                      // Adjust vertically if tooltip goes off-screen
+                      if (top < margin) {
+                        top = y + margin;
+                      }
+
+                      return { left, top };
+                    };
+
+                    const position = getOptimalPosition(x, y);
+
                     return (
                       <div
-                        className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-2xl border-2 z-[9999] absolute"
+                        className="bg-white/95 backdrop-blur-sm p-2 sm:p-3 rounded-lg shadow-2xl border-2 z-[9999] absolute animate-in fade-in duration-200"
                         style={{
-                          borderColor: payload[0].payload.fill,
-                          left: x,
-                          top: y - 10,
+                          borderColor: data.fill,
+                          left: position.left,
+                          top: position.top,
                           transform: 'translateX(-50%)',
-                          pointerEvents: 'none'
+                          pointerEvents: 'none',
+                          willChange: 'transform',
                         }}
+                        role="tooltip"
+                        aria-live="polite"
                       >
                         <p className="font-semibold text-gray-800 text-sm">
-                          {payload[0].payload.name}
+                          {data.name}
                         </p>
                         <p
-                          style={{ color: payload[0].payload.fill }}
+                          style={{ color: data.fill }}
                           className="text-lg font-bold mt-1"
                         >
                           {payload[0].value}
@@ -321,11 +432,6 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
   }
 
   // --- Enhanced Pie Chart Implementation ---
-  const chartData = data.map((item) => ({
-    name: item.label,
-    value: item.value,
-    fill: item.color,
-  }));
 
   return (
     <>
@@ -336,9 +442,9 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
       >
         <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-center">
           {/* Pie Chart */}
-          <div className="w-full h-64 outline-none focus:outline-none overflow-visible relative">
+          <div className="w-full h-48 sm:h-56 lg:h-64 outline-none focus:outline-none overflow-visible relative">
             <ResponsiveContainer width="100%" height="100%" debounce={50}>
               <PieChart key={animationKey}>
                 <defs>
@@ -451,4 +557,4 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
       </div>
     </>
   );
-};
+});
