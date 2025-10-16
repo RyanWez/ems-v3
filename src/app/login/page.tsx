@@ -7,7 +7,7 @@ import { useNavigation } from '@/providers/NavigationProvider';
 import { authenticate } from '@/app/lib/actions';
 import { useAuth } from '@/Auth';
 import { toast } from 'sonner';
-import { LoginFormData, FormErrors, TouchedFields } from '@/types/auth';
+import type { LoginFormData, FormErrors, TouchedFields, AuthActionResult } from '@/types/auth';
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -56,9 +56,9 @@ const Login: React.FC = () => {
     setIsLoading(true);
     
     try {
-        const result = await authenticate(formData.username, formData.password);
+        const result: AuthActionResult = await authenticate(formData.username, formData.password);
 
-        if (result?.error) {
+        if (result.error) {
             // Better error categorization
             if (result.error.includes('Invalid username or password')) {
                 toast.error('Invalid credentials. Please check your username and password.');

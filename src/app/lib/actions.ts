@@ -5,13 +5,14 @@ import { createSession } from "./session";
 import { redirect } from "next/navigation";
 import { PrismaClient } from "../../generated/prisma";
 import bcrypt from "bcrypt";
+import type { AuthActionResult, Permission } from '@/types/auth';
 
 const prisma = new PrismaClient();
 
 export async function authenticate(
   username: string,
   password: string
-): Promise<{ error?: string } | undefined> {
+): Promise<AuthActionResult> {
   try {
     // Input validation
     if (!username?.trim() || !password) {
@@ -51,7 +52,7 @@ export async function authenticate(
       username: user.name,
       role: user.role.name,
       userId: user.id,
-      permissions: user.role.permissions,
+      permissions: user.role.permissions as Permission,
     });
 
     return {};
@@ -78,7 +79,7 @@ export async function authenticate(
   }
 }
 
-export async function logoutAction() {
+export async function logoutAction(): Promise<void> {
   try {
     const cookieStore = await cookies();
     cookieStore.delete("session");

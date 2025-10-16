@@ -3,11 +3,15 @@ import 'server-only';
 
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import type { SessionData, JWTPayload } from '@/types/auth';
 
 const secretKey = process.env['SESSION_SECRET'];
+if (!secretKey) {
+  throw new Error('SESSION_SECRET environment variable is required');
+}
 const encodedKey = new TextEncoder().encode(secretKey);
 
-export async function encrypt(payload: any) {
+export async function encrypt(payload: SessionData): Promise<string> {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
@@ -15,21 +19,34 @@ export async function encrypt(payload: any) {
     .sign(encodedKey);
 }
 
-export async function decrypt(session: string | undefined = '') {
+export async function decrypt(session: string | undefined = ''): Promise<JWTPayload | null> {
   try {
+    if (!session) {
+      return null;
+    }
+    
     const { payload } = await jwtVerify(session, encodedKey, {
       algorithms: ['HS256'],
     });
-    return payload;
+    
+    return payload as JWTPayload;
   } catch (error) {
     console.log('Failed to verify session');
     return null;
   }
 }
 
-export async function createSession(data: { username: string, role: string, userId?: number, permissions?: any }) {
+export async function createSession(data: Omit<SessionData, 'expiresAt'>): Promise<void> {
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  const session = await encrypt({ ...data, expiresAt });
+  const sessionData: SessionData = { 
+    username: data.username,
+    role: data.role,
+    userId: data.userId || 0, // Ensure userId is always a number
+    permissions: data.permissions,
+    expiresAt 
+  };
+  
+  const session = await encrypt(sessionData);
 
   const cookieStore = await cookies();
   cookieStore.set('session', session, {
@@ -41,7 +58,7 @@ export async function createSession(data: { username: string, role: string, user
   });
 }
 
-export async function getSession() {
+export async function getSession(): Promise<JWTPayload | null> {
     const cookieStore = await cookies();
     const cookie = cookieStore.get('session')?.value;
     const session = await decrypt(cookie);
@@ -71,7 +88,7 @@ export async function updateSession(): Promise<void> {
   });
 }
 
-export async function deleteSession() {
+export async function deleteSession(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete('session');
 }

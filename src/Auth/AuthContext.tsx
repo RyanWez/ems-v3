@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { getSession as getServerSession } from '@/app/lib/session';
 import NetworkErrorBoundary from '@/components/NetworkErrorBoundary';
-import type { AuthContextType } from '@/types/auth';
+import type { AuthContextType, Permission, LogoutResponse } from '@/types/auth';
 import { toast } from 'sonner';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -16,7 +16,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<string | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [permissions, setPermissions] = useState<any | null>(null);
+  const [permissions, setPermissions] = useState<Permission | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const validateSession = useCallback(async (retryCount = 0) => {
@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsAuthenticated(true);
         setUser(session['username']);
         setUserRole(session['role'] as string);
-        setPermissions(session['permissions'] || null);
+        setPermissions((session['permissions'] as Permission) || null);
       } else {
         setIsAuthenticated(false);
         setUser(null);
@@ -68,19 +68,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const response = await fetch('/api/auth/logout', {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
-      if (response.ok) {
+      const result: LogoutResponse = await response.json();
+
+      if (response.ok && result.success) {
         setIsAuthenticated(false);
         setUser(null);
         setUserRole(null);
         setPermissions(null);
-        toast.success('Logged out successfully');
+        toast.success(result.message || 'Logged out successfully');
         
         // Redirect to login page
         window.location.href = '/login';
       } else {
-        throw new Error('Logout failed');
+        const errorMessage = 'error' in result ? result.error : 'Logout failed';
+        throw new Error(errorMessage);
       }
     } catch (error) {
       console.error('Logout error:', error);

@@ -17,6 +17,7 @@ import { DeleteEmployeeModal } from './components/modals/DeleteEmployeeModal';
 import { LoadingSpinner, InlineSpinner } from '../../../../components/LoadingSpinner';
 import { useAuth } from '@/Auth/AuthContext';
 import { exportEmployeesToCSV, exportEmployeesToExcel } from './utils/exportHelpers';
+import type { RolePermissions } from '@/app/dashboard/user-management/roles/types/permissions';
 
 const EmployeeLists: React.FC = () => {
   // Auth context
@@ -329,7 +330,7 @@ const EmployeeLists: React.FC = () => {
         onClose={handleCloseView}
         employee={viewingEmployee}
         onEdit={handleEdit}
-        permissions={permissions}
+        permissions={permissions as RolePermissions}
         userRole={userRole}
         canEdit={perms.canEdit}
       />
@@ -339,7 +340,7 @@ const EmployeeLists: React.FC = () => {
         onClose={handleCloseEdit}
         employee={editingEmployee}
         onSave={handleSaveEdit}
-        permissions={permissions}
+        permissions={permissions as RolePermissions}
         userRole={userRole}
       />
 
@@ -347,7 +348,7 @@ const EmployeeLists: React.FC = () => {
         isOpen={isAddModalOpen}
         onClose={handleCloseAdd}
         onSave={handleSaveAdd}
-        permissions={permissions}
+        permissions={permissions as RolePermissions}
         userRole={userRole}
       />
 
