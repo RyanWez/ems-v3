@@ -146,8 +146,8 @@ const SimpleBar = (props: any) => {
   );
 };
 
-// Custom Tooltip Component
-const CustomTooltip = ({ active, payload }: any) => {
+// Custom Tooltip Component with Enhanced Positioning
+const CustomTooltip = ({ active, payload, coordinate }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     // Calculate percentage from value and total
@@ -160,10 +160,20 @@ const CustomTooltip = ({ active, payload }: any) => {
           100
         ).toFixed(1);
 
+    // Calculate position to avoid clipping
+    const x = coordinate?.x || 0;
+    const y = coordinate?.y || 0;
+
     return (
       <div
-        className="bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-xl border"
-        style={{ borderColor: data.fill }}
+        className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-2xl border z-[9999] absolute"
+        style={{
+          borderColor: data.fill,
+          left: x,
+          top: y - 10,
+          transform: 'translateX(-50%)',
+          pointerEvents: 'none'
+        }}
       >
         <p className="font-semibold text-gray-800">{data.name}</p>
         <p style={{ color: data.fill }}>
@@ -235,15 +245,15 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
     return (
       <div
         ref={containerRef}
-        className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 ease-out"
+        className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-lg hover:z-50 relative transition-all duration-300 ease-out"
       >
         <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
-        <div className="w-full h-80 outline-none focus:outline-none">
+        <div className="w-full h-80 outline-none focus:outline-none overflow-visible relative">
           <ResponsiveContainer width="100%" height="100%" debounce={50}>
             <BarChart
               key={animationKey}
               data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 20, right: 50, left: 20, bottom: 5 }}
             >
               <CartesianGrid
                 strokeDasharray="3 3"
@@ -265,12 +275,21 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
               />
               <Tooltip
                 cursor={{ fill: "rgba(0, 0, 0, 0.05)", radius: 8 }}
-                content={({ active, payload }) => {
+                content={({ active, payload, coordinate }) => {
                   if (active && payload && payload.length) {
+                    const x = coordinate?.x || 0;
+                    const y = coordinate?.y || 0;
+
                     return (
                       <div
-                        className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-xl border-2"
-                        style={{ borderColor: payload[0].payload.fill }}
+                        className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-2xl border-2 z-[9999] absolute"
+                        style={{
+                          borderColor: payload[0].payload.fill,
+                          left: x,
+                          top: y - 10,
+                          transform: 'translateX(-50%)',
+                          pointerEvents: 'none'
+                        }}
                       >
                         <p className="font-semibold text-gray-800 text-sm">
                           {payload[0].payload.name}
@@ -313,13 +332,13 @@ export const ChartCard: React.FC<ChartCardProps> = ({ title, data, type }) => {
       <style>{styles}</style>
       <div
         ref={containerRef}
-        className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 ease-out"
+        className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-lg hover:z-50 relative transition-all duration-300 ease-out"
       >
         <h3 className="text-lg font-semibold text-gray-800 mb-4">{title}</h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           {/* Pie Chart */}
-          <div className="w-full h-64 outline-none focus:outline-none">
+          <div className="w-full h-64 outline-none focus:outline-none overflow-visible relative">
             <ResponsiveContainer width="100%" height="100%" debounce={50}>
               <PieChart key={animationKey}>
                 <defs>

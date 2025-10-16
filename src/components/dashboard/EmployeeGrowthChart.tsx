@@ -30,7 +30,7 @@ interface EmployeeGrowthChartProps {
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/95 backdrop-blur-sm p-4 rounded-lg shadow-xl border-2 border-gray-200">
+      <div className="bg-white/95 backdrop-blur-sm p-4 rounded-lg shadow-xl border-2 border-gray-200 z-50 relative">
         <p className="font-semibold text-gray-800 mb-2">{label}</p>
         {payload.map((entry: any, index: number) => (
           <p key={index} style={{ color: entry.color }} className="text-sm">
@@ -123,7 +123,7 @@ export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
   return (
     <div
       ref={containerRef}
-      className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30 p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-500 ease-out"
+      className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30 p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-lg hover:z-10 relative transition-all duration-500 ease-out"
     >
       {/* Header with Toggle */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
