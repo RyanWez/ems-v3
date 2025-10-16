@@ -6,13 +6,12 @@ import Sidebar from "@/components/layout/Sidebar";
 import Hamburger from "@/components/Hamburger";
 import AuthLoading from "@/components/AuthLoading";
 import { useAuth } from "@/Auth";
-import { deleteSession } from "@/app/lib/actions";
 import DashboardSkeleton from "@/components/skeletons/DashboardSkeleton";
 
 import PageTransition from "@/components/ui/PageTransition";
 
 const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, user, isLoading } = useAuth();
+  const { isAuthenticated, user, isLoading, logout } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -64,7 +63,7 @@ const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }, [isMobileMenuOpen]);
 
   const handleLogout = async () => {
-    await deleteSession();
+    await logout();
   };
 
   const getPageTitle = () => {

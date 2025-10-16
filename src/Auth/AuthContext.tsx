@@ -3,15 +3,8 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { getSession as getServerSession } from '@/app/lib/session';
 import NetworkErrorBoundary from '@/components/NetworkErrorBoundary';
-
-interface AuthContextType {
-  isAuthenticated: boolean;
-  user: string | null;
-  userRole: string | null;
-  permissions: any | null;
-  isLoading: boolean;
-  revalidate: () => Promise<void>;
-}
+import type { AuthContextType } from '@/types/auth';
+import { toast } from 'sonner';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -41,20 +34,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUserRole(null);
         setPermissions(null);
       }
-    } catch (e) {
-      console.error('Session validation error:', e);
+    } catch (error) {
+      console.error('Session validation error:', error);
 
-      // Retry logic for network errors
-      if (retryCount < 2) {
+      // Better error handling with user-friendly messages
+      const isNetworkError = error instanceof TypeError && error.message.includes('fetch');
+      
+      if (retryCount < 2 && isNetworkError) {
         console.log(`Retrying session validation... (${retryCount + 1}/2)`);
+        toast.error(`Connection issue. Retrying... (${retryCount + 1}/2)`);
         setTimeout(() => validateSession(retryCount + 1), 1000 * (retryCount + 1));
         return;
+      }
+
+      if (retryCount >= 2) {
+        toast.error('Unable to verify session. Please check your connection and try again.');
       }
 
       setIsAuthenticated(false);
       setUser(null);
       setUserRole(null);
       setPermissions(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      
+      // Call logout API
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        setIsAuthenticated(false);
+        setUser(null);
+        setUserRole(null);
+        setPermissions(null);
+        toast.success('Logged out successfully');
+        
+        // Redirect to login page
+        window.location.href = '/login';
+      } else {
+        throw new Error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Failed to logout. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -71,6 +101,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     permissions,
     isLoading,
     revalidate: validateSession,
+    logout,
   };
 
   return (

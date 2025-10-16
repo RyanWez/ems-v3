@@ -7,33 +7,36 @@ import { useNavigation } from '@/providers/NavigationProvider';
 import { authenticate } from '@/app/lib/actions';
 import { useAuth } from '@/Auth';
 import { toast } from 'sonner';
+import { LoginFormData, FormErrors, TouchedFields } from '@/types/auth';
 
 const Login: React.FC = () => {
   const router = useRouter();
   const { revalidate } = useAuth();
   const { startNavigation } = useNavigation();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState<LoginFormData>({
+    username: '',
+    password: ''
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formErrors, setFormErrors] = useState<{username?: string; password?: string}>({});
-  const [touched, setTouched] = useState<{username: boolean; password: boolean}>({
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<TouchedFields>({
     username: false,
     password: false
   });
 
   const validateForm = (): boolean => {
-    const errors: {username?: string; password?: string} = {};
+    const errors: FormErrors = {};
 
-    if (!username.trim()) {
+    if (!formData.username.trim()) {
       errors.username = 'Username is required';
-    } else if (username.trim().length < 3) {
+    } else if (formData.username.trim().length < 3) {
       errors.username = 'Username must be at least 3 characters';
     }
 
-    if (!password) {
+    if (!formData.password) {
       errors.password = 'Password is required';
-    } else if (password.length < 6) {
+    } else if (formData.password.length < 6) {
       errors.password = 'Password must be at least 6 characters';
     }
 
@@ -53,30 +56,44 @@ const Login: React.FC = () => {
     setIsLoading(true);
     
     try {
-        const result = await authenticate(username, password);
+        const result = await authenticate(formData.username, formData.password);
 
         if (result?.error) {
-            toast.error(result.error);
+            // Better error categorization
+            if (result.error.includes('Invalid username or password')) {
+                toast.error('Invalid credentials. Please check your username and password.');
+            } else if (result.error.includes('network') || result.error.includes('fetch')) {
+                toast.error('Network error. Please check your connection and try again.');
+            } else {
+                toast.error(result.error);
+            }
         } else {
            toast.success('Login successful!');
            await revalidate();
            startNavigation('/dashboard');
            router.push('/dashboard');
         }
-    } catch (e) {
-        toast.error('An unexpected error occurred. Please try again.');
+    } catch (error) {
+        console.error('Login error:', error);
+        
+        // Better error handling based on error type
+        if (error instanceof TypeError && error.message.includes('fetch')) {
+            toast.error('Network error. Please check your connection and try again.');
+        } else {
+            toast.error('An unexpected error occurred. Please try again.');
+        }
     } finally {
         setIsLoading(false);
     }
   };
 
-  const handleInputChange = (field: 'username' | 'password', value: string) => {
-    if (field === 'username') {
-      setUsername(value);
-    } else {
-      setPassword(value);
-    }
+  const handleInputChange = (field: keyof LoginFormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
 
+    // Clear error when user starts typing
     if (formErrors[field] && touched[field]) {
       setFormErrors(prev => ({ ...prev, [field]: undefined }));
     }
@@ -110,7 +127,7 @@ const Login: React.FC = () => {
                   <input
                     type="text"
                     id="username"
-                    value={username}
+                    value={formData.username}
                     onChange={(e) => handleInputChange('username', e.target.value)}
                     onBlur={() => setTouched(prev => ({ ...prev, username: true }))}
                     className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 ${
@@ -118,6 +135,7 @@ const Login: React.FC = () => {
                     }`}
                     placeholder="Enter your username"
                     disabled={isLoading}
+                    autoComplete="username"
                   />
                   {formErrors.username && touched.username && (
                     <p className="mt-1 text-sm text-red-600">{formErrors.username}</p>
@@ -133,7 +151,7 @@ const Login: React.FC = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     id="password"
-                    value={password}
+                    value={formData.password}
                     onChange={(e) => handleInputChange('password', e.target.value)}
                     onBlur={() => setTouched(prev => ({ ...prev, password: true }))}
                     className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 pr-12 ${
@@ -141,6 +159,7 @@ const Login: React.FC = () => {
                     }`}
                     placeholder="Enter your password"
                     disabled={isLoading}
+                    autoComplete="current-password"
                   />
                   <button
                     type="button"
