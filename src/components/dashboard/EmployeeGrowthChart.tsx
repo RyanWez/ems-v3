@@ -55,9 +55,33 @@ export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
   );
   const [animationKey, setAnimationKey] = useState(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
 
   const chartData =
     viewMode === "monthly" ? monthlyDataByYear[selectedYear] || [] : yearlyData;
+
+  // Detect container width changes (sidebar toggle) and trigger re-animation
+  React.useEffect(() => {
+    if (!containerRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const newWidth = entry.contentRect.width;
+        if (containerWidth !== 0 && Math.abs(newWidth - containerWidth) > 50) {
+          // Significant width change detected (sidebar toggle)
+          setAnimationKey((prev) => prev + 1);
+        }
+        setContainerWidth(newWidth);
+      }
+    });
+
+    resizeObserver.observe(containerRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [containerWidth]);
 
   // Trigger animation when view mode changes
   const handleViewModeChange = (mode: "monthly" | "yearly") => {
@@ -86,7 +110,10 @@ export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
   const isPositiveGrowth = Number(growthPercentage) >= 0;
 
   return (
-    <div className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30 p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-500 ease-out">
+    <div
+      ref={containerRef}
+      className="bg-gradient-to-br from-white via-blue-50/30 to-indigo-50/30 p-6 rounded-lg shadow-sm border border-gray-100 hover:shadow-lg transition-all duration-500 ease-out"
+    >
       {/* Header with Toggle */}
       <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
         <div>
@@ -177,8 +204,8 @@ export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
       </div>
 
       {/* Chart */}
-      <div className="w-full h-80">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="w-full h-80 outline-none focus:outline-none">
+        <ResponsiveContainer width="100%" height="100%" debounce={50}>
           <AreaChart
             key={animationKey}
             data={chartData}
