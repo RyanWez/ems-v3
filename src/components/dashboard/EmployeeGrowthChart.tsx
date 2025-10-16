@@ -65,20 +65,31 @@ export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
   React.useEffect(() => {
     if (!containerRef.current) return;
 
+    let timeoutId: NodeJS.Timeout;
+
     const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const newWidth = entry.contentRect.width;
-        if (containerWidth !== 0 && Math.abs(newWidth - containerWidth) > 50) {
-          // Significant width change detected (sidebar toggle)
-          setAnimationKey((prev) => prev + 1);
+      // Clear previous timeout to debounce rapid changes
+      if (timeoutId) clearTimeout(timeoutId);
+
+      timeoutId = setTimeout(() => {
+        for (const entry of entries) {
+          const newWidth = entry.contentRect.width;
+          if (containerWidth !== 0 && Math.abs(newWidth - containerWidth) > 50) {
+            // Significant width change detected (sidebar toggle)
+            // Add small delay to ensure smooth transition
+            setTimeout(() => {
+              setAnimationKey((prev) => prev + 1);
+            }, 100);
+          }
+          setContainerWidth(newWidth);
         }
-        setContainerWidth(newWidth);
-      }
+      }, 50); // Debounce resize events
     });
 
     resizeObserver.observe(containerRef.current);
 
     return () => {
+      if (timeoutId) clearTimeout(timeoutId);
       resizeObserver.disconnect();
     };
   }, [containerWidth]);
@@ -204,8 +215,13 @@ export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
       </div>
 
       {/* Chart */}
-      <div className="w-full h-80 outline-none focus:outline-none">
-        <ResponsiveContainer width="100%" height="100%" debounce={50}>
+      <div className="w-full h-80 outline-none focus:outline-none transform-gpu">
+        <ResponsiveContainer 
+          width="100%" 
+          height="100%" 
+          debounce={100}
+          minWidth={300}
+        >
           <AreaChart
             key={animationKey}
             data={chartData}
@@ -298,8 +314,9 @@ export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
                   filter: "drop-shadow(0 0 8px rgba(59, 130, 246, 0.8))",
                 },
               }}
-              animationDuration={1200}
-              animationEasing="ease-in-out"
+              animationDuration={800}
+              animationEasing="ease-out"
+              animationBegin={0}
               isAnimationActive={true}
             />
 
@@ -326,8 +343,9 @@ export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
                   filter: "drop-shadow(0 0 6px rgba(16, 185, 129, 0.6))",
                 },
               }}
-              animationDuration={1200}
-              animationEasing="ease-in-out"
+              animationDuration={800}
+              animationEasing="ease-out"
+              animationBegin={100}
               isAnimationActive={true}
             />
 
@@ -351,8 +369,9 @@ export const EmployeeGrowthChart: React.FC<EmployeeGrowthChartProps> = ({
                 stroke: "#fff",
                 strokeWidth: 2,
               }}
-              animationDuration={1200}
-              animationEasing="ease-in-out"
+              animationDuration={800}
+              animationEasing="ease-out"
+              animationBegin={200}
               isAnimationActive={true}
             />
           </AreaChart>

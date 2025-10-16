@@ -645,6 +645,32 @@ svg *:focus {
 .recharts-wrapper:focus,
 .recharts-surface:focus {
   outline: none !important;
+}
+
+/* Enhanced chart performance */
+.recharts-wrapper {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.recharts-surface {
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Smooth chart transitions */
+.recharts-area,
+.recharts-line {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Chart container optimization */
+.transform-gpu {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }/* Mo
 bile Chart Scrollbar Styles */
 .chart-scroll-container {
