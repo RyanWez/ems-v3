@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getSegmentLabel } from "@/config/breadcrumbConfig";
@@ -15,8 +15,8 @@ interface BreadcrumbItem {
 const Breadcrumbs: React.FC = () => {
   const pathname = usePathname();
 
-  // Generate breadcrumb items from pathname
-  const generateBreadcrumbs = (): BreadcrumbItem[] => {
+  // Memoize breadcrumb generation for performance
+  const breadcrumbs = useMemo((): BreadcrumbItem[] => {
     if (!pathname || pathname === "/") {
       return [];
     }
@@ -43,9 +43,7 @@ const Breadcrumbs: React.FC = () => {
     });
 
     return breadcrumbs;
-  };
-
-  const breadcrumbs = generateBreadcrumbs();
+  }, [pathname]);
 
   // Don't render if no breadcrumbs
   if (breadcrumbs.length === 0) {
@@ -65,7 +63,7 @@ const Breadcrumbs: React.FC = () => {
           </span>
           {item.isCurrentPage ? (
             <span
-              className="text-gray-700 font-semibold truncate max-w-[150px] sm:max-w-[200px] md:max-w-none"
+              className="text-gray-700 font-semibold truncate max-w-[150px] sm:max-w-[200px] md:max-w-none animate-in fade-in duration-300"
               aria-current="page"
             >
               {item.label}
@@ -73,7 +71,7 @@ const Breadcrumbs: React.FC = () => {
           ) : (
             <Link
               href={item.href}
-              className="text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate max-w-[150px] sm:max-w-[200px] md:max-w-none"
+              className="text-blue-600 hover:text-blue-800 hover:underline transition-all duration-200 hover:scale-105 truncate max-w-[150px] sm:max-w-[200px] md:max-w-none"
             >
               {item.label}
             </Link>
@@ -99,7 +97,7 @@ const Breadcrumbs: React.FC = () => {
             /
           </span>
           <span
-            className="text-gray-700 font-semibold truncate max-w-[150px]"
+            className="text-gray-700 font-semibold truncate max-w-[150px] animate-in fade-in duration-300"
             aria-current="page"
           >
             {lastItem.label}
@@ -113,7 +111,7 @@ const Breadcrumbs: React.FC = () => {
           </span>
           <Link
             href={firstItem.href}
-            className="text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate max-w-[120px]"
+            className="text-blue-600 hover:text-blue-800 hover:underline transition-all duration-200 hover:scale-105 truncate max-w-[120px]"
           >
             {firstItem.label}
           </Link>
@@ -132,7 +130,7 @@ const Breadcrumbs: React.FC = () => {
               </span>
               <Link
                 href={secondLastItem.href}
-                className="text-blue-600 hover:text-blue-800 hover:underline transition-colors truncate max-w-[150px]"
+                className="text-blue-600 hover:text-blue-800 hover:underline transition-all duration-200 hover:scale-105 truncate max-w-[150px]"
               >
                 {secondLastItem.label}
               </Link>
@@ -142,7 +140,7 @@ const Breadcrumbs: React.FC = () => {
             /
           </span>
           <span
-            className="text-gray-700 font-semibold truncate max-w-[150px]"
+            className="text-gray-700 font-semibold truncate max-w-[150px] animate-in fade-in duration-300"
             aria-current="page"
           >
             {lastItem.label}
@@ -158,7 +156,7 @@ const Breadcrumbs: React.FC = () => {
               </span>
               {item.isCurrentPage ? (
                 <span
-                  className="text-gray-700 font-semibold"
+                  className="text-gray-700 font-semibold animate-in fade-in duration-300"
                   aria-current="page"
                 >
                   {item.label}
@@ -166,7 +164,7 @@ const Breadcrumbs: React.FC = () => {
               ) : (
                 <Link
                   href={item.href}
-                  className="text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                  className="text-blue-600 hover:text-blue-800 hover:underline transition-all duration-200 hover:scale-105"
                 >
                   {item.label}
                 </Link>
@@ -181,12 +179,12 @@ const Breadcrumbs: React.FC = () => {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="flex items-center gap-2 md:gap-3 text-sm overflow-hidden"
+      className="flex items-center gap-2 md:gap-3 text-sm overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300"
     >
       {/* Home Icon */}
       <Link
         href="/dashboard"
-        className="flex items-center text-blue-600 hover:text-blue-800 hover:underline transition-colors flex-shrink-0"
+        className="flex items-center text-blue-600 hover:text-blue-800 hover:underline transition-all duration-200 hover:scale-110 flex-shrink-0"
         aria-label="Go to Dashboard"
       >
         <Home className="w-4 h-4" />
@@ -198,4 +196,5 @@ const Breadcrumbs: React.FC = () => {
   );
 };
 
-export default Breadcrumbs;
+// Memoize component to prevent unnecessary re-renders
+export default React.memo(Breadcrumbs);
