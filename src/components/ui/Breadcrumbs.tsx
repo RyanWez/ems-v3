@@ -181,7 +181,7 @@ const Breadcrumbs: React.FC = () => {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="flex items-center gap-2 md:gap-3 text-sm mb-4 overflow-hidden"
+      className="flex items-center gap-2 md:gap-3 text-sm overflow-hidden"
     >
       {/* Home Icon */}
       <Link

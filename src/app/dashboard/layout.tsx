@@ -168,8 +168,11 @@ const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-y-auto p-6">
+        {/* Breadcrumbs Bar - Separate from header */}
+        <div className="bg-white border-b border-gray-200 px-4 py-3 shadow-sm">
           <Breadcrumbs />
+        </div>
+        <main className="flex-1 overflow-y-auto p-6">
           <Suspense fallback={<DashboardSkeleton />}>
             <PageTransition>{children}</PageTransition>
           </Suspense>
