@@ -9,6 +9,7 @@ import { useAuth } from "@/Auth";
 import DashboardSkeleton from "@/components/skeletons/DashboardSkeleton";
 
 import PageTransition from "@/components/ui/PageTransition";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, user, isLoading, logout } = useAuth();
@@ -95,9 +96,8 @@ const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <div
-      className={`flex h-screen bg-secondary ${
-        isMobileMenuOpen ? "mobile-menu-open" : ""
-      }`}
+      className={`flex h-screen bg-secondary ${isMobileMenuOpen ? "mobile-menu-open" : ""
+        }`}
     >
       <Sidebar
         isCollapsed={isMobileMenuOpen ? false : isSidebarCollapsed}
@@ -105,14 +105,12 @@ const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         onMobileClose={closeMobileMenu}
       />
       <div
-        className={`flex-1 flex flex-col overflow-hidden ${
-          isMobileMenuOpen ? "main-content-mobile" : ""
-        }`}
+        className={`flex-1 flex flex-col overflow-hidden ${isMobileMenuOpen ? "main-content-mobile" : ""
+          }`}
       >
         <header
-          className={`main-header flex items-center justify-between h-16 px-4 ${
-            isMobileMenuOpen ? "mobile-blur" : ""
-          }`}
+          className={`main-header flex items-center justify-between h-16 px-4 ${isMobileMenuOpen ? "mobile-blur" : ""
+            }`}
         >
           <div className="flex items-center">
             <button
@@ -124,27 +122,23 @@ const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             >
               <div className="flex flex-col items-center justify-center space-y-1">
                 <div
-                  className={`w-5 h-0.5 bg-gray-600 transition-all duration-200 ${
-                    isSidebarCollapsed ? "rotate-45 translate-y-1.5" : ""
-                  }`}
+                  className={`w-5 h-0.5 bg-gray-600 transition-all duration-200 ${isSidebarCollapsed ? "rotate-45 translate-y-1.5" : ""
+                    }`}
                 ></div>
                 <div
-                  className={`w-5 h-0.5 bg-gray-600 transition-all duration-200 ${
-                    isSidebarCollapsed ? "opacity-0 scale-0" : ""
-                  }`}
+                  className={`w-5 h-0.5 bg-gray-600 transition-all duration-200 ${isSidebarCollapsed ? "opacity-0 scale-0" : ""
+                    }`}
                 ></div>
                 <div
-                  className={`w-5 h-0.5 bg-gray-600 transition-all duration-200 ${
-                    isSidebarCollapsed ? "-rotate-45 -translate-y-1.5" : ""
-                  }`}
+                  className={`w-5 h-0.5 bg-gray-600 transition-all duration-200 ${isSidebarCollapsed ? "-rotate-45 -translate-y-1.5" : ""
+                    }`}
                 ></div>
               </div>
               <div
-                className={`absolute -top-1 -right-1 w-3 h-3 rounded-full transition-all duration-200 border border-white shadow-sm ${
-                  isSidebarCollapsed
+                className={`absolute -top-1 -right-1 w-3 h-3 rounded-full transition-all duration-200 border border-white shadow-sm ${isSidebarCollapsed
                     ? "bg-red-500 scale-110"
                     : "bg-green-500 scale-100"
-                }`}
+                  }`}
               ></div>
             </button>
             <div className="mobile-menu-button md:hidden">
@@ -175,6 +169,7 @@ const AppContent: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </div>
         </header>
         <main className="flex-1 overflow-y-auto p-6">
+          <Breadcrumbs />
           <Suspense fallback={<DashboardSkeleton />}>
             <PageTransition>{children}</PageTransition>
           </Suspense>
