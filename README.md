@@ -12,6 +12,14 @@ A modern, secure, and comprehensive employee management system built with Next.j
 
 ## 🌟 Key Features
 
+### 🎯 **Professional Landing Page**
+- **Modern Design**: Clean, professional landing page with smooth animations
+- **Feature Showcase**: Comprehensive display of system capabilities
+- **Technology Stack**: Transparent display of technologies used
+- **Responsive Navigation**: Sticky header with smooth scroll navigation
+- **Smart Routing**: Automatic redirect to dashboard for logged-in users
+- **Mobile Optimized**: Fully responsive design for all devices
+
 ### 🔐 **Advanced Authentication System**
 - **JWT-based Authentication**: Secure token-based authentication with server-side validation
 - **Session Management**: Intelligent session handling with automatic token refresh

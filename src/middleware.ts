@@ -32,19 +32,25 @@ export async function middleware(request: NextRequest) {
     return new NextResponse(null, { status: 200, headers: response.headers });
   }
 
-  const publicPaths = ['/login'];
+  const publicPaths = ['/login', '/landing', '/'];
 
-  const isPublicPath = publicPaths.some(path => pathname.startsWith(path));
+  const isPublicPath = publicPaths.some(path => pathname === path || pathname.startsWith(path));
 
   // Exclude API routes and static files from authentication checks
   const isApiRoute = pathname.startsWith('/api');
   const isStaticFile = pathname.includes('.') || pathname.startsWith('/_next') || pathname.startsWith('/public');
 
+  // Allow access to root path (landing page) for everyone
+  if (pathname === '/') {
+    return response;
+  }
+
   if (!session && !isPublicPath && !isApiRoute && !isStaticFile) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  if (session && isPublicPath) {
+  // Only redirect to dashboard if user is on login page and already logged in
+  if (session && pathname === '/login') {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
